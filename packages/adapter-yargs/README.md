@@ -1,9 +1,9 @@
-# @opencli/adapter-yargs
+# @clidoc/adapter-yargs
 
 Convert Yargs command modules into an OpenCLI 1.0.0-alpha.14 document.
 
 ```ts
-import { fromYargs } from '@opencli/adapter-yargs';
+import { fromYargs } from '@clidoc/adapter-yargs';
 import { command as greet } from './commands/greet.js';
 
 const document = fromYargs([greet], {

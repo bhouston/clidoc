@@ -1,12 +1,12 @@
-# @opencli/cli
+# @clidoc/cli
 
 Generate OpenCLI JSON from framework metadata, validate JSON/YAML documents, and
 render Markdown. Node 22.12+; ESM only.
 
 ```sh
-opencli generate ./definition.mjs --adapter yargs --output cli.json
-opencli validate cli.json
-opencli markdown cli.json --output reference.md
+clidoc generate ./definition.mjs --adapter yargs --output cli.json
+clidoc validate cli.json
+clidoc markdown cli.json --output reference.md
 ```
 
 Omit `--output` to print the result. Invalid input or command usage exits with

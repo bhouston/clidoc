@@ -1,11 +1,11 @@
-import { fromYargs } from '@opencli/adapter-yargs';
+import { fromYargs } from '@clidoc/adapter-yargs';
 import { command as generate } from './commands/generate.js';
 import { command as markdown } from './commands/markdown.js';
 import { command as validate } from './commands/validate.js';
 
 export const info = {
-  title: 'OpenCLI JS/TS',
-  binary: 'opencli',
+  title: 'clidoc',
+  binary: 'clidoc',
   version: '0.1.0',
   summary: 'Generate, validate, and publish CLI documentation through OpenCLI.',
 };

@@ -1,9 +1,9 @@
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { parse } from '@opencli/core';
-import { fromYargs } from '@opencli/adapter-yargs';
-import { fromCommander } from '@opencli/adapter-commander';
-import { fromOclif } from '@opencli/adapter-oclif';
+import { parse } from '@clidoc/core';
+import { fromYargs } from '@clidoc/adapter-yargs';
+import { fromCommander } from '@clidoc/adapter-commander';
+import { fromOclif } from '@clidoc/adapter-oclif';
 import { defineCommand } from 'yargs-file-commands';
 import { output } from '../io.js';
 

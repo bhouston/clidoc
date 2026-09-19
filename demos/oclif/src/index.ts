@@ -1,5 +1,5 @@
 import { Args, Command, Flags } from '@oclif/core';
-import { fromOclif } from '@opencli/adapter-oclif';
+import { fromOclif } from '@clidoc/adapter-oclif';
 
 class Greet extends Command {
   static override description = 'Greet a person';
@@ -11,7 +11,7 @@ class Greet extends Command {
   }
 }
 
-if (process.argv.includes('--opencli')) {
+if (process.argv.includes('--clidoc')) {
   const flags = Object.fromEntries(
     Object.entries(Greet.flags).map(([name, flag]) => [
       name,

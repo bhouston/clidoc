@@ -1,5 +1,5 @@
 {
-  "name": "@opencli/demo-oclif",
+  "name": "@clidoc/demo-oclif",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -9,9 +9,9 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
-    "@oclif/core": "^5.0.0",
-    "@opencli/adapter-oclif": "workspace:*",
-    "@opencli/core": "workspace:*"
+    "@clidoc/adapter-oclif": "workspace:*",
+    "@clidoc/core": "workspace:*",
+    "@oclif/core": "^5.0.0"
   },
   "engines": {
     "node": ">=22.12.0"

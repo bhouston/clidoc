@@ -1,14 +1,14 @@
 {
-  "name": "@opencli/demo-docusaurus",
+  "name": "@clidoc/demo-docusaurus",
   "private": true,
   "scripts": {
     "build": "docusaurus build",
     "dev": "docusaurus start"
   },
   "dependencies": {
+    "@clidoc/docusaurus": "workspace:^",
     "@docusaurus/core": "^3.10.2",
     "@docusaurus/preset-classic": "^3.10.2",
-    "@opencli/docusaurus": "workspace:^",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"
   }

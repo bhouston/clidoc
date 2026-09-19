@@ -6,7 +6,7 @@ export { cliDocument } from './definition.js';
 /** Run without terminating the embedding process. Commands live in individual files. */
 export async function runCli(argv: string[]): Promise<void> {
   await yargs(argv)
-    .scriptName('opencli')
+    .scriptName('clidoc')
     .command(await fileCommands({ commandDirs: [fileURLToPath(new URL('./commands', import.meta.url))] }))
     .demandCommand(1)
     .strict()

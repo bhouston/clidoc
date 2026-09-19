@@ -1,9 +1,9 @@
 # Release setup and operation
 
-This monorepo publishes packages from `packages/`: `@opencli/core`,
-`@opencli/adapter-yargs`, `@opencli/adapter-commander`,
-`@opencli/adapter-oclif`, `@opencli/cli`, `@opencli/docusaurus`, and
-`@opencli/vitepress`. The demos under `demos/` are private and never published.
+This monorepo publishes packages from `packages/`: `@clidoc/core`,
+`@clidoc/adapter-yargs`, `@clidoc/adapter-commander`,
+`@clidoc/adapter-oclif`, `@clidoc/cli`, `@clidoc/docusaurus`, and
+`@clidoc/vitepress`. The demos under `demos/` are private and never published.
 `pnpm release` runs `semantic-release -e semantic-release-monorepo` once per
 package in dependency order. Commits touching each package determine its version
 independently. Tags have the form `<package>-v<version>`. The release runner
@@ -24,7 +24,7 @@ Actions, and enter:
 | Field                | Value         |
 | -------------------- | ------------- |
 | Organization or user | `bhouston`    |
-| Repository           | `opencli`     |
+| Repository           | `clidoc`      |
 | Workflow filename    | `release.yml` |
 | Environment          | Leave blank   |
 
@@ -35,7 +35,7 @@ checkout of `main`, run `pnpm install --frozen-lockfile` and
 `pnpm release:bootstrap:stage`. This builds all packages and creates
 `publish/<package>/` directories with concrete dependency versions. Review each
 `publish/<package>/package.json`, then publish from those staged directories in
-dependency order with an npm account authorized for the `@opencli` scope:
+dependency order with an npm account authorized for the `@clidoc` scope:
 
 ```sh
 npm publish ./publish/core --access public
@@ -68,7 +68,7 @@ release without publishing. Merging a PR does not publish.
 Packages start at `0.1.0`. After the staged `0.1.0` bootstrap publish, create
 `<package>-v0.1.0` baseline tags on the exact commit used for staging and push
 them. Use the full scoped package name in each tag (for example,
-`@opencli/core-v0.1.0`). These tags keep the first automated release based on
+`@clidoc/core-v0.1.0`). These tags keep the first automated release based on
 commits after the bootstrap. Without baseline tags, semantic-release treats the
 project as unreleased and may compute a different first version.
 

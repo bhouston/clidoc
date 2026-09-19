@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises';
-import { parse } from '@opencli/core';
+import { parse } from '@clidoc/core';
 import { defineCommand } from 'yargs-file-commands';
 
 export const command = defineCommand({

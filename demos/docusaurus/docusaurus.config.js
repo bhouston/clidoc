@@ -3,23 +3,23 @@ import { fileURLToPath } from 'node:url';
 
 const siteDir = path.dirname(fileURLToPath(import.meta.url));
 
-import opencliPlugin from '@opencli/docusaurus';
+import clidocPlugin from '@clidoc/docusaurus';
 
 module.exports = {
-  title: 'OpenCLI',
+  title: 'clidoc',
   tagline: 'One CLI contract. Documentation everywhere.',
   url: 'https://bhouston.github.io',
-  baseUrl: '/opencli/',
+  baseUrl: '/clidoc/',
   organizationName: 'bhouston',
-  projectName: 'opencli',
+  projectName: 'clidoc',
   onBrokenLinks: 'throw',
   markdown: { format: 'md' },
   presets: [['classic', { docs: { routeBasePath: '/', sidebarPath: './sidebars.js' }, blog: false }]],
   plugins: [
     [
-      opencliPlugin,
+      clidocPlugin,
       {
-        input: '../../docs/generated/opencli.json',
+        input: '../../docs/generated/clidoc.json',
         outputDir: path.join(siteDir, 'docs/reference'),
         basePath: '/reference',
       },
@@ -27,12 +27,12 @@ module.exports = {
   ],
   themeConfig: {
     navbar: {
-      title: 'OpenCLI',
+      title: 'clidoc',
       items: [
         { to: '/', label: 'Guide', position: 'left' },
-        { href: 'https://github.com/bhouston/opencli', label: 'GitHub', position: 'right' },
+        { href: 'https://github.com/bhouston/clidoc', label: 'GitHub', position: 'right' },
       ],
     },
-    footer: { style: 'dark', copyright: 'MIT · OpenCLI JS/TS' },
+    footer: { style: 'dark', copyright: 'MIT · clidoc' },
   },
 };

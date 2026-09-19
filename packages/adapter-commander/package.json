@@ -1,12 +1,12 @@
 {
-  "name": "@opencli/adapter-commander",
+  "name": "@clidoc/adapter-commander",
   "version": "0.1.0",
   "description": "OpenCLI adapter for commander",
   "license": "MIT",
   "author": "Ben Houston <ben@ben3d.ca> (https://ben3d.ca)",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bhouston/opencli.git",
+    "url": "git+https://github.com/bhouston/clidoc.git",
     "directory": "packages/adapter-commander"
   },
   "files": [
@@ -35,7 +35,7 @@
     "tsc": "tsc"
   },
   "dependencies": {
-    "@opencli/core": "workspace:*"
+    "@clidoc/core": "workspace:*"
   },
   "peerDependencies": {
     "commander": "^15.0.0"

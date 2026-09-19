@@ -1,3 +1,3 @@
 # Commander demo
 
-Run `pnpm --filter @opencli/demo-commander build`, then `pnpm --filter @opencli/demo-commander start -- greet Ada` or `pnpm --filter @opencli/demo-commander start -- --opencli` to print its OpenCLI document.
+Run `pnpm --filter @clidoc/demo-commander build`, then `pnpm --filter @clidoc/demo-commander start -- greet Ada` or `pnpm --filter @clidoc/demo-commander start -- --clidoc` to print its OpenCLI document.

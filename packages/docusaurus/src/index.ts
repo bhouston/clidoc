@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
-import { generatePages, parse, type OpenCliDocument } from '@opencli/core';
+import { generatePages, parse, type OpenCliDocument } from '@clidoc/core';
 
 export interface DocusaurusOptions {
   /** An OpenCLI document or a JSON/YAML filename relative to siteDir. */
@@ -11,15 +11,15 @@ export interface DocusaurusOptions {
   basePath?: string;
 }
 
-const manifestName = '.opencli-generated.json';
+const manifestName = '.clidoc-generated.json';
 function filename(id: string): string {
-  return `opencli-${createHash('sha256').update(id).digest('hex').slice(0, 20)}.md`;
+  return `clidoc-${createHash('sha256').update(id).digest('hex').slice(0, 20)}.md`;
 }
 async function previousFiles(outputDir: string): Promise<string[]> {
   try {
     const value: unknown = JSON.parse(await readFile(join(outputDir, manifestName), 'utf8'));
     if (!Array.isArray(value)) throw new Error('Invalid generated file manifest');
-    return value.filter((name): name is string => typeof name === 'string' && /^opencli-[a-f0-9]{20}\.md$/.test(name));
+    return value.filter((name): name is string => typeof name === 'string' && /^clidoc-[a-f0-9]{20}\.md$/.test(name));
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === 'ENOENT') return [];
     throw error;
@@ -52,7 +52,7 @@ export async function writeDocusaurus(document: OpenCliDocument, options: { outp
 }
 
 /** Generate before content loading, so plugin-content-docs can discover the files. */
-export default async function opencliPlugin(context: { siteDir: string }, options: DocusaurusOptions) {
+export default async function clidocPlugin(context: { siteDir: string }, options: DocusaurusOptions) {
   const document =
     typeof options.input === 'string'
       ? parse(await readFile(resolve(context.siteDir, options.input), 'utf8'))
@@ -62,7 +62,7 @@ export default async function opencliPlugin(context: { siteDir: string }, option
     basePath: options.basePath,
   });
   return {
-    name: 'opencli-docusaurus',
+    name: 'clidoc-docusaurus',
     loadContent() {
       return sidebar;
     },

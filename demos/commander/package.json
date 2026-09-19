@@ -1,5 +1,5 @@
 {
-  "name": "@opencli/demo-commander",
+  "name": "@clidoc/demo-commander",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -9,8 +9,8 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
-    "@opencli/adapter-commander": "workspace:*",
-    "@opencli/core": "workspace:*",
+    "@clidoc/adapter-commander": "workspace:*",
+    "@clidoc/core": "workspace:*",
     "commander": "^15.0.0"
   },
   "engines": {

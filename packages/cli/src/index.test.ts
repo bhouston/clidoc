@@ -2,7 +2,7 @@ import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { validate } from '@opencli/core';
+import { validate } from '@clidoc/core';
 import { runCli, cliDocument } from './index.js';
 import { output } from './io.js';
 
@@ -19,7 +19,7 @@ vi.mock('yargs-file-commands', async (importOriginal) => ({
 
 const temporary: string[] = [];
 async function directory() {
-  const path = await mkdtemp(join(tmpdir(), 'opencli-cli-'));
+  const path = await mkdtemp(join(tmpdir(), 'clidoc-cli-'));
   temporary.push(path);
   return path;
 }
@@ -44,10 +44,10 @@ describe('CLI', () => {
     await runCli(['validate', input]);
     expect(stdout).toHaveBeenCalledWith('Valid OpenCLI document\n');
     await runCli(['markdown', input]);
-    expect(stdout).toHaveBeenCalledWith(expect.stringContaining('# OpenCLI JS/TS'));
+    expect(stdout).toHaveBeenCalledWith(expect.stringContaining('# clidoc'));
     const destination = join(path, 'nested', 'reference.md');
     await runCli(['markdown', input, '-o', destination]);
-    expect(await readFile(destination, 'utf8')).toContain('opencli generate');
+    expect(await readFile(destination, 'utf8')).toContain('clidoc generate');
   });
 
   it('rejects invalid input and incorrect invocations without exiting', async () => {

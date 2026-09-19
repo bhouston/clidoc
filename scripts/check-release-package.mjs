@@ -13,7 +13,7 @@ const versions = Object.fromEntries(
 );
 for (const item of dirs) {
   const packageDir = new URL(`${item.name}/`, root).pathname;
-  const temp = mkdtempSync(join(tmpdir(), 'opencli-package-check-'));
+  const temp = mkdtempSync(join(tmpdir(), 'clidoc-package-check-'));
   try {
     const staged = stagePackage(packageDir, temp, '2.3.4', versions);
     if (staged.version !== '2.3.4') throw new Error(`${staged.name}: incorrect staged version`);

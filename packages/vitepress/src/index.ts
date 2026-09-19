@@ -1,6 +1,6 @@
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname, join, relative, resolve, sep } from 'node:path';
-import { generatePages, type OpenCliDocument } from '@opencli/core';
+import { generatePages, type OpenCliDocument } from '@clidoc/core';
 
 export interface VitePressOptions {
   /** Site source root. Generated pages live below basePath. */
@@ -8,7 +8,7 @@ export interface VitePressOptions {
   basePath?: string;
 }
 
-const manifestName = '.opencli-generated.json';
+const manifestName = '.clidoc-generated.json';
 function ownedPath(outputDir: string, name: string): string {
   const full = resolve(outputDir, name);
   const rel = relative(outputDir, full);

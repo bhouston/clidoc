@@ -1,6 +1,6 @@
 import type { Command, Option, Argument } from 'commander';
-import { OPENCLI_VERSION } from '@opencli/core';
-import type { OpenCliDocument, InfoObject, CommandItemObject, FlagItemObject, ArgumentItemObject } from '@opencli/core';
+import { OPENCLI_VERSION } from '@clidoc/core';
+import type { OpenCliDocument, InfoObject, CommandItemObject, FlagItemObject, ArgumentItemObject } from '@clidoc/core';
 
 function argumentToOpenCli(argument: Argument): ArgumentItemObject {
   const result: ArgumentItemObject = { name: argument.name() };

@@ -1,7 +1,7 @@
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import type { ArgumentsCamelCase } from 'yargs';
-import { fromYargs } from '@opencli/adapter-yargs';
+import { fromYargs } from '@clidoc/adapter-yargs';
 
 const greet = {
   command: 'greet <name>',
@@ -20,7 +20,7 @@ const greet = {
   },
 };
 
-if (process.argv.includes('--opencli')) {
+if (process.argv.includes('--clidoc')) {
   console.log(JSON.stringify(fromYargs([greet], { title: 'Yargs demo', binary: 'demo', version: '0.0.0' }), null, 2));
 } else {
   yargs(hideBin(process.argv)).command(greet).demandCommand().parse();

@@ -1,5 +1,5 @@
 {
-  "name": "@opencli/demo-yargs",
+  "name": "@clidoc/demo-yargs",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -9,8 +9,8 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
-    "@opencli/adapter-yargs": "workspace:*",
-    "@opencli/core": "workspace:*",
+    "@clidoc/adapter-yargs": "workspace:*",
+    "@clidoc/core": "workspace:*",
     "yargs": "^18.1.0"
   },
   "devDependencies": {

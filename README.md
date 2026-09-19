@@ -1,24 +1,24 @@
-# OpenCLI JS/TS
+# clidoc
 
 Turn CLI definitions into a portable OpenCLI document, then publish Markdown
 wherever your documentation lives.
 
 This TypeScript monorepo adopts the [OpenCLI specification](https://github.com/bcdxn/opencli).
 It provides adapters for Yargs, Commander, and oclif, a command-line tool, and
-Docusaurus and VitePress consumers. The OpenCLI tool documents itself from its
+Docusaurus and VitePress consumers. The clidoc tool documents itself from its
 own `yargs-file-commands` definitions.
 
 ## Packages
 
-| Package                                                    | Purpose                                                                              |
-| ---------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| [`@opencli/core`](packages/core)                           | Types, offline JSON Schema validation, JSON/YAML parsing, Markdown, pages and routes |
-| [`@opencli/adapter-yargs`](packages/adapter-yargs)         | Yargs command modules, including supported `defineCommand` builders                  |
-| [`@opencli/adapter-commander`](packages/adapter-commander) | Configured Commander command trees                                                   |
-| [`@opencli/adapter-oclif`](packages/adapter-oclif)         | oclif manifest command metadata                                                      |
-| [`@opencli/cli`](packages/cli)                             | `generate`, `validate`, and `markdown` commands                                      |
-| [`@opencli/docusaurus`](packages/docusaurus)               | Generated Markdown pages for the Docusaurus docs plugin                              |
-| [`@opencli/vitepress`](packages/vitepress)                 | Generated Markdown and matching VitePress sidebar links                              |
+| Package                                                   | Purpose                                                                              |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| [`@clidoc/core`](packages/core)                           | Types, offline JSON Schema validation, JSON/YAML parsing, Markdown, pages and routes |
+| [`@clidoc/adapter-yargs`](packages/adapter-yargs)         | Yargs command modules, including supported `defineCommand` builders                  |
+| [`@clidoc/adapter-commander`](packages/adapter-commander) | Configured Commander command trees                                                   |
+| [`@clidoc/adapter-oclif`](packages/adapter-oclif)         | oclif manifest command metadata                                                      |
+| [`@clidoc/cli`](packages/cli)                             | `generate`, `validate`, and `markdown` commands                                      |
+| [`@clidoc/docusaurus`](packages/docusaurus)               | Generated Markdown pages for the Docusaurus docs plugin                              |
+| [`@clidoc/vitepress`](packages/vitepress)                 | Generated Markdown and matching VitePress sidebar links                              |
 
 Packages are not published by creating or merging a PR. Use the workspace
 commands below until a maintainer runs the first release.
@@ -28,14 +28,14 @@ commands below until a maintainer runs the first release.
 Use the Node version in `.nvmrc` and pnpm specified in `package.json`.
 
 ```sh
-git clone --recurse-submodules https://github.com/bhouston/opencli.git
-cd opencli
+git clone --recurse-submodules https://github.com/bhouston/clidoc.git
+cd clidoc
 pnpm install --frozen-lockfile
 pnpm build
 node packages/cli/dist/bin.js --help
 pnpm docs:generate
-node packages/cli/dist/bin.js validate docs/generated/opencli.json
-node packages/cli/dist/bin.js markdown docs/generated/opencli.json
+node packages/cli/dist/bin.js validate docs/generated/clidoc.json
+node packages/cli/dist/bin.js markdown docs/generated/clidoc.json
 ```
 
 Already cloned? Run `git submodule update --init --recursive` before the tests.
@@ -78,8 +78,8 @@ Adapters do not parse user arguments or invoke command handlers.
 ## Use the pipeline as a library
 
 ```ts
-import { fromCommander } from '@opencli/adapter-commander';
-import { renderMarkdown, validate } from '@opencli/core';
+import { fromCommander } from '@clidoc/adapter-commander';
+import { renderMarkdown, validate } from '@clidoc/core';
 
 const document = fromCommander(program, {
   title: 'My CLI',
@@ -99,25 +99,25 @@ Hand-written guides stay as ordinary Markdown alongside generated reference page
 ## Demos and dogfooding
 
 ```sh
-pnpm --filter @opencli/demo-yargs build
-pnpm --filter @opencli/demo-yargs start greet Ada --language fr
-pnpm --filter @opencli/demo-commander build
-pnpm --filter @opencli/demo-commander start greet Ada
-pnpm --filter @opencli/demo-oclif build
-pnpm --filter @opencli/demo-oclif start Ada
+pnpm --filter @clidoc/demo-yargs build
+pnpm --filter @clidoc/demo-yargs start greet Ada --language fr
+pnpm --filter @clidoc/demo-commander build
+pnpm --filter @clidoc/demo-commander start greet Ada
+pnpm --filter @clidoc/demo-oclif build
+pnpm --filter @clidoc/demo-oclif start Ada
 
 pnpm docs:build
-pnpm --filter @opencli/demo-docusaurus dev
+pnpm --filter @clidoc/demo-docusaurus dev
 # Or:
-pnpm --filter @opencli/demo-vitepress dev
+pnpm --filter @clidoc/demo-vitepress dev
 ```
 
-Each CLI demo accepts `--opencli` to print its document. The Yargs demo uses
-barebones Yargs; the OpenCLI tool uses `defineCommand` and `fileCommands`, following
+Each CLI demo accepts `--clidoc` to print its document. The Yargs demo uses
+barebones Yargs; the clidoc tool uses `defineCommand` and `fileCommands`, following
 the structure used by [hdrify](https://github.com/bhouston/hdrify).
 
 The [generated CLI reference](docs/generated/cli.md) and
-[OpenCLI JSON](docs/generated/opencli.json) come from the actual command modules.
+[OpenCLI JSON](docs/generated/clidoc.json) come from the actual command modules.
 `pnpm docs:generate` refreshes them; both sites consume the same JSON.
 
 ## Compatibility and scope
