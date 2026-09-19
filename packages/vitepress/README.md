@@ -1,5 +1,11 @@
 # @clidoc/vitepress
 
+[![npm version](https://img.shields.io/npm/v/%40clidoc%2Fvitepress)](https://www.npmjs.com/package/@clidoc/vitepress)
+[![npm downloads](https://img.shields.io/npm/dw/%40clidoc%2Fvitepress)](https://www.npmjs.com/package/@clidoc/vitepress)
+[![CI](https://github.com/bhouston/clidoc/actions/workflows/ci.yml/badge.svg)](https://github.com/bhouston/clidoc/actions/workflows/ci.yml)
+[![Coverage](https://codecov.io/gh/bhouston/clidoc/graph/badge.svg)](https://codecov.io/gh/bhouston/clidoc)
+[![Documentation](https://img.shields.io/badge/docs-clidoc.ben3d.ca-blue)](https://clidoc.ben3d.ca)
+
 Generate VitePress pages and sidebar entries from an OpenCLI document.
 
 ```ts
@@ -25,3 +31,11 @@ locations below `outputDir`. Regeneration removes only files recorded in
 `.clidoc-generated.json`, leaving hand-written pages intact. On the first run
 after upgrading from OpenCLI, it also removes stale pages listed in
 `.opencli-generated.json` and deletes that legacy manifest.
+
+## License
+
+MIT. See [LICENSE](../../LICENSE).
+
+## Author
+
+[Ben Houston](https://ben3d.ca), Sponsored by [Land of Assets](https://landofassets.com).

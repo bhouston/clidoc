@@ -1,5 +1,11 @@
 # @clidoc/docusaurus
 
+[![npm version](https://img.shields.io/npm/v/%40clidoc%2Fdocusaurus)](https://www.npmjs.com/package/@clidoc/docusaurus)
+[![npm downloads](https://img.shields.io/npm/dw/%40clidoc%2Fdocusaurus)](https://www.npmjs.com/package/@clidoc/docusaurus)
+[![CI](https://github.com/bhouston/clidoc/actions/workflows/ci.yml/badge.svg)](https://github.com/bhouston/clidoc/actions/workflows/ci.yml)
+[![Coverage](https://codecov.io/gh/bhouston/clidoc/graph/badge.svg)](https://codecov.io/gh/bhouston/clidoc)
+[![Documentation](https://img.shields.io/badge/docs-clidoc.ben3d.ca-blue)](https://clidoc.ben3d.ca)
+
 Generate Docusaurus documentation and sidebar entries from an OpenCLI document.
 The output is ordinary Markdown with CommonMark front matter, so CLI descriptions
 remain plain Markdown even when they contain JSX-like text.
@@ -36,3 +42,11 @@ for build scripts. Regeneration removes files listed in `.clidoc-generated.json`
 On the first run after upgrading from OpenCLI, it also removes old generated
 pages listed in `.opencli-generated.json` and deletes that legacy manifest.
 Other documents in the directory are preserved.
+
+## License
+
+MIT. See [LICENSE](../../LICENSE).
+
+## Author
+
+[Ben Houston](https://ben3d.ca), Sponsored by [Land of Assets](https://landofassets.com).
