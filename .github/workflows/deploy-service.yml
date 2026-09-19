@@ -17,6 +17,10 @@ on:
         required: false
         type: string
         default: ''
+      smoke_text:
+        required: false
+        type: string
+        default: ''
     secrets:
       GCP_SA_KEY:
         required: true
@@ -47,9 +51,31 @@ jobs:
           push: true
           tags: ${{ env.IMAGE_PATH }}
           build-args: ${{ inputs.build_args }}
-      - uses: google-github-actions/deploy-cloudrun@v2
+      - id: deploy
+        uses: google-github-actions/deploy-cloudrun@v2
         with:
           service: ${{ inputs.service_name }}
           region: ${{ env.REGION }}
           image: ${{ env.IMAGE_PATH }}
           flags: '--allow-unauthenticated'
+      - name: Report service URL
+        env:
+          SERVICE_URL: ${{ steps.deploy.outputs.url }}
+        run: |
+          echo "Deployed service: $SERVICE_URL" >> "$GITHUB_STEP_SUMMARY"
+      - name: Verify public site
+        if: inputs.smoke_text != ''
+        env:
+          SERVICE_URL: ${{ steps.deploy.outputs.url }}
+          SMOKE_TEXT: ${{ inputs.smoke_text }}
+        run: |
+          for attempt in {1..12}; do
+            if curl --fail --silent --show-error --location --max-time 15 "$SERVICE_URL" -o /tmp/deployed-site.html && grep -Fqi "$SMOKE_TEXT" /tmp/deployed-site.html; then
+              echo "HTTP smoke check passed: $SERVICE_URL" >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            echo "Smoke check attempt $attempt failed; retrying in 5 seconds"
+            sleep 5
+          done
+          echo "HTTP smoke check failed: $SERVICE_URL" >> "$GITHUB_STEP_SUMMARY"
+          exit 1
