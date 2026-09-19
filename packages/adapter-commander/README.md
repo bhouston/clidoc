@@ -58,7 +58,7 @@ Run `mycli docgen --output cli.json` for JSON (the default), or `mycli docgen --
 
 ## Supported metadata
 
-The adapter traverses nested commands and reads descriptions, aliases, registered arguments, and options, including required and variadic status, choices, simple defaults, and hidden options. Custom parsers, hooks, and action behavior cannot be inferred from the command tree.
+The adapter traverses nested commands and reads descriptions, aliases, registered arguments, and options, including required and variadic status, choices, simple defaults, and hidden options and commands. `command.summary()` maps to `summary` and `command.description()` to `description` when both are set; a command with only a description keeps mapping it to `summary`. A `--foo`/`--no-foo` pair on the same command is merged into a single boolean flag named `foo`, with the negation noted in its summary; a standalone `--no-foo` maps to a boolean flag defaulting to `true`. `Option.env()` maps to `alternativeSources` with type `$ENV`. Any command with subcommands is marked `kind: 'group'`, even if it also has its own flags or arguments. Argument defaults have no dedicated field in the OpenCLI spec, so they are appended to the argument's summary instead. Custom parsers, hooks, and action behavior cannot be inferred from the command tree.
 
 ## License
 
