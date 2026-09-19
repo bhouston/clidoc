@@ -10,16 +10,16 @@ Part of [clidoc](https://clidoc.ben3d.ca), tooling for publishing CLI reference 
 
 `fromYargs` converts Yargs command modules into an OpenCLI `1.0.0-alpha.14` document. Pass the same modules that register your commands, plus the CLI title, executable name, and version. The adapter reads their metadata; it does not parse arguments or run handlers. Supply modules explicitly because a live Yargs instance does not expose all command metadata through a stable public API.
 
-## Add `docgen` and `--opencli` to your CLI
+## Add `docgen` and `__opencli` to your CLI
 
-Add `mycli docgen --output cli.json` to write the OpenCLI document from your CLI metadata. Reserve the **exact top-level** `mycli --opencli` invocation as a discovery command. Print only one UTF-8 JSON OpenCLI document followed by a newline to stdout, then exit with status 0. Report errors on stderr and exit nonzero; do not run command handlers. Check for the exact invocation before Yargs parses arguments; other invocations continue through the normal CLI.
+Add `mycli docgen --output cli.json`, the human-facing command, to write the OpenCLI document from your CLI metadata. For machine discovery, attach the hidden `__opencli` subcommand, matching [upstream OpenCLI's Go adapters](https://github.com/bcdxn/opencli): print only one UTF-8 JSON OpenCLI document followed by a newline to stdout, then exit with status 0. `@clidoc/core` exports `handleOpenCliRequest`, which checks argv for `__opencli` (or the documented `--opencli` compatibility alias) before Yargs parses arguments, so command handlers never run:
 
 ```ts
 import { writeFile } from 'node:fs/promises';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { fromYargs } from '@clidoc/adapter-yargs';
-import { renderMarkdown } from '@clidoc/core';
+import { handleOpenCliRequest, renderMarkdown } from '@clidoc/core';
 import { command as greet } from './commands/greet.js';
 
 const docgen = {
@@ -42,16 +42,14 @@ const info = { title: 'My CLI', binary: 'mycli', version: '1.0.0' };
 const args = hideBin(process.argv);
 const document = () => fromYargs(commands, info);
 
-if (args.length === 1 && args[0] === '--opencli') {
-  process.stdout.write(`${JSON.stringify(document())}\n`);
-} else {
+if (!handleOpenCliRequest(args, document)) {
   const cli = yargs(args);
   for (const command of commands) cli.command(command);
   cli.demandCommand().parse();
 }
 ```
 
-Run `mycli docgen --output cli.json` for JSON (the default), or `mycli docgen --format markdown --output reference.md` to render Markdown directly. Install the validator with `npm install -g @clidoc/cli` and run `clidoc validate cli.json`. Consumers can also run `mycli --opencli > mycli.opencli.json` for discovery. See the [Yargs demo](../../demos/yargs) for a runnable example.
+Run `mycli docgen --output cli.json` for JSON (the default), or `mycli docgen --format markdown --output reference.md` to render Markdown directly. Install the validator with `npm install -g @clidoc/cli` and run `clidoc validate cli.json`. Consumers can also run `mycli __opencli > mycli.opencli.json` for discovery; `mycli --opencli` still works as a clidoc-only alias. See the [Yargs demo](../../demos/yargs) for a runnable example.
 
 ## Supported metadata
 

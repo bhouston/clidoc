@@ -1,7 +1,7 @@
 import { writeFile } from 'node:fs/promises';
 import { Args, Command, Flags } from '@oclif/core';
 import { fromOclif } from '@clidoc/adapter-oclif';
-import { renderMarkdown } from '@clidoc/core';
+import { handleOpenCliRequest, renderMarkdown } from '@clidoc/core';
 
 class Greet extends Command {
   static override description = 'Greet a person';
@@ -51,9 +51,7 @@ const document = () =>
     { title: 'oclif demo', binary: 'demo', version: '0.0.0' },
   );
 
-if (process.argv.slice(2).length === 1 && process.argv[2] === '--opencli') {
-  console.log(JSON.stringify(document(), null, 2));
-} else {
+if (!handleOpenCliRequest(process.argv.slice(2), document)) {
   const argv = process.argv.slice(2);
   await (argv[0] === 'docgen' ? Docgen.run(argv.slice(1)) : Greet.run(argv[0] === 'greet' ? argv.slice(1) : argv));
 }
