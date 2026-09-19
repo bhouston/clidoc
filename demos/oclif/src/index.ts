@@ -5,11 +5,19 @@ import { handleOpenCliRequest, renderMarkdown } from '@clidoc/core';
 
 class Greet extends Command {
   static override description = 'Greet a person';
+  static override examples = [
+    '<%= config.bin %> greet Ada',
+    { command: '<%= config.bin %> greet Ada -l fr', description: 'Greet in French' },
+  ];
   static override args = { name: Args.string({ description: 'Person to greet', required: true }) };
-  static override flags = { language: Flags.string({ char: 'l', options: ['en', 'fr'], default: 'en' }) };
+  static override flags = {
+    language: Flags.string({ char: 'l', options: ['en', 'fr'], default: 'en' }),
+    loud: Flags.boolean({ description: 'Shout the greeting', env: 'DEMO_LOUD' }),
+  };
   async run(): Promise<void> {
     const { args, flags } = await this.parse(Greet);
-    this.log(`${flags.language === 'fr' ? 'Bonjour' : 'Hello'}, ${args.name}!`);
+    const greeting = `${flags.language === 'fr' ? 'Bonjour' : 'Hello'}, ${args.name}!`;
+    this.log(flags.loud ? greeting.toUpperCase() : greeting);
   }
 }
 
@@ -34,15 +42,24 @@ function metadata(command: typeof Greet | typeof Docgen) {
     Object.entries(command.flags).map(([name, flag]) => [
       name,
       {
+        type: flag.type,
         char: flag.char,
         description: flag.description,
-        options: flag.options,
+        options: 'options' in flag ? flag.options : undefined,
         required: flag.required,
         default: typeof flag.default === 'function' ? undefined : flag.default,
+        env: flag.env,
+        helpValue: 'helpValue' in flag ? flag.helpValue : undefined,
+        multiple: 'multiple' in flag ? flag.multiple : undefined,
       },
     ]),
   );
-  return { description: command.description, args: command === Greet ? Greet.args : {}, flags };
+  return {
+    description: command.description,
+    examples: command.examples,
+    args: command === Greet ? Greet.args : {},
+    flags,
+  };
 }
 
 const document = () =>
