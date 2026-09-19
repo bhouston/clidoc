@@ -20,7 +20,7 @@ const greet = {
   },
 };
 
-if (process.argv.includes('--clidoc')) {
+if (process.argv.slice(2).length === 1 && process.argv[2] === '--opencli') {
   console.log(JSON.stringify(fromYargs([greet], { title: 'Yargs demo', binary: 'demo', version: '0.0.0' }), null, 2));
 } else {
   yargs(hideBin(process.argv)).command(greet).demandCommand().parse();

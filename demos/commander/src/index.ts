@@ -10,7 +10,7 @@ cli
   .action((name: string, options: { language: string }) => {
     console.log(`${options.language === 'fr' ? 'Bonjour' : 'Hello'}, ${name}!`);
   });
-if (process.argv.includes('--clidoc')) {
+if (process.argv.slice(2).length === 1 && process.argv[2] === '--opencli') {
   console.log(
     JSON.stringify(fromCommander(cli, { title: 'Commander demo', binary: 'demo', version: '0.0.0' }), null, 2),
   );

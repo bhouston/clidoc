@@ -48,8 +48,17 @@ Already cloned? Run `git submodule update --init --recursive` before the tests.
 
 ## Generate from your CLI
 
-Create a trusted local module that exports its framework definitions as `default`
-and CLI metadata as `info`:
+For CLI authors, expose the exact top-level `mycli --opencli` invocation. It
+prints only one UTF-8 OpenCLI JSON document followed by a newline to stdout and
+exits with status 0. Check for exactly that argument before your framework
+parses the command line; do not run handlers. Report errors on stderr and exit
+nonzero. Let other invocations use normal parsing. This gives tools a consistent
+discovery command: `mycli --opencli > mycli.opencli.json`. The
+[Yargs](packages/adapter-yargs), [Commander](packages/adapter-commander), and
+[oclif](packages/adapter-oclif) adapter guides show the entry-point code.
+
+You can also generate a document from a trusted local module that exports its
+framework definitions as `default` and CLI metadata as `info`:
 
 ```js
 // definition.mjs — ordinary Yargs command metadata
@@ -118,7 +127,7 @@ pnpm --filter @clidoc/demo-docusaurus dev
 pnpm --filter @clidoc/demo-vitepress dev
 ```
 
-Each CLI demo accepts `--clidoc` to print its document. The Yargs demo uses
+Each CLI demo accepts standalone `--opencli` to print its document. The Yargs demo uses
 barebones Yargs; the clidoc tool uses `defineCommand` and `fileCommands`, following
 the structure used by [hdrify](https://github.com/bhouston/hdrify).
 

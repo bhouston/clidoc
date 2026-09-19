@@ -11,7 +11,7 @@ class Greet extends Command {
   }
 }
 
-if (process.argv.includes('--clidoc')) {
+if (process.argv.slice(2).length === 1 && process.argv[2] === '--opencli') {
   const flags = Object.fromEntries(
     Object.entries(Greet.flags).map(([name, flag]) => [
       name,
