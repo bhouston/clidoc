@@ -2,6 +2,17 @@
   "name": "@clidoc/adapter-yargs",
   "version": "0.1.0",
   "description": "OpenCLI adapter for yargs",
+  "keywords": [
+    "cli",
+    "docs",
+    "documentation",
+    "opencli",
+    "yargs"
+  ],
+  "homepage": "https://github.com/bhouston/clidoc#readme",
+  "bugs": {
+    "url": "https://github.com/bhouston/clidoc/issues"
+  },
   "license": "MIT",
   "author": "Ben Houston <ben@ben3d.ca> (https://ben3d.ca)",
   "repository": {
@@ -40,9 +51,6 @@
   },
   "devDependencies": {
     "yargs-file-commands": "^2.0.1"
-  },
-  "peerDependencies": {
-    "yargs": "^18.1.0"
   },
   "engines": {
     "node": ">=22.12.0"

@@ -2,6 +2,18 @@
   "name": "@clidoc/docusaurus",
   "version": "0.1.0",
   "description": "Publish OpenCLI Markdown in Docusaurus",
+  "keywords": [
+    "cli",
+    "docs",
+    "documentation",
+    "docusaurus",
+    "markdown",
+    "opencli"
+  ],
+  "homepage": "https://github.com/bhouston/clidoc#readme",
+  "bugs": {
+    "url": "https://github.com/bhouston/clidoc/issues"
+  },
   "license": "MIT",
   "author": "Ben Houston <ben@ben3d.ca> (https://ben3d.ca)",
   "repository": {
