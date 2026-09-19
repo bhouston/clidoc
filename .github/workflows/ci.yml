@@ -49,6 +49,23 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
 
+  website-browser:
+    name: Website browser smoke
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: true
+      - uses: pnpm/action-setup@v5
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm docs:build
+      - run: pnpm --filter @clidoc/website exec playwright install --with-deps chromium
+      - run: pnpm --filter @clidoc/website test:browser
+
   policy:
     name: PR policy
     if: github.event_name == 'pull_request'
