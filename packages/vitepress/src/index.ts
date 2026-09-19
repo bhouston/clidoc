@@ -9,6 +9,7 @@ export interface VitePressOptions {
 }
 
 const manifestName = '.clidoc-generated.json';
+const legacyManifestName = '.opencli-generated.json';
 function ownedPath(outputDir: string, name: string): string {
   const full = resolve(outputDir, name);
   const rel = relative(outputDir, full);
@@ -17,12 +18,12 @@ function ownedPath(outputDir: string, name: string): string {
   }
   return full;
 }
-async function previousFiles(outputDir: string): Promise<string[]> {
+async function previousFiles(outputDir: string, name: string): Promise<string[]> {
   try {
-    const value: unknown = JSON.parse(await readFile(join(outputDir, manifestName), 'utf8'));
+    const value: unknown = JSON.parse(await readFile(join(outputDir, name), 'utf8'));
     if (!Array.isArray(value)) throw new Error('Invalid generated file manifest');
     return value.filter(
-      (name): name is string => typeof name === 'string' && name.endsWith('.md') && !name.includes('..'),
+      (entry): entry is string => typeof entry === 'string' && entry.endsWith('.md') && !entry.includes('..'),
     );
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === 'ENOENT') return [];
@@ -35,7 +36,8 @@ export async function writeVitePress(document: OpenCliDocument, options: VitePre
   const pages = generatePages(document, { basePath: options.basePath });
   const outputDir = resolve(options.outputDir);
   await mkdir(outputDir, { recursive: true });
-  const previous = await previousFiles(outputDir);
+  const previous = await previousFiles(outputDir, manifestName);
+  const legacy = await previousFiles(outputDir, legacyManifestName);
   const current = pages.map((page) => `${page.path.replace(/^\//, '') || 'index'}.md`);
   for (const [index, page] of pages.entries()) {
     const filename = ownedPath(outputDir, current[index]!);
@@ -43,7 +45,9 @@ export async function writeVitePress(document: OpenCliDocument, options: VitePre
     // VitePress's v-pre container keeps Vue expressions literal while parsing Markdown.
     await writeFile(filename, `::: v-pre\n\n${page.content.trimEnd()}\n\n:::\n`);
   }
-  for (const name of previous) if (!current.includes(name)) await rm(ownedPath(outputDir, name), { force: true });
+  for (const name of [...previous, ...legacy])
+    if (!current.includes(name)) await rm(ownedPath(outputDir, name), { force: true });
   await writeFile(join(outputDir, manifestName), JSON.stringify(current, null, 2) + '\n');
+  await rm(join(outputDir, legacyManifestName), { force: true });
   return pages.map((page) => ({ text: page.title, link: page.path }));
 }
