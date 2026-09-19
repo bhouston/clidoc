@@ -11,7 +11,25 @@ describe('published website', () => {
     const home = await documentAt('/');
     expect(home.querySelector('h1')?.textContent).toContain('CLI documentation from the source');
     expect(home.body.textContent).toContain('Built upon the OpenCLI specification');
+    expect(home.querySelector('header')?.textContent).toContain('Docusaurus or VitePress');
+    expect(home.querySelector('main > section:first-child h2')?.textContent).toBe('Built for your CLI framework');
     expect(home.querySelector('a[href="/docs/cli/reference"]')).not.toBeNull();
+    for (const name of ['yargs', 'Commander.js', 'oclif', 'Docusaurus', 'VitePress']) {
+      expect(home.body.textContent).toContain(name);
+    }
+    expect(home.body.textContent).toContain('mycli docgen --output cli.json');
+    expect(home.body.textContent).toContain('clidoc validate cli.json');
+    expect(home.body.textContent).toContain('Markdown');
+    const logos = [...home.querySelectorAll('img[src^="/img/integrations/"]')];
+    expect(logos).toHaveLength(5);
+    for (const logo of logos) {
+      expect((await fetch(`http://127.0.0.1:4173${logo.getAttribute('src')}`)).ok).toBe(true);
+    }
+    expect(home.querySelector('a[href="/docs/adapters/"]')).not.toBeNull();
+    expect(home.querySelector('a[href="/docs/guides/publishing"]')).not.toBeNull();
+    expect(home.body.textContent).toContain('Created with love ❤️ by');
+    expect(home.querySelector('a[href="https://ben3d.ca"]')?.textContent).toBe('Ben Houston');
+    expect(home.querySelector('a[href="https://landofassets.com"]')?.textContent).toBe('Land of Assets');
 
     const cli = await documentAt('/docs/cli/reference');
     expect(cli.body.textContent).toContain('clidoc');

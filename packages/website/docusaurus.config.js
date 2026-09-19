@@ -45,6 +45,9 @@ module.exports = {
         { href: 'https://github.com/bhouston/clidoc', label: 'GitHub', position: 'right' },
       ],
     },
-    footer: { style: 'dark', copyright: `Copyright © ${new Date().getFullYear()} clidoc · MIT` },
+    footer: {
+      style: 'dark',
+      copyright: `Copyright © ${new Date().getFullYear()} clidoc · MIT · Created with love ❤️ by <a href="https://ben3d.ca">Ben Houston</a> · Sponsored by <a href="https://landofassets.com">Land of Assets</a>`,
+    },
   },
 };
