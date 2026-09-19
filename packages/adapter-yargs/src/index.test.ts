@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { fromYargs } from './index.js';
+import { validate } from '@clidoc/core';
 import { defineCommand } from 'yargs-file-commands';
 const info = { title: 'Demo', binary: 'demo', version: '1.0.0' };
 describe('fromYargs', () => {
@@ -101,6 +102,10 @@ describe('Yargs metadata variants', () => {
 });
 
 describe('Yargs sparse metadata', () => {
+  it('handles a positional() call with no type or describe metadata', () => {
+    const doc = fromYargs([{ command: 'go <where>', builder: (yargs: any) => yargs.positional('where', {}) }], info);
+    expect(doc.commands?.['demo go']).toMatchObject({ args: [{ name: 'where', required: true }] });
+  });
   it('handles command modules with no builder or optional metadata', () => {
     const doc = fromYargs(
       [
@@ -142,5 +147,113 @@ describe('Yargs sparse metadata', () => {
       args: [{ name: 'factor', type: 'number', summary: 'Scale factor' }],
       flags: [{ name: 'debug', type: 'boolean' }],
     });
+  });
+});
+
+describe('multi-word command names (#33)', () => {
+  it('joins leading non-positional tokens instead of collapsing to the first word', () => {
+    const doc = fromYargs(
+      [
+        { command: 'config set <key> <value>', describe: 'Set a config value' },
+        { command: 'config get <key>', describe: 'Get a config value' },
+      ],
+      info,
+    );
+    expect(doc.commands?.['demo config set']).toMatchObject({
+      summary: 'Set a config value',
+      args: [{ name: 'key' }, { name: 'value' }],
+    });
+    expect(doc.commands?.['demo config get']).toMatchObject({
+      summary: 'Get a config value',
+      args: [{ name: 'key' }],
+    });
+  });
+  it('keeps colliding command-word prefixes distinct instead of overwriting each other', () => {
+    const doc = fromYargs(
+      [
+        { command: 'remote add <name> <url>', describe: 'Add a remote' },
+        { command: 'remote remove <name>', describe: 'Remove a remote' },
+      ],
+      info,
+    );
+    expect(Object.keys(doc.commands ?? {})).toEqual(['demo remote add', 'demo remote remove']);
+  });
+  it('joins multi-word alias patterns the same way as the primary pattern', () => {
+    const doc = fromYargs([{ command: ['config set <key> <value>', 'config s <key> <value>'] }], info);
+    expect(doc.commands?.['demo config set']).toMatchObject({ aliases: ['config s'] });
+  });
+  it('maps $0 default-command patterns to the binary itself', () => {
+    const doc = fromYargs([{ command: '$0 <file>', describe: 'Default command' }], info);
+    expect(doc.commands?.['demo']).toMatchObject({ summary: 'Default command', args: [{ name: 'file' }] });
+  });
+  it('recurses into nested .command() calls registered inside a builder, marking pure parents as groups', () => {
+    const doc = fromYargs(
+      [
+        {
+          command: 'config',
+          describe: 'Manage configuration',
+          builder: (yargs: any) =>
+            yargs
+              .command('set <key> <value>', 'Set a config value', (y: any) => y.option('force', { type: 'boolean' }))
+              .command({ command: 'get <key>', describe: 'Get a config value' }),
+        },
+      ],
+      info,
+    );
+    expect(doc.commands?.['demo config']).toMatchObject({ summary: 'Manage configuration', kind: 'group' });
+    expect(doc.commands?.['demo config'].args).toBeUndefined();
+    expect(doc.commands?.['demo config'].flags).toBeUndefined();
+    expect(doc.commands?.['demo config set']).toMatchObject({
+      summary: 'Set a config value',
+      args: [{ name: 'key' }, { name: 'value' }],
+      flags: [{ name: 'force', type: 'boolean' }],
+    });
+    expect(doc.commands?.['demo config get']).toMatchObject({ summary: 'Get a config value', args: [{ name: 'key' }] });
+  });
+  it('does not mark a parent as a group when it has its own args or flags alongside children', () => {
+    const doc = fromYargs(
+      [
+        {
+          command: 'serve [port]',
+          describe: 'Run the server, or manage it',
+          builder: (yargs: any) => yargs.command('stop', 'Stop the server'),
+        },
+      ],
+      info,
+    );
+    expect(doc.commands?.['demo serve'].kind).toBeUndefined();
+    expect(doc.commands?.['demo serve stop']).toMatchObject({ summary: 'Stop the server' });
+  });
+});
+
+describe('option type mapping (#34)', () => {
+  it('maps count options to integer and unrecognised types to string', () => {
+    const doc = fromYargs(
+      [
+        {
+          command: 'run',
+          builder: {
+            verbose: { type: 'count', alias: 'v' },
+            level: { type: 'enum' as any },
+          },
+        },
+      ],
+      info,
+    );
+    expect(doc.commands?.['demo run']).toMatchObject({
+      flags: [
+        { name: 'verbose', type: 'integer', aliases: ['v'] },
+        { name: 'level', type: 'string' },
+      ],
+    });
+  });
+  it('produces a document that validates, including a count option', () => {
+    const doc = fromYargs(
+      [{ command: 'run', builder: { verbose: { type: 'count', describe: 'Increase verbosity' } } }],
+      info,
+    );
+    const result = validate(doc);
+    expect(result.errors).toEqual([]);
+    expect(result.valid).toBe(true);
   });
 });
