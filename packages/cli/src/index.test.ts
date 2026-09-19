@@ -14,6 +14,7 @@ vi.mock('yargs-file-commands', async (importOriginal) => ({
     (await import('./commands/generate.js')).command,
     (await import('./commands/markdown.js')).command,
     (await import('./commands/validate.js')).command,
+    (await import('./commands/docgen.js')).command,
   ],
 }));
 
@@ -32,7 +33,7 @@ describe('CLI', () => {
   it('documents the exact command definitions as a valid contract', () => {
     const document = cliDocument();
     expect(validate(document)).toEqual({ valid: true, errors: [] });
-    expect(Object.keys(document.commands!)).toHaveLength(3);
+    expect(Object.keys(document.commands!)).toHaveLength(4);
     expect(JSON.stringify(document)).toContain('Framework adapter');
   });
 
@@ -48,6 +49,19 @@ describe('CLI', () => {
     const destination = join(path, 'nested', 'reference.md');
     await runCli(['markdown', input, '-o', destination]);
     expect(await readFile(destination, 'utf8')).toContain('clidoc generate');
+  });
+
+  it('generates its own OpenCLI document through docgen', async () => {
+    const path = await directory();
+    const destination = join(path, 'clidoc.json');
+    await runCli(['docgen', '--output', destination]);
+    expect(JSON.parse(await readFile(destination, 'utf8'))).toEqual(cliDocument());
+    const markdown = join(path, 'clidoc.md');
+    await runCli(['docgen', '--format', 'markdown', '--output', markdown]);
+    expect(await readFile(markdown, 'utf8')).toContain('# clidoc');
+    const stdout = vi.spyOn(process.stdout, 'write').mockReturnValue(true);
+    await runCli(['docgen']);
+    expect(stdout).toHaveBeenCalledWith(`${JSON.stringify(cliDocument(), null, 2)}\n`);
   });
 
   it('rejects invalid input and incorrect invocations without exiting', async () => {
@@ -120,5 +134,11 @@ describe('CLI', () => {
     const invalid = spawnSync(process.execPath, [executable, 'missing'], { encoding: 'utf8' });
     expect(invalid.status).toBe(1);
     expect(invalid.stderr).toContain('Unknown');
+    expect(execFileSync(process.execPath, [executable, '--version'], { encoding: 'utf8' }).trim()).toBe(
+      cliDocument().info.version,
+    );
+    expect(JSON.parse(execFileSync(process.execPath, [executable, '__opencli'], { encoding: 'utf8' }))).toEqual(
+      cliDocument(),
+    );
   });
 });

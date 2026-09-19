@@ -22,7 +22,7 @@ own `yargs-file-commands` definitions.
 | [`@clidoc/adapter-yargs`](packages/adapter-yargs)         | Yargs command modules, including supported `defineCommand` builders                  |
 | [`@clidoc/adapter-commander`](packages/adapter-commander) | Configured Commander command trees                                                   |
 | [`@clidoc/adapter-oclif`](packages/adapter-oclif)         | oclif manifest command metadata                                                      |
-| [`@clidoc/cli`](packages/cli)                             | `generate`, `validate`, and `markdown` commands                                      |
+| [`@clidoc/cli`](packages/cli)                             | `generate`, `validate`, `markdown`, and `docgen` commands, plus `__opencli`          |
 | [`@clidoc/docusaurus`](packages/docusaurus)               | Generated Markdown pages for the Docusaurus docs plugin                              |
 | [`@clidoc/vitepress`](packages/vitepress)                 | Generated Markdown and matching VitePress sidebar links                              |
 
@@ -48,24 +48,38 @@ with a warning and the remaining tests run normally.
 
 ## Generate from your CLI
 
-Add a `docgen` command to the CLI you document. It should use the same command
-metadata as the running CLI and write an OpenCLI JSON file:
+Add a human-facing `docgen` command to the CLI you document. It should use the
+same command metadata as the running CLI and write an OpenCLI document as JSON
+or Markdown:
 
 ```sh
 npm install -g @clidoc/cli
 mycli docgen --output cli.json
+mycli docgen --format markdown --output reference.md
 clidoc validate cli.json
-clidoc markdown cli.json --output reference.md
 ```
 
-For tool discovery, also expose the exact top-level `mycli --opencli`
-invocation. It prints only one UTF-8 OpenCLI JSON document followed by a newline
-to stdout and exits with status 0. Check for exactly that argument before your
-framework parses the command line; do not run handlers. Report errors on stderr
-and exit nonzero. For example, `mycli --opencli > mycli.opencli.json` captures
-the same document. The [Yargs](packages/adapter-yargs),
-[Commander](packages/adapter-commander), and [oclif](packages/adapter-oclif)
-adapter guides and runnable demos show both commands.
+For machine discovery, also attach the hidden `__opencli` subcommand, matching
+[upstream OpenCLI's Go adapters](https://github.com/bcdxn/opencli). It prints
+only one UTF-8 OpenCLI JSON document followed by a newline to stdout and exits
+with status 0. `@clidoc/core` exports a `handleOpenCliRequest(argv, document)`
+helper that checks argv for `__opencli` before your framework parses the
+command line, so handlers never run:
+
+```ts
+import { handleOpenCliRequest } from '@clidoc/core';
+
+if (!handleOpenCliRequest(process.argv.slice(2), buildDocument)) {
+  // parse and run the CLI as usual
+}
+```
+
+`mycli --opencli` also works as a documented clidoc-only alias for tools that
+still expect a flag; prefer `__opencli` for new integrations. For example,
+`mycli __opencli > mycli.opencli.json` captures the same document. The
+[Yargs](packages/adapter-yargs), [Commander](packages/adapter-commander), and
+[oclif](packages/adapter-oclif) adapter guides and runnable demos show both
+commands.
 
 As an optional path for trusted local modules, `clidoc generate` imports a
 module exporting framework definitions as `default` and CLI metadata as `info`:
@@ -116,9 +130,14 @@ pnpm --filter @clidoc/demo-docusaurus dev
 pnpm --filter @clidoc/demo-vitepress dev
 ```
 
-Each CLI demo supports `docgen --output cli.json` and standalone `--opencli` to print its document. The Yargs demo uses
-barebones Yargs; the clidoc tool uses `defineCommand` and `fileCommands`, following
-the structure used by [hdrify](https://github.com/bhouston/hdrify).
+Each CLI demo supports `docgen --output cli.json` for humans and the hidden
+`__opencli` subcommand (plus the `--opencli` compatibility alias) for machine
+discovery, e.g. `pnpm --filter @clidoc/demo-yargs start __opencli`. The Yargs
+demo uses barebones Yargs; the clidoc tool uses `defineCommand` and
+`fileCommands`, following the structure used by
+[hdrify](https://github.com/bhouston/hdrify). `clidoc` itself dogfoods this
+same workflow: `clidoc docgen` and `clidoc __opencli` describe the `clidoc`
+binary.
 
 The [generated CLI reference](docs/generated/cli.md) and
 [OpenCLI JSON](docs/generated/clidoc.json) come from the actual command modules.
@@ -126,6 +145,56 @@ They are committed, unlike each site's own `outputDir`, so the demo sites and
 website build straight from a checkout with no generation step; `pnpm docs:generate`
 refreshes them locally, and CI's `docs:build` regenerates them before building
 the sites.
+
+## Example document
+
+Trimmed from [`docs/generated/clidoc.json`](docs/generated/clidoc.json), the document clidoc
+generates for itself:
+
+```json
+{
+  "opencliVersion": "1.0.0-alpha.14",
+  "info": {
+    "title": "clidoc",
+    "binary": "clidoc",
+    "version": "0.1.0",
+    "summary": "Generate, validate, and publish CLI documentation through OpenCLI."
+  },
+  "commands": {
+    "clidoc generate": {
+      "summary": "Import a trusted framework definition module and generate OpenCLI JSON",
+      "args": [
+        {
+          "name": "module",
+          "required": true,
+          "type": "string",
+          "summary": "Trusted JS module exporting default metadata and info"
+        }
+      ],
+      "flags": [
+        {
+          "name": "adapter",
+          "type": "string",
+          "summary": "Framework adapter",
+          "required": true,
+          "choices": [{ "value": "yargs" }, { "value": "commander" }, { "value": "oclif" }]
+        }
+      ]
+    },
+    "clidoc validate": {
+      "summary": "Validate an OpenCLI JSON or YAML document",
+      "args": [
+        {
+          "name": "input",
+          "required": true,
+          "type": "string",
+          "summary": "OpenCLI document filename"
+        }
+      ]
+    }
+  }
+}
+```
 
 ## Compatibility and scope
 
@@ -136,6 +205,13 @@ without the submodule. Tests compare the bundled schema and upstream fixtures wh
 the submodule is checked out.
 The upstream Go project retains its own license; see
 [third-party attribution](packages/core/THIRD_PARTY_NOTICES.md).
+
+The OpenCLI schema only requires `commands` keys to be strings; it does not mandate a
+format. Upstream's Go generator decorates keys for display, e.g.
+`"petstore pet add <arguments> [flags]"`. clidoc emits the plain `binary sub command` path
+instead, as shown above, because page titles, route slugs, and `commands[...]` lookups all
+want that exact string. Both forms validate against the schema, and `clidoc validate`
+accepts upstream's decorated documents unchanged.
 
 Framework metadata cannot express every runtime behavior. The adapters document
 what their supported metadata exposes; they do not infer custom validation,

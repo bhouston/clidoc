@@ -30,14 +30,32 @@ describe.each(runners)('%s demo', (runner) => {
     expect(french).toHaveStdout(/Bonjour, Ada!/);
   });
 
-  it('exports a valid OpenCLI contract for its real command', async () => {
-    const result = await cli.run(['--opencli']);
+  it('exports a valid OpenCLI contract via the upstream __opencli subcommand', async () => {
+    const result = await cli.run(['__opencli']);
     expect(result).toSucceed();
     const document = result.json();
     expect(validate(document)).toEqual({ valid: true, errors: [] });
     expect(document.info.binary).toBe('demo');
     expect(document.commands['demo greet'].summary).toBe('Greet a person');
     expect(document.commands['demo docgen'].summary).toBe('Write the OpenCLI document to a file');
+  });
+
+  it('exports the same OpenCLI contract via the --opencli compatibility alias', async () => {
+    const opencli = await cli.run(['__opencli']);
+    const flag = await cli.run(['--opencli']);
+    expect(flag).toSucceed();
+    expect(flag.json()).toEqual(opencli.json());
+  });
+
+  it('hides __opencli from --help output', async () => {
+    const result = await cli.run(['--help']);
+    expect(result.stdout).not.toMatch(/__opencli/);
+  });
+
+  it('runs the literal README quickstart command', async () => {
+    const result = await cli.run(['greet', 'Ada']);
+    expect(result).toSucceed();
+    expect(result).toHaveStdout(/Hello, Ada!/);
   });
 
   it('writes the same valid OpenCLI document through docgen', async () => {
