@@ -11,6 +11,7 @@ jobs:
       service_name: clidoc
       dockerfile: packages/website/Dockerfile
       context: .
+      smoke_text: clidoc
       build_args: |
         SITE_URL=${{ vars.CLIDOC_SITE_URL || 'https://bhouston.github.io' }}
         BASE_URL=/
