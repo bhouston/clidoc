@@ -158,8 +158,8 @@ pnpm package:check
 pnpm docs:build
 ```
 
-The repository follows `vitest-gpu`: pnpm workspaces, TypeScript builds, Vitest,
-Oxlint/Oxfmt, Husky/commitlint, MIT licensing, and independent manually dispatched
+The repository follows a standard TypeScript toolchain: pnpm workspaces, TypeScript builds,
+Vitest, Oxlint/Oxfmt, Husky/commitlint, MIT licensing, and independent manually dispatched
 semantic releases. See [release and deployment setup](docs/releasing.md).
 
 ## License

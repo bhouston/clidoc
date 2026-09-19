@@ -2,6 +2,14 @@
   "name": "@clidoc/core",
   "version": "0.1.0",
   "description": "OpenCLI specification types, validation, and Markdown documentation generation",
+  "keywords": [
+    "cli",
+    "docs",
+    "documentation",
+    "json-schema",
+    "markdown",
+    "opencli"
+  ],
   "homepage": "https://github.com/bhouston/clidoc#readme",
   "bugs": {
     "url": "https://github.com/bhouston/clidoc/issues"
