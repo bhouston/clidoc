@@ -3,6 +3,8 @@ import { spawnSync } from 'node:child_process';
 import { test } from 'node:test';
 import { analyzeCommits } from '@semantic-release/commit-analyzer';
 import config from '../release.config.js';
+import { baselineCommits, baselineTags, missingTags } from './check-release-baselines.mjs';
+import { readFileSync } from 'node:fs';
 
 const valid = {
   PR_BASE: 'main',
@@ -46,3 +48,21 @@ for (const [message, expected] of [
 }
 
 test('release branch is only main', () => assert.deepEqual(config.branches, ['main']));
+
+test('all seven public packages require their initial version tags', () => {
+  const tags = baselineTags();
+  assert.equal(tags.length, 7);
+  assert.equal(new Set(tags).size, 7);
+  assert.deepEqual(
+    missingTags(tags, (tag) => tag !== '@clidoc/core-v0.1.0'),
+    ['@clidoc/core-v0.1.0'],
+  );
+  assert.equal(baselineCommits(tags, () => 'bootstrap').size, 1);
+  assert.equal(baselineCommits(tags, (tag) => (tag === tags[0] ? 'other' : 'bootstrap')).size, 2);
+});
+
+test('release workflow guards publishing while allowing dry runs before activation', () => {
+  const workflow = readFileSync('.github/workflows/release.yml', 'utf8');
+  assert.match(workflow, /!inputs\.dry_run && vars\.NPM_RELEASE_ENABLED != 'true'/);
+  assert.match(workflow, /if: \$\{\{ !inputs\.dry_run \}\}\n\s+run: node scripts\/check-release-baselines\.mjs/);
+});

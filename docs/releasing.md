@@ -28,9 +28,18 @@ Actions, and enter:
 | Workflow filename    | `release.yml` |
 | Environment          | Leave blank   |
 
+For configurations created after September 3, 2026, npm initially permits
+`npm stage publish`. Explicitly allow direct `npm publish` for **each of the
+seven packages**, since this workflow publishes directly. Each package's
+`repository.url` matches `github.com/bhouston/clidoc`.
+
 The workflow runs on GitHub-hosted Ubuntu with `id-token: write` and the Node
 version from `.nvmrc`. It uses OIDC; do not configure a long-lived npm token.
-The built-in `GITHUB_TOKEN` creates tags and GitHub Releases. The first publish of a new package cannot use trusted publishing. From a clean
+The built-in `GITHUB_TOKEN` creates tags and GitHub Releases. The first publish
+of a new package cannot use trusted publishing. Sign into npm with an account
+authorized for `@clidoc` and satisfying npm's 2FA requirement, or use an
+appropriate publishing token. Confirm that the scope allows public packages.
+From a clean
 checkout of `main`, run `pnpm install --frozen-lockfile` and
 `pnpm release:bootstrap:stage`. This builds all packages and creates
 `publish/<package>/` directories with concrete dependency versions. Review each
@@ -49,19 +58,27 @@ npm publish ./publish/vitepress --access public
 
 Each staged package starts at the source version `0.1.0`. Do not publish from
 `packages/`: those manifests still contain `workspace:` ranges. After each
-initial publish, configure its trusted publisher. The `publish/` output is a
+initial publish, configure its trusted publisher and allow direct publishing.
+The `publish/` output is a
 local artifact and should not be committed.
 
 ## GitHub configuration
 
 Keep `main` as the integration branch. Enable merge commits and disable squash
 merges. Protect `main` with required PRs and the checks `Quality
-(macos-latest)`, `Quality (ubuntu-latest)`, and `PR policy`. Repository rules
+(macos-latest)`, `Quality (ubuntu-latest)`, `PR policy`, `Website browser smoke`,
+and `Website container build`. Repository rules
 must allow the Actions token to create package version tags.
 
 The `Release` workflow runs only through manual dispatch on `main`:
-`gh workflow run release.yml --ref main`. Use `-f dry_run=true` to verify a
-release without publishing. Merging a PR does not publish.
+`gh workflow run release.yml --ref main`. Publishing remains disabled until
+the repository Actions variable `NPM_RELEASE_ENABLED` is `true`. Keep it unset
+until all seven packages are bootstrapped publicly, their trusted publishers
+allow direct publishing, and the baseline tags exist. Then activate with
+`gh variable set NPM_RELEASE_ENABLED --body true`. Run
+`gh workflow run release.yml --ref main -f dry_run=true` to preview before or
+after activation. Dry runs execute CI and semantic-release without requiring
+baseline tags, publishing, or creating tags. Merging a PR does not publish.
 
 ## Version baseline
 
@@ -71,6 +88,29 @@ them. Use the full scoped package name in each tag (for example,
 `@clidoc/core-v0.1.0`). These tags keep the first automated release based on
 commits after the bootstrap. Without baseline tags, semantic-release treats the
 project as unreleased and may compute a different first version.
+
+Create all seven tags at the exact main commit used for staging and publishing:
+
+```sh
+git tag '@clidoc/core-v0.1.0' <bootstrap-commit>
+git tag '@clidoc/adapter-commander-v0.1.0' <bootstrap-commit>
+git tag '@clidoc/adapter-oclif-v0.1.0' <bootstrap-commit>
+git tag '@clidoc/adapter-yargs-v0.1.0' <bootstrap-commit>
+git tag '@clidoc/cli-v0.1.0' <bootstrap-commit>
+git tag '@clidoc/docusaurus-v0.1.0' <bootstrap-commit>
+git tag '@clidoc/vitepress-v0.1.0' <bootstrap-commit>
+git push origin \
+  '@clidoc/core-v0.1.0' \
+  '@clidoc/adapter-commander-v0.1.0' \
+  '@clidoc/adapter-oclif-v0.1.0' \
+  '@clidoc/adapter-yargs-v0.1.0' \
+  '@clidoc/cli-v0.1.0' \
+  '@clidoc/docusaurus-v0.1.0' \
+  '@clidoc/vitepress-v0.1.0'
+```
+
+Never move a baseline tag after activation. Run
+`node scripts/check-release-baselines.mjs` to check the tags locally.
 
 ## GitHub Pages
 
@@ -84,3 +124,6 @@ expecting the first deployment. The workflow uses the repository's built-in
 
 If npm succeeded but GitHub release creation failed, recover the GitHub
 release from the existing tag. Do not republish the same npm version.
+Publishing across seven packages is not atomic. If a run partially publishes,
+compare npm versions, tags, and workflow logs before retrying. Finish missing
+packages from the same release commit.
