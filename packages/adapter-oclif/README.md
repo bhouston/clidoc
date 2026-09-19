@@ -73,6 +73,28 @@ The [runnable oclif demo](../../demos/oclif/src/index.ts) implements `docgen` wi
 
 The adapter reads command IDs, descriptions, aliases, visibility, flags, and arguments from the generated manifest. It maps supported types, defaults, choices, required status, and repeatable flags. It cannot infer custom parsing, hooks, or command runtime behavior from the manifest.
 
+## Adding examples and exit codes
+
+`fromOclif` only knows what the generated manifest exposes, so `examples`, `exitCodes`, and
+metadata like `info.license` never appear in the generated document. Add them with
+`@clidoc/core`'s `mergeDocument` before writing the document out in `docgen`:
+
+```ts
+import { mergeDocument } from '@clidoc/core';
+
+const document = mergeDocument(fromOclif(manifest, { title: 'My CLI', binary: 'mycli', version: '1.0.0' }), {
+  info: { license: { name: 'MIT', spdxId: 'MIT' } },
+  commands: {
+    greet: {
+      examples: [{ title: 'Basic', content: 'mycli greet Ada' }],
+      exitCodes: [{ code: 1, status: 'BAD_USER_INPUT_ERROR', summary: 'Missing name' }],
+    },
+  },
+});
+```
+
+See the [`@clidoc/core` README](../core/README.md#adding-author-supplied-metadata) for the merge rules.
+
 ## License
 
 MIT. See [LICENSE](../../LICENSE).

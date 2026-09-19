@@ -109,6 +109,23 @@ if (!result.valid) throw new Error(result.errors.join('\n'));
 const markdown = renderMarkdown(document);
 ```
 
+Add author-supplied metadata a generator can't infer &mdash; examples, exit
+codes, license, install methods &mdash; with `mergeDocument`:
+
+```ts
+import { mergeDocument } from '@clidoc/core';
+
+const documented = mergeDocument(document, {
+  info: { license: { name: 'MIT', spdxId: 'MIT' } },
+  commands: {
+    'my-cli greet': {
+      examples: [{ title: 'Basic', content: 'my-cli greet Ada' }],
+      exitCodes: [{ code: 1, status: 'BAD_USER_INPUT_ERROR', summary: 'Missing name' }],
+    },
+  },
+});
+```
+
 `generatePages(document, { basePath: '/reference' })` returns stable page IDs,
 titles, URL paths, and Markdown content. Both site consumers use that mapping.
 Use different base paths and dedicated generated directories for multiple CLIs.
