@@ -2,7 +2,7 @@
 FROM node:26-slim AS build
 ENV CI=true
 WORKDIR /app
-RUN corepack enable && corepack prepare pnpm@11.1.3 --activate
+RUN npm install -g pnpm@11.1.3
 COPY . .
 RUN pnpm install --frozen-lockfile
 ARG SITE_URL=https://bhouston.github.io
