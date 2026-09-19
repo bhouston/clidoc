@@ -37,6 +37,9 @@ entities, since `v-pre` stops Vue mustache interpolation but not its SFC
 parser's tag scanning; as a result, HTML written in a description renders as
 literal text rather than as markup on VitePress.
 
+Add `outputDir` to `.gitignore`; it holds hundreds of hashed generated
+Markdown files that are regenerated on every build.
+
 ## License
 
 MIT. See [LICENSE](../../LICENSE).
