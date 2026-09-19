@@ -15,4 +15,4 @@ const result = validate(document);
 const markdown = renderMarkdown(document);
 ```
 
-Use [`generatePages`](./docs/api) for a landing page and one page per visible command. See the [API reference](./docs/api) for signatures and TSDoc descriptions generated from the source.
+Use [`generatePages`](/docs/api) for a landing page and one page per visible command. See the [API reference](/docs/api) for signatures and TSDoc descriptions generated from the source.

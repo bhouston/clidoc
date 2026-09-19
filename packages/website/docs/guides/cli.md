@@ -5,7 +5,7 @@ sidebar_position: 2
 
 # Work with the clidoc CLI
 
-Install with `npm install --global @clidoc/cli`, then run `clidoc --help` to see available commands. The [command reference](./docs/cli/reference) is generated from the same definitions the CLI executes.
+Install with `npm install --global @clidoc/cli`, then run `clidoc --help` to see available commands. The [command reference](/docs/cli/reference) is generated from the same definitions the CLI executes.
 
 ```sh
 clidoc generate --help

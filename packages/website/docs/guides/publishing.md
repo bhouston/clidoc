@@ -13,4 +13,4 @@ sidebar_position: 4
 
 `@clidoc/vitepress` generates a reference directory and sidebar from the same document. The [integration README](https://github.com/bhouston/clidoc/tree/main/packages/vitepress) describes its setup.
 
-This site uses the Docusaurus integration for its [CLI reference](./docs/cli/reference).
+This site uses the Docusaurus integration for its [CLI reference](/docs/cli/reference).
