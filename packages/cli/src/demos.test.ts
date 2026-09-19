@@ -29,7 +29,7 @@ describe.each(runners)('%s demo', (runner) => {
   });
 
   it('exports a valid OpenCLI contract for its real command', async () => {
-    const result = await cli.run(['--clidoc']);
+    const result = await cli.run(['--opencli']);
     expect(result).toSucceed();
     const document = result.json();
     expect(validate(document)).toEqual({ valid: true, errors: [] });
