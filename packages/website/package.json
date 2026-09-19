@@ -6,7 +6,7 @@
     "build": "docusaurus build",
     "dev": "docusaurus start",
     "generate:api": "typedoc --options typedoc.json",
-    "test:browser": "playwright test"
+    "test:browser": "node scripts/run-browser-tests.mjs"
   },
   "dependencies": {
     "@docusaurus/core": "^3.10.2",
@@ -18,6 +18,7 @@
   "devDependencies": {
     "typedoc": "^0.28.0",
     "typedoc-plugin-markdown": "^4.0.0",
-    "@playwright/test": "^1.55.0"
+    "@vitest/browser-playwright": "^4.1.11",
+    "vitest": "^4.1.11"
   }
 }

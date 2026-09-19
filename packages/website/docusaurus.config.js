@@ -7,8 +7,8 @@ const siteDir = path.dirname(fileURLToPath(import.meta.url));
 export default {
   title: 'clidoc',
   tagline: 'One CLI contract. Useful documentation everywhere.',
-  url: 'https://clidoc.dev',
-  baseUrl: '/',
+  url: process.env.SITE_URL ?? 'https://bhouston.github.io',
+  baseUrl: process.env.BASE_URL ?? '/clidoc/',
   organizationName: 'bhouston',
   projectName: 'clidoc',
   onBrokenLinks: 'throw',
@@ -21,7 +21,7 @@ export default {
     }],
   ],
   plugins: [[clidocPlugin, {
-    input: '../../docs/generated/opencli.json',
+    input: '../../docs/generated/clidoc.json',
     outputDir: path.join(siteDir, 'docs/cli/reference'),
     basePath: '/docs/cli/reference',
   }]],

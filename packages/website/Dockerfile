@@ -5,6 +5,9 @@ WORKDIR /app
 RUN corepack enable && corepack prepare pnpm@11.1.3 --activate
 COPY . .
 RUN pnpm install --frozen-lockfile
+ARG SITE_URL=https://bhouston.github.io
+ARG BASE_URL=/
+ENV SITE_URL=${SITE_URL} BASE_URL=${BASE_URL}
 RUN pnpm docs:build
 
 FROM nginx:1.29-alpine
