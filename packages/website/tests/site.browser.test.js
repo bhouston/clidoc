@@ -11,6 +11,8 @@ describe('published website', () => {
     const home = await documentAt('/');
     expect(home.querySelector('h1')?.textContent).toContain('CLI documentation from the source');
     expect(home.body.textContent).toContain('Built upon the OpenCLI specification');
+    expect(home.querySelector('header')?.textContent).toContain('Docusaurus or VitePress');
+    expect(home.querySelector('main > section:first-child h2')?.textContent).toBe('Built for your CLI framework');
     expect(home.querySelector('a[href="/docs/cli/reference"]')).not.toBeNull();
     for (const name of ['yargs', 'Commander.js', 'oclif', 'Docusaurus', 'VitePress']) {
       expect(home.body.textContent).toContain(name);
