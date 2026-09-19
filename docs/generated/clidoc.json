@@ -76,6 +76,33 @@
           "summary": "OpenCLI document filename"
         }
       ]
+    },
+    "clidoc docgen": {
+      "summary": "Write clidoc’s own OpenCLI document",
+      "flags": [
+        {
+          "name": "format",
+          "type": "string",
+          "summary": "Output format",
+          "choices": [
+            {
+              "value": "json"
+            },
+            {
+              "value": "markdown"
+            }
+          ],
+          "default": "json"
+        },
+        {
+          "name": "output",
+          "type": "string",
+          "aliases": [
+            "o"
+          ],
+          "summary": "Output file; defaults to stdout"
+        }
+      ]
     }
   }
 }

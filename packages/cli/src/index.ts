@@ -1,6 +1,7 @@
 import { fileURLToPath } from 'node:url';
 import yargs from 'yargs';
 import { fileCommands } from 'yargs-file-commands';
+import { info } from './definition.js';
 export { cliDocument } from './definition.js';
 
 /** Run without terminating the embedding process. Commands live in individual files. */
@@ -11,7 +12,7 @@ export async function runCli(argv: string[]): Promise<void> {
     .demandCommand(1)
     .strict()
     .help()
-    .version(false)
+    .version(info.version)
     .exitProcess(false)
     .fail((message, error) => {
       throw error ?? new Error(message);

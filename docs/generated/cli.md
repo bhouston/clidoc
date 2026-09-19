@@ -4,6 +4,15 @@ Generate, validate, and publish CLI documentation through OpenCLI.
 
 Binary: `clidoc` · Version: `0.1.0`
 
+## clidoc docgen
+
+Write clidoc’s own OpenCLI document
+
+| Flag | Type | Required | Description |
+| --- | --- | --- | --- |
+| `--format` | string | No | Output format; Choices: json, markdown; Default: `json` |
+| `--output` | string | No | Output file; defaults to stdout; Aliases: `o` |
+
 ## clidoc generate
 
 Import a trusted framework definition module and generate OpenCLI JSON
