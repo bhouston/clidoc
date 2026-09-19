@@ -11,5 +11,8 @@ jobs:
       service_name: clidoc
       dockerfile: packages/website/Dockerfile
       context: .
+      build_args: |
+        SITE_URL=${{ vars.CLIDOC_SITE_URL || 'https://bhouston.github.io' }}
+        BASE_URL=/
     secrets:
       GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}

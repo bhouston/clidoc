@@ -13,6 +13,10 @@ on:
         required: false
         type: string
         default: '.'
+      build_args:
+        required: false
+        type: string
+        default: ''
     secrets:
       GCP_SA_KEY:
         required: true
@@ -42,6 +46,7 @@ jobs:
           file: ${{ inputs.dockerfile }}
           push: true
           tags: ${{ env.IMAGE_PATH }}
+          build-args: ${{ inputs.build_args }}
       - uses: google-github-actions/deploy-cloudrun@v2
         with:
           service: ${{ inputs.service_name }}

@@ -66,6 +66,23 @@ jobs:
       - run: pnpm --filter @clidoc/website exec playwright install --with-deps chromium
       - run: pnpm --filter @clidoc/website test:browser
 
+  website-container:
+    name: Website container build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: true
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: packages/website/Dockerfile
+          push: false
+          build-args: |
+            SITE_URL=https://bhouston.github.io
+            BASE_URL=/
+
   policy:
     name: PR policy
     if: github.event_name == 'pull_request'
