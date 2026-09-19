@@ -1,4 +1,5 @@
 export * from './discovery.js';
+export * from './merge.js';
 import { Ajv2020 } from 'ajv/dist/2020.js';
 import * as formatsModule from 'ajv-formats';
 import { parse as parseYaml } from 'yaml';

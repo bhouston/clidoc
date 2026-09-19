@@ -55,6 +55,29 @@ Run `mycli docgen --output cli.json` for JSON (the default), or `mycli docgen --
 
 Standard Yargs command modules and `defineCommand` results from `yargs-file-commands` work. Command patterns provide names and positional arguments: the command name is every leading pattern token that is not a positional (`<...>` / `[...]`), so `'config set <key> <value>'` becomes `config set`, not just `config`. The special `$0` default-command token maps to the binary itself and contributes no word of its own. The adapter reads descriptions, aliases, declarative option maps, and synchronous builder calls to `.option()`, `.options()`, `.positional()`, and `.command()`. Nested `.command()` calls inside a builder are recursed into and produce dotted-word keys (e.g. `demo config set`); a parent command that has no flags or args of its own and exists only to register children is marked `kind: 'group'`. It maps supported value types, defaults, choices, and required, hidden, and array/variadic flags; `count` options map to `integer`, and any other unrecognised option type falls back to `string`. Builder callbacks run to collect this metadata, so use trusted modules; asynchronous builders are unsupported. Custom parsing, coercion, validation, and middleware behavior cannot be inferred from command metadata.
 
+## Adding examples and exit codes
+
+`fromYargs` only knows what Yargs' command metadata exposes, so `examples`, `exitCodes`, and
+metadata like `info.license` never appear in the generated document. Add them with `@clidoc/core`'s
+`mergeDocument` before writing the document out in `docgen`:
+
+```ts
+import { mergeDocument } from '@clidoc/core';
+
+const document = () =>
+  mergeDocument(fromYargs(commands, info), {
+    info: { license: { name: 'MIT', spdxId: 'MIT' } },
+    commands: {
+      'mycli greet': {
+        examples: [{ title: 'Basic', content: 'mycli greet Ada' }],
+        exitCodes: [{ code: 1, status: 'BAD_USER_INPUT_ERROR', summary: 'Missing name' }],
+      },
+    },
+  });
+```
+
+See the [`@clidoc/core` README](../core/README.md#adding-author-supplied-metadata) for the merge rules.
+
 ## License
 
 MIT. See [LICENSE](../../LICENSE).

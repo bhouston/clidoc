@@ -21,6 +21,35 @@ const pages = generatePages(document, { basePath: '/cli' });
 
 `validate` checks documents against the vendored JSON Schema and, once that passes, against the logical rules ported from upstream's `validate/validate.go`: positional arguments must not place a required argument after an optional one, `minItems`/`maxItems` are only valid on variadic arguments and flags (with `minItems <= maxItems`), `$FILE` alternative sources must have a matching file declared in `global.config`, flag names and aliases must be unique per command, variadic flags cannot be `required`, and group commands cannot declare `args` or `flags`. Errors use the same `instancePath message` shape as schema errors.
 
+## Adding author-supplied metadata
+
+Adapters generate a document from what your CLI's argument parser already knows, so things like
+`examples`, `exitCodes`, `info.license`/`contact`, `install`, and `global` config are usually
+missing. Add them with `mergeDocument`, then re-validate:
+
+```ts
+import { mergeDocument } from '@clidoc/core';
+
+const documented = mergeDocument(document, {
+  info: { license: { name: 'MIT', spdxId: 'MIT' } },
+  install: [{ name: 'npm', command: 'npm i -g my-cli' }],
+  commands: {
+    'my-cli greet': {
+      examples: [{ title: 'Basic', content: 'my-cli greet Ada' }],
+      exitCodes: [{ code: 1, status: 'BAD_USER_INPUT_ERROR', summary: 'Missing name' }],
+      flags: [{ name: 'language', alternativeSources: [{ type: '$ENV', property: 'LANG' }] }],
+    },
+  },
+});
+```
+
+Plain objects (`info`, `global`, each command) merge recursively. Arrays replace the base array,
+except `examples` and `exitCodes`, which append, and `flags`/`args`, which are merged item-by-item
+matched by `name` &mdash; so you can add `alternativeSources` or a `summary` to one generated flag
+without repeating the rest of it. Commands not present in the generated document are added as-is.
+`mergeDocument` throws an `Error` listing every problem if the merged result fails schema
+validation.
+
 ## License
 
 MIT. See [LICENSE](../../LICENSE).
