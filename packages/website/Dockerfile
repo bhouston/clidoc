@@ -5,7 +5,7 @@ WORKDIR /app
 RUN npm install -g pnpm@11.1.3
 COPY . .
 RUN pnpm install --frozen-lockfile
-ARG SITE_URL=https://bhouston.github.io
+ARG SITE_URL=https://clidoc.ben3d.ca
 ARG BASE_URL=/
 ENV SITE_URL=${SITE_URL} BASE_URL=${BASE_URL}
 RUN pnpm docs:build
