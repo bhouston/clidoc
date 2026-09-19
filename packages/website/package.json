@@ -1,7 +1,6 @@
 {
   "name": "@clidoc/website",
   "private": true,
-  "type": "module",
   "scripts": {
     "build": "docusaurus build",
     "dev": "docusaurus start",
@@ -9,16 +8,17 @@
     "test:browser": "node scripts/run-browser-tests.mjs"
   },
   "dependencies": {
+    "@clidoc/docusaurus": "workspace:^",
     "@docusaurus/core": "^3.10.2",
     "@docusaurus/preset-classic": "^3.10.2",
-    "@clidoc/docusaurus": "workspace:^",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"
   },
   "devDependencies": {
+    "@vitest/browser-playwright": "^4.1.11",
     "typedoc": "^0.28.0",
     "typedoc-plugin-markdown": "^4.0.0",
-    "@vitest/browser-playwright": "^4.1.11",
+    "typescript": "^6.0.3",
     "vitest": "^4.1.11"
   }
 }

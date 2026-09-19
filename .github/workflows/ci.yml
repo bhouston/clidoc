@@ -62,7 +62,7 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm docs:build
+      - run: SITE_URL=http://127.0.0.1 BASE_URL=/ pnpm docs:build
       - run: pnpm --filter @clidoc/website exec playwright install --with-deps chromium
       - run: pnpm --filter @clidoc/website test:browser
 

@@ -17,7 +17,7 @@ export default function Home() {
         <h1>CLI documentation from the source</h1>
         <p className={styles.lead}>clidoc gives your commands a portable contract, then turns that contract into documentation people can use.</p>
         <div className={styles.actions}>
-          <Link className="button button--primary button--lg" to="/docs/intro">Get started</Link>
+          <Link className="button button--primary button--lg" to="/docs">Get started</Link>
           <Link className="button button--secondary button--lg" to="/docs/cli/reference">Explore the CLI</Link>
         </div>
       </div>
