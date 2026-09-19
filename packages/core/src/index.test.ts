@@ -67,6 +67,13 @@ describe('OpenCLI schema', () => {
   it.skipIf(!hasUpstreamFiles)('rejects invalid upstream examples with paths', () => {
     expect(() => parse(fixture('tea.ocs.yaml'))).toThrow(/global\/config/);
   });
+  it('reports which parser failed based on the input shape', () => {
+    expect(() => parse('{ "opencliVersion": ')).toThrow(/Invalid OpenCLI JSON:/);
+    expect(() => parse('[')).toThrow(/Invalid OpenCLI JSON:/);
+    expect(() => parse('opencliVersion: [')).toThrow(/Invalid OpenCLI YAML:/);
+    expect(() => parse('{ "opencliVersion": ', { format: 'json' })).toThrow(/Invalid OpenCLI JSON:/);
+    expect(() => parse('opencliVersion: 1', { format: 'yaml' })).toThrow(/Invalid OpenCLI document/);
+  });
 });
 
 describe('rendering', () => {
@@ -84,6 +91,29 @@ describe('rendering', () => {
     const pages = generatePages(document);
     expect(pages.slice(1).map((page) => page.title)).toEqual(['acme alpha', 'acme zulu']);
     expect(pages[2]?.content).toContain('````sh');
+  });
+  it('renders inline code spans with backticks using a wider delimiter', () => {
+    const document: OpenCliDocument = {
+      ...doc,
+      commands: {
+        'acme run': {
+          ...doc.commands!['acme run'],
+          flags: [{ name: 'x', type: 'string', default: 'a`b' }],
+        },
+      },
+    };
+    const markdown = renderMarkdown(document);
+    expect(markdown).toContain('Default: ``a`b``');
+    expect(markdown).not.toContain('\\`');
+  });
+  it('pads code spans that start or end with a backtick', () => {
+    const document: OpenCliDocument = {
+      ...doc,
+      commands: {
+        'acme run': { ...doc.commands!['acme run'], flags: [{ name: 'x', type: 'string', default: '`a' }] },
+      },
+    };
+    expect(renderMarkdown(document)).toContain('Default: `` `a ``');
   });
   it('renders content, global and command details in Markdown', () => {
     const rendered = renderMarkdown(doc);
@@ -159,6 +189,80 @@ describe('optional document sections', () => {
     const landing = generatePages(rich)[0]?.content;
     expect(landing).toContain('## Installation');
     expect(landing).toContain('## Global exit codes');
+  });
+  it('renders license, contact, config, alternative sources, hint, passthrough, and choice descriptions', () => {
+    const full: OpenCliDocument = {
+      opencliVersion: OPENCLI_VERSION,
+      info: {
+        title: 'Full',
+        binary: 'full',
+        version: '1',
+        license: { name: 'MIT', spdxId: 'MIT', url: 'https://spdx.org/licenses/MIT.html' },
+        contact: { name: 'Full Team', email: 'team@example.com', url: 'https://example.com' },
+      },
+      global: { config: { json: '~/.full/config.json', toml: '~/.full/config.toml', yaml: '~/.full/config.yaml' } },
+      commands: {
+        'full run': {
+          args: [{ name: 'target', passthrough: true }],
+          flags: [
+            {
+              name: 'output',
+              type: 'string',
+              hint: '<format>',
+              choices: [{ value: 'json', description: 'Emit JSON' }, { value: 'text' }],
+              alternativeSources: [
+                { type: '$ENV', property: 'FULL_OUTPUT' },
+                { type: '$FILE', property: '$.output' },
+              ],
+            },
+          ],
+        },
+      },
+    };
+    const markdown = renderMarkdown(full);
+    expect(markdown).toContain('License: [MIT](https://spdx.org/licenses/MIT.html) (MIT)');
+    expect(markdown).toContain('Contact: Full Team · team@example.com · https://example.com');
+    expect(markdown).toContain('## Configuration');
+    expect(markdown).toContain('~/.full/config.json');
+    expect(markdown).toContain('Passthrough');
+    expect(markdown).toContain('Hint: <format>');
+    expect(markdown).toContain('Choices: json (Emit JSON), text');
+    expect(markdown).toContain('Env: `FULL_OUTPUT`');
+    expect(markdown).toContain('File: `$.output`');
+
+    const landing = generatePages(full)[0]?.content ?? '';
+    expect(landing).toContain('License: [MIT](https://spdx.org/licenses/MIT.html) (MIT)');
+    expect(landing).toContain('Contact: Full Team · team@example.com · https://example.com');
+    expect(landing).toContain('## Configuration');
+    expect(landing).toContain('~/.full/config.yaml');
+  });
+  it('renders license and contact fallbacks and ignores empty config', () => {
+    const sparse: OpenCliDocument = {
+      opencliVersion: OPENCLI_VERSION,
+      info: {
+        title: 'Sparse',
+        binary: 'sparse',
+        version: '1',
+        license: { name: 'Proprietary' },
+        contact: { email: 'help@example.com' },
+      },
+      global: { config: { json: '~/.sparse/config.json' } },
+    };
+    const markdown = renderMarkdown(sparse);
+    expect(markdown).toContain('License: Proprietary\n\n');
+    expect(markdown).toContain('Contact: help@example.com\n\n');
+    expect(markdown).toContain('| JSON | `~/.sparse/config.json` |');
+    expect(markdown).not.toContain('| TOML |');
+    const extensionOnlyConfig: OpenCliDocument = { ...sparse, global: { config: { 'x-custom': true } } };
+    expect(renderMarkdown(extensionOnlyConfig)).not.toContain('## Configuration');
+  });
+  it.skipIf(!hasUpstreamFiles)('renders upstream petstore fields', () => {
+    const petstore = parse(fixture('petstore-cli.ocs.yaml'));
+    const markdown = renderMarkdown(petstore);
+    expect(markdown).toContain('License:');
+    expect(markdown).toContain('Contact:');
+    expect(markdown).toContain('## Configuration');
+    expect(markdown).toContain('Env: `PETSTORE_USER`');
   });
   it('keeps paths safe for hostile names and rejects traversal base paths', () => {
     const special: OpenCliDocument = { ...doc, commands: { '../foo': {}, '..\\foo': {}, '☃': {}, FOO: {} } };
