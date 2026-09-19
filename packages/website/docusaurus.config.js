@@ -31,7 +31,6 @@ module.exports = {
         input: '../../docs/generated/clidoc.json',
         outputDir: path.join(siteDir, 'docs/cli/reference'),
         basePath: '/cli/reference',
-        docsRouteBasePath: '/docs',
       },
     ],
   ],

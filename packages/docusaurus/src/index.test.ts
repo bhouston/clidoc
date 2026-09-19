@@ -29,24 +29,31 @@ it('writes CommonMark pages with stable sidebar entries, then removes only stale
   const names = await readdir(outputDir);
   const generated = names.filter((name) => name.startsWith('clidoc-'));
   expect(generated).toHaveLength(2);
-  const landing = await readFile(join(outputDir, generated[0]!), 'utf8');
-  expect(landing).toContain('mdx:\n  format: md');
-  expect((await Promise.all(generated.map((name) => readFile(join(outputDir, name), 'utf8')))).join('\n')).toContain(
-    'slug: "/docs/cli"',
+  const contents = await Promise.all(
+    generated.map(async (name) => [name, await readFile(join(outputDir, name), 'utf8')] as const),
   );
+  const [landingName, landing] = contents.find(([, text]) => text.includes('id: "index"'))!;
+  const [commandName] = contents.find(([name]) => name !== landingName)!;
+  expect(landing).toContain('mdx:\n  format: md');
+  expect(contents.map(([, text]) => text).join('\n')).toContain('slug: "/docs/cli"');
+  // The landing page links to the command page's generated filename, not its route, so Docusaurus
+  // resolves the URL itself regardless of routeBasePath.
+  expect(landing).toContain(`](./${commandName})`);
+  expect(landing).not.toContain('/docs/cli/commands/');
   await writeDocusaurus({ ...document, commands: {} }, { outputDir, basePath: '/docs/cli' });
   expect((await readdir(outputDir)).filter((name) => name.startsWith('clidoc-'))).toHaveLength(1);
   expect(await readFile(join(outputDir, 'manual.md'), 'utf8')).toBe('# Keep me\n');
 });
 
-it('loads a file relative to siteDir and exposes navigation through the plugin lifecycle', async () => {
+it('loads a file relative to siteDir and writes generated docs before content loading', async () => {
   const siteDir = await site();
   await writeFile(join(siteDir, 'input.json'), JSON.stringify(document));
   const plugin = await clidocPlugin({ siteDir }, { input: 'input.json', outputDir: 'generated' });
   expect(plugin.name).toBe('clidoc-docusaurus');
-  expect(plugin.loadContent()).toHaveLength(2);
+  expect((await readdir(join(siteDir, 'generated'))).filter((name) => name.startsWith('clidoc-'))).toHaveLength(2);
   await expect(clidocPlugin({ siteDir }, { input: 'missing.json', outputDir: 'generated' })).rejects.toThrow();
-  expect((await clidocPlugin({ siteDir }, { input: document, outputDir: 'generated' })).loadContent()).toHaveLength(2);
+  await clidocPlugin({ siteDir }, { input: document, outputDir: 'generated' });
+  expect((await readdir(join(siteDir, 'generated'))).filter((name) => name.startsWith('clidoc-'))).toHaveLength(2);
 });
 
 it('rejects an invalid manifest and ignores unowned entries', async () => {
