@@ -31,7 +31,7 @@ own `yargs-file-commands` definitions.
 For repository development, use the Node version in `.nvmrc` and pnpm specified in `package.json`.
 
 ```sh
-git clone --recurse-submodules https://github.com/bhouston/clidoc.git
+git clone https://github.com/bhouston/clidoc.git
 cd clidoc
 pnpm install --frozen-lockfile
 pnpm build
@@ -41,7 +41,10 @@ node packages/cli/dist/bin.js validate docs/generated/clidoc.json
 node packages/cli/dist/bin.js markdown docs/generated/clidoc.json
 ```
 
-Already cloned? Run `git submodule update --init --recursive` before the tests.
+The upstream OpenCLI submodule is optional. Already cloned? Run
+`git submodule update --init --recursive` to enable tests that compare the bundled
+schema and validate upstream examples. Without the submodule, those tests skip
+with a warning and the remaining tests run normally.
 
 ## Generate from your CLI
 
@@ -126,7 +129,8 @@ The [generated CLI reference](docs/generated/cli.md) and
 The contract is **OpenCLI `1.0.0-alpha.14`**, pinned to upstream commit
 `683d0ca92fc37ccc2626e64db0a8c32f3c4063c0` in [`upstream/opencli`](upstream/opencli).
 The core package bundles that schema, so installed packages validate offline
-without the submodule. Tests compare the bundled schema and upstream fixtures.
+without the submodule. Tests compare the bundled schema and upstream fixtures when
+the submodule is checked out.
 The upstream Go project retains its own license; see
 [third-party attribution](packages/core/THIRD_PARTY_NOTICES.md).
 

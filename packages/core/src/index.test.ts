@@ -1,11 +1,28 @@
-import { describe, expect, it } from 'vitest';
-import { readFileSync } from 'node:fs';
+import { beforeAll, describe, expect, it } from 'vitest';
+import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { generatePages, OPENCLI_VERSION, openCliSchema, parse, renderMarkdown, validate } from './index.js';
 import type { OpenCliDocument } from './types.js';
 
 const fixture = (name: string) =>
   readFileSync(fileURLToPath(new URL(`../../../upstream/opencli/examples/${name}`, import.meta.url)), 'utf8');
+const upstreamFiles = [
+  'spec.schema.json',
+  'examples/petstore-cli.ocs.json',
+  'examples/petstore-cli.ocs.yaml',
+  'examples/pleasantries-cli.ocs.yaml',
+  'examples/tea.ocs.yaml',
+];
+const hasUpstreamFiles = upstreamFiles.every((name) =>
+  existsSync(fileURLToPath(new URL(`../../../upstream/opencli/${name}`, import.meta.url))),
+);
+beforeAll(() => {
+  if (!hasUpstreamFiles) {
+    process.stderr.write(
+      'Warning: skipping upstream OpenCLI fixture tests because submodule files are missing. Run `git submodule update --init --recursive` to enable them.\n',
+    );
+  }
+});
 const doc: OpenCliDocument = {
   opencliVersion: OPENCLI_VERSION,
   info: { title: 'Acme | CLI', binary: 'acme', version: '2.0', summary: 'Useful **commands**' },
@@ -26,19 +43,18 @@ const doc: OpenCliDocument = {
 };
 
 describe('OpenCLI schema', () => {
-  it('bundles the pinned schema unchanged', () => {
+  it.skipIf(!hasUpstreamFiles)('bundles the pinned schema unchanged', () => {
     const upstream = JSON.parse(
       readFileSync(fileURLToPath(new URL('../../../upstream/opencli/spec.schema.json', import.meta.url)), 'utf8'),
     );
     expect(openCliSchema).toEqual(upstream);
   });
-  it('validates upstream examples', () => {
+  it.skipIf(!hasUpstreamFiles)('validates upstream examples', () => {
     for (const name of ['petstore-cli.ocs.json', 'petstore-cli.ocs.yaml', 'pleasantries-cli.ocs.yaml']) {
       expect(validate(parse(fixture(name))).valid).toBe(true);
     }
   });
   it('rejects schema violations with paths', () => {
-    expect(() => parse(fixture('tea.ocs.yaml'))).toThrow(/global\/config/);
     expect(
       validate({ ...doc, info: { ...doc.info, binary: 42 } }).errors.some((error) => error.includes('/info/binary')),
     ).toBe(true);
@@ -47,6 +63,9 @@ describe('OpenCLI schema', () => {
     expect(() => parse('{}')).toThrow(/OpenCLI document/);
     expect(() => renderMarkdown({} as OpenCliDocument)).toThrow(/OpenCLI document/);
     expect(() => generatePages({} as OpenCliDocument)).toThrow(/OpenCLI document/);
+  });
+  it.skipIf(!hasUpstreamFiles)('rejects invalid upstream examples with paths', () => {
+    expect(() => parse(fixture('tea.ocs.yaml'))).toThrow(/global\/config/);
   });
 });
 
