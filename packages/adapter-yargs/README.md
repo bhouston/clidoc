@@ -19,14 +19,22 @@ import { writeFile } from 'node:fs/promises';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { fromYargs } from '@clidoc/adapter-yargs';
+import { renderMarkdown } from '@clidoc/core';
 import { command as greet } from './commands/greet.js';
 
 const docgen = {
   command: 'docgen',
   describe: 'Write the OpenCLI document to a file',
-  builder: { output: { type: 'string' as const, demandOption: true } },
-  async handler(argv: { output: string }) {
-    await writeFile(argv.output, `${JSON.stringify(document(), null, 2)}\n`);
+  builder: {
+    output: { type: 'string' as const, demandOption: true },
+    format: { type: 'string' as const, choices: ['json', 'markdown'] as const, default: 'json' },
+  },
+  async handler(argv: { output: string; format: 'json' | 'markdown' }) {
+    const generated = document();
+    await writeFile(
+      argv.output,
+      argv.format === 'markdown' ? renderMarkdown(generated) : `${JSON.stringify(generated, null, 2)}\n`,
+    );
   },
 };
 const commands = [greet, docgen];
@@ -43,7 +51,7 @@ if (args.length === 1 && args[0] === '--opencli') {
 }
 ```
 
-Run `mycli docgen --output cli.json`, then `npm install -g @clidoc/cli`, `clidoc validate cli.json`, and `clidoc markdown cli.json --output reference.md`. Consumers can also run `mycli --opencli > mycli.opencli.json` for discovery. See the [Yargs demo](../../demos/yargs) for a runnable example.
+Run `mycli docgen --output cli.json` for JSON (the default), or `mycli docgen --format markdown --output reference.md` to render Markdown directly. Install the validator with `npm install -g @clidoc/cli` and run `clidoc validate cli.json`. Consumers can also run `mycli --opencli > mycli.opencli.json` for discovery. See the [Yargs demo](../../demos/yargs) for a runnable example.
 
 ## Supported metadata
 
