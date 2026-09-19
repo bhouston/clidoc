@@ -125,12 +125,26 @@ describe('rendering', () => {
     expect(rendered).not.toContain('acme hidden');
     expect(rendered).not.toContain('secret');
   });
-  it('generates deterministic paths and navigation', () => {
+  it('generates deterministic paths and navigation, stripping the binary prefix', () => {
     const pages = generatePages(doc, { basePath: '/docs/cli/' });
-    expect(pages.map((page) => page.path)).toEqual(['/docs/cli', '/docs/cli/commands/acme-run-df5b3682']);
-    expect(pages[0]?.content).toContain('](/docs/cli/commands/acme-run-df5b3682)');
+    expect(pages.map((page) => page.path)).toEqual(['/docs/cli', '/docs/cli/commands/run']);
+    expect(pages[1]?.id).toBe('command-run');
+    expect(pages[0]?.content).toContain('](/docs/cli/commands/run)');
     expect(pages[0]?.content).toContain('## Global flags');
     expect(generatePages(doc)).toEqual(generatePages(doc));
+  });
+  it('appends a hash suffix only when two visible commands share a readable slug', () => {
+    const collision: OpenCliDocument = {
+      ...doc,
+      commands: { 'acme index': { summary: 'lower' }, 'acme Index': { summary: 'upper' } },
+    };
+    const pages = generatePages(collision);
+    const routes = pages.slice(1).map((page) => page.path);
+    expect(new Set(routes).size).toBe(2);
+    expect(routes.every((path) => /^\/commands\/index-[a-f0-9]{8}$/.test(path))).toBe(true);
+    // A command route never collides with the landing page's own `/` route.
+    expect(pages[0]?.path).toBe('/');
+    expect(routes).not.toContain('/');
   });
 });
 
@@ -145,8 +159,8 @@ describe('optional document sections', () => {
       ],
       global: { exitCodes: [{ code: 1, status: 'BAD_USER_INPUT_ERROR', summary: 'Bad' }] },
       commands: {
+        'rich group': { kind: 'group' },
         'rich build': {
-          kind: 'group',
           description: 'Build things',
           aliases: ['b'],
           args: [
