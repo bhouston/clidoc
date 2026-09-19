@@ -3,7 +3,7 @@ import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import type { ArgumentsCamelCase } from 'yargs';
 import { fromYargs } from '@clidoc/adapter-yargs';
-import { renderMarkdown } from '@clidoc/core';
+import { handleOpenCliRequest, renderMarkdown } from '@clidoc/core';
 
 const greet = {
   command: 'greet <name>',
@@ -45,8 +45,6 @@ const docgen = {
 
 const document = () => fromYargs([greet, docgen], { title: 'Yargs demo', binary: 'demo', version: '0.0.0' });
 
-if (process.argv.slice(2).length === 1 && process.argv[2] === '--opencli') {
-  console.log(JSON.stringify(document(), null, 2));
-} else {
+if (!handleOpenCliRequest(hideBin(process.argv), document)) {
   yargs(hideBin(process.argv)).command(greet).command(docgen).demandCommand().parse();
 }

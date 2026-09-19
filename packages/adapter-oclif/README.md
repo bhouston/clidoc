@@ -8,16 +8,17 @@
 
 Part of [clidoc](https://clidoc.ben3d.ca), tooling for publishing CLI reference documentation from an [OpenCLI](https://github.com/bcdxn/opencli) document.
 
-`fromOclif` converts the command metadata in oclif's generated `manifest.json` into an OpenCLI `1.0.0-alpha.14` document. Pass the manifest and the CLI title, executable name, and version. The adapter reads metadata only; it does not load commands, parse arguments, or run handlers. Generate or refresh the oclif manifest as part of your build so `--opencli` reflects the current commands.
+`fromOclif` converts the command metadata in oclif's generated `manifest.json` into an OpenCLI `1.0.0-alpha.14` document. Pass the manifest and the CLI title, executable name, and version. The adapter reads metadata only; it does not load commands, parse arguments, or run handlers. Generate or refresh the oclif manifest as part of your build so `__opencli` reflects the current commands.
 
-## Add `docgen` and `--opencli` to your CLI
+## Add `docgen` and `__opencli` to your CLI
 
-Add `mycli docgen --output cli.json` to write the OpenCLI document from your CLI metadata. Reserve the **exact top-level** `mycli --opencli` invocation as a discovery command. Print only one UTF-8 JSON OpenCLI document followed by a newline to stdout, then exit with status 0. Report errors on stderr and exit nonzero; do not run command handlers. Check for the exact invocation in your executable entry point before handing arguments to oclif; other invocations continue through the normal CLI.
+Add `mycli docgen --output cli.json`, the human-facing command, to write the OpenCLI document from your CLI metadata. For machine discovery, attach the hidden `__opencli` subcommand, matching [upstream OpenCLI's Go adapters](https://github.com/bcdxn/opencli): print only one UTF-8 JSON OpenCLI document followed by a newline to stdout, then exit with status 0. `@clidoc/core` exports `handleOpenCliRequest`, which checks argv for `__opencli` (or the documented `--opencli` compatibility alias) in your executable entry point before handing arguments to oclif, so command handlers never run:
 
 ```ts
 import { readFileSync } from 'node:fs';
 import { run } from '@oclif/core';
 import { fromOclif } from '@clidoc/adapter-oclif';
+import { handleOpenCliRequest } from '@clidoc/core';
 
 const document = () => {
   const manifest = JSON.parse(readFileSync(new URL('../manifest.json', import.meta.url), 'utf8'));
@@ -28,9 +29,7 @@ const document = () => {
   });
 };
 const args = process.argv.slice(2);
-if (args.length === 1 && args[0] === '--opencli') {
-  process.stdout.write(`${JSON.stringify(document())}\n`);
-} else {
+if (!handleOpenCliRequest(args, document)) {
   await run(args);
 }
 ```
@@ -68,7 +67,7 @@ export default class Docgen extends Command {
 }
 ```
 
-The [runnable oclif demo](../../demos/oclif/src/index.ts) implements `docgen` with a required `--output` flag. Adjust the manifest paths for your built executable and command. Run `mycli docgen --output cli.json` for JSON (the default), or `mycli docgen --format markdown --output reference.md` to render Markdown directly. Install the validator with `npm install -g @clidoc/cli` and run `clidoc validate cli.json`. Consumers can also run `mycli --opencli > mycli.opencli.json` for discovery.
+The [runnable oclif demo](../../demos/oclif/src/index.ts) implements `docgen` with a required `--output` flag. Adjust the manifest paths for your built executable and command. Run `mycli docgen --output cli.json` for JSON (the default), or `mycli docgen --format markdown --output reference.md` to render Markdown directly. Install the validator with `npm install -g @clidoc/cli` and run `clidoc validate cli.json`. Consumers can also run `mycli __opencli > mycli.opencli.json` for discovery; `mycli --opencli` still works as a clidoc-only alias.
 
 ## Supported metadata
 

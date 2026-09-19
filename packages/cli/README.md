@@ -9,8 +9,8 @@
 Generate OpenCLI JSON from framework metadata, validate JSON/YAML documents, and
 render Markdown. Node 22.12+; ESM only.
 
-The CLI being documented should provide its own `docgen` command. Install
-clidoc globally to validate and render the resulting file:
+The CLI being documented should provide its own `docgen` command, the human-facing
+entry point. Install clidoc globally to validate and render the resulting file:
 
 ```sh
 npm install -g @clidoc/cli
@@ -19,11 +19,15 @@ clidoc validate cli.json
 clidoc markdown cli.json --output reference.md
 ```
 
-`mycli --opencli` can also print the same document for discovery. As a secondary
-option, trusted command definitions can be imported with
-`clidoc generate ./definition.mjs --adapter yargs --output cli.json`.
-Omit `--output` from `clidoc generate` or `clidoc markdown` to print the result. Invalid input or command usage exits with
-status 1. `--help` describes command arguments.
+`mycli __opencli` is the hidden, machine-facing discovery subcommand, matching
+upstream OpenCLI's Go adapters; `mycli --opencli` is a documented clidoc-only
+alias kept for backwards compatibility. clidoc dogfoods this exact workflow on
+itself: `clidoc docgen`, `clidoc __opencli`, and `clidoc --opencli` all describe
+the `clidoc` binary. As a secondary option, trusted command definitions can be
+imported with `clidoc generate ./definition.mjs --adapter yargs --output cli.json`.
+Omit `--output` from `clidoc generate`, `clidoc markdown`, or `clidoc docgen` to
+print the result. Invalid input or command usage exits with status 1. `--help`
+describes command arguments, and `--version` prints the installed package version.
 
 The generation module must export `info` (`title`, `binary`, `version`) and a
 default value: Yargs command modules, a Commander `Command`, or an oclif manifest.

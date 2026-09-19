@@ -1,7 +1,7 @@
 import { writeFile } from 'node:fs/promises';
 import { Command, Option } from 'commander';
 import { fromCommander } from '@clidoc/adapter-commander';
-import { renderMarkdown } from '@clidoc/core';
+import { handleOpenCliRequest, renderMarkdown } from '@clidoc/core';
 
 const cli = new Command('demo');
 cli.description('Commander demo CLI');
@@ -27,8 +27,6 @@ cli
 
 const document = () => fromCommander(cli, { title: 'Commander demo', binary: 'demo', version: '0.0.0' });
 
-if (process.argv.slice(2).length === 1 && process.argv[2] === '--opencli') {
-  console.log(JSON.stringify(document(), null, 2));
-} else {
+if (!handleOpenCliRequest(process.argv.slice(2), document)) {
   cli.parse();
 }
