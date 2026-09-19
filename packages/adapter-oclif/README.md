@@ -71,7 +71,9 @@ The [runnable oclif demo](../../demos/oclif/src/index.ts) implements `docgen` wi
 
 ## Supported metadata
 
-The adapter reads command IDs, descriptions, aliases, visibility, flags, and arguments from the generated manifest. It maps supported types, defaults, choices, required status, and repeatable flags. It cannot infer custom parsing, hooks, or command runtime behavior from the manifest.
+The adapter reads command IDs, descriptions, aliases, visibility, flags, arguments, examples, and topics from the generated manifest. It maps supported types, defaults, choices, required status, repeatable flags (`multiple` on both flags and args), flag `env` (to `alternativeSources`), flag `helpValue` (to `hint`), and flag `aliases`/`charAliases` (merged with `char` into `aliases`). Command `examples` (a string, or oclif's `{ command, description }` object) map to spec `examples: [{ title?, content }]`, with `description` becoming `title` and `command` becoming `content`. Argument `default` has no equivalent spec field, so it is folded into the argument's summary as `Default: <value>.`, matching `@clidoc/adapter-commander`. Manifest `topics` synthesise `kind: 'group'` commands keyed by the topic path (e.g. `user` or `user admin`) without overwriting a real command of the same key.
+
+Flag `deprecated` and `deprecateAliases` are read by oclif's own help output but are not mapped to the OpenCLI document; there is no equivalent spec field. It cannot infer custom parsing, hooks, or command runtime behavior from the manifest.
 
 ## Adding examples and exit codes
 

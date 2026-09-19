@@ -1,4 +1,6 @@
 import { defineConfig } from 'vitest/config';
 export default defineConfig({
-  test: { coverage: { provider: 'v8', include: ['src/index.ts', 'src/discovery.ts', 'src/merge.ts'] } },
+  test: {
+    coverage: { provider: 'v8', include: ['src/index.ts', 'src/discovery.ts', 'src/logical.ts', 'src/merge.ts'] },
+  },
 });

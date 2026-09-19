@@ -158,7 +158,60 @@ binary.
 
 The [generated CLI reference](docs/generated/cli.md) and
 [OpenCLI JSON](docs/generated/clidoc.json) come from the actual command modules.
-`pnpm docs:generate` refreshes them; both sites consume the same JSON.
+They are committed, unlike each site's own `outputDir`, so the demo sites and
+website build straight from a checkout with no generation step; `pnpm docs:generate`
+refreshes them locally, and CI's `docs:build` regenerates them before building
+the sites.
+
+## Example document
+
+Trimmed from [`docs/generated/clidoc.json`](docs/generated/clidoc.json), the document clidoc
+generates for itself:
+
+```json
+{
+  "opencliVersion": "1.0.0-alpha.14",
+  "info": {
+    "title": "clidoc",
+    "binary": "clidoc",
+    "version": "0.1.0",
+    "summary": "Generate, validate, and publish CLI documentation through OpenCLI."
+  },
+  "commands": {
+    "clidoc generate": {
+      "summary": "Import a trusted framework definition module and generate OpenCLI JSON",
+      "args": [
+        {
+          "name": "module",
+          "required": true,
+          "type": "string",
+          "summary": "Trusted JS module exporting default metadata and info"
+        }
+      ],
+      "flags": [
+        {
+          "name": "adapter",
+          "type": "string",
+          "summary": "Framework adapter",
+          "required": true,
+          "choices": [{ "value": "yargs" }, { "value": "commander" }, { "value": "oclif" }]
+        }
+      ]
+    },
+    "clidoc validate": {
+      "summary": "Validate an OpenCLI JSON or YAML document",
+      "args": [
+        {
+          "name": "input",
+          "required": true,
+          "type": "string",
+          "summary": "OpenCLI document filename"
+        }
+      ]
+    }
+  }
+}
+```
 
 ## Compatibility and scope
 
@@ -170,11 +223,20 @@ the submodule is checked out.
 The upstream Go project retains its own license; see
 [third-party attribution](packages/core/THIRD_PARTY_NOTICES.md).
 
+The OpenCLI schema only requires `commands` keys to be strings; it does not mandate a
+format. Upstream's Go generator decorates keys for display, e.g.
+`"petstore pet add <arguments> [flags]"`. clidoc emits the plain `binary sub command` path
+instead, as shown above, because page titles, route slugs, and `commands[...]` lookups all
+want that exact string. Both forms validate against the schema, and `clidoc validate`
+accepts upstream's decorated documents unchanged.
+
 Framework metadata cannot express every runtime behavior. The adapters document
 what their supported metadata exposes; they do not infer custom validation,
 coercion, middleware, or application behavior. See each adapter README for limits.
-Schema validation follows the upstream JSON Schema, rather than claiming identical
-behavior to every semantic check in the Go CLI.
+Schema validation follows the upstream JSON Schema and is paired with the logical
+checks ported from upstream's `validate/validate.go` (argument ordering, variadic
+constraints, `$FILE` config references, duplicate flags), rather than claiming
+identical behavior to every semantic check in the Go CLI.
 
 This first implementation focuses on the CLI-to-Markdown pipeline. OpenAPI and
 TypeDoc ingestion, a standalone embeddable React viewer, additional site platforms,
