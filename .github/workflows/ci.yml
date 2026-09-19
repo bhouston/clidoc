@@ -80,7 +80,7 @@ jobs:
           file: packages/website/Dockerfile
           push: false
           build-args: |
-            SITE_URL=https://bhouston.github.io
+            SITE_URL=https://clidoc.ben3d.ca
             BASE_URL=/
 
   policy:
