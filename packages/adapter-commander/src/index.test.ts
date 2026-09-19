@@ -145,12 +145,13 @@ describe('hidden commands, summary, env sources (#36)', () => {
     expect(doc.commands?.demo?.args?.[0]).toMatchObject({ name: 'mode', summary: 'Default: fast.' });
   });
 
-  it('sets kind: group whenever a command has subcommands, even with its own flags', () => {
+  it('does not mark a parent with its own flags as a group, since upstream rejects groups with flags', () => {
     const root = new Command('demo');
     const parent = root.command('parent').option('--verbose', 'Verbose');
     parent.command('child');
     const doc = fromCommander(root, info);
-    expect(doc.commands?.['demo parent']?.kind).toBe('group');
+    expect(doc.commands?.['demo parent']?.kind).toBeUndefined();
+    expect(doc.commands?.['demo parent']?.flags?.[0]?.name).toBe('verbose');
   });
 
   it('produces a document that passes @clidoc/core validate()', () => {
