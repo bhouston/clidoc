@@ -1,0 +1,23 @@
+{
+  "name": "@clidoc/website",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "docusaurus build",
+    "dev": "docusaurus start",
+    "generate:api": "typedoc --options typedoc.json",
+    "test:browser": "playwright test"
+  },
+  "dependencies": {
+    "@docusaurus/core": "^3.10.2",
+    "@docusaurus/preset-classic": "^3.10.2",
+    "@clidoc/docusaurus": "workspace:^",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  },
+  "devDependencies": {
+    "typedoc": "^0.28.0",
+    "typedoc-plugin-markdown": "^4.0.0",
+    "@playwright/test": "^1.55.0"
+  }
+}

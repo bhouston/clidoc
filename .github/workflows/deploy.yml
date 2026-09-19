@@ -1,0 +1,15 @@
+name: Deploy clidoc website to Cloud Run
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/deploy-service.yml
+    with:
+      service_name: clidoc
+      dockerfile: packages/website/Dockerfile
+      context: .
+    secrets:
+      GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
