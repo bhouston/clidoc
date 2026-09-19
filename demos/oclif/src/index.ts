@@ -27,5 +27,6 @@ if (process.argv.includes('--clidoc')) {
   const manifest = { commands: { greet: { description: Greet.description, args: Greet.args, flags } } };
   console.log(JSON.stringify(fromOclif(manifest, { title: 'oclif demo', binary: 'demo', version: '0.0.0' }), null, 2));
 } else {
-  await Greet.run(process.argv.slice(2));
+  const argv = process.argv.slice(2);
+  await Greet.run(argv[0] === 'greet' ? argv.slice(1) : argv);
 }

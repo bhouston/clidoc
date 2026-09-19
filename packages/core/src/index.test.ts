@@ -51,6 +51,21 @@ describe('OpenCLI schema', () => {
 });
 
 describe('rendering', () => {
+  it('sorts commands and chooses a safe fence for examples containing backticks', () => {
+    const document: OpenCliDocument = {
+      ...doc,
+      commands: {
+        'acme zulu': { examples: [{ content: 'echo ```nested```' }] },
+        'acme alpha': { summary: 'First command' },
+      },
+    };
+    const markdown = renderMarkdown(document);
+    expect(markdown.indexOf('## acme alpha')).toBeLessThan(markdown.indexOf('## acme zulu'));
+    expect(markdown).toContain('````sh\necho ```nested```\n````');
+    const pages = generatePages(document);
+    expect(pages.slice(1).map((page) => page.title)).toEqual(['acme alpha', 'acme zulu']);
+    expect(pages[2]?.content).toContain('````sh');
+  });
   it('renders content, global and command details in Markdown', () => {
     const rendered = renderMarkdown(doc);
     expect(rendered).toContain('# Acme | CLI');
