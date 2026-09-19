@@ -1,3 +1,5 @@
+import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 import { beforeAll, describe, expect, it } from 'vitest';
@@ -35,5 +37,22 @@ describe.each(runners)('%s demo', (runner) => {
     expect(validate(document)).toEqual({ valid: true, errors: [] });
     expect(document.info.binary).toBe('demo');
     expect(document.commands['demo greet'].summary).toBe('Greet a person');
+    expect(document.commands['demo docgen'].summary).toBe('Write the OpenCLI document to a file');
+  });
+
+  it('writes the same valid OpenCLI document through docgen', async () => {
+    const directory = await mkdtemp(resolve(tmpdir(), `clidoc-${runner}-`));
+    try {
+      const destination = resolve(directory, 'cli.json');
+      const result = await cli.run(['docgen', '--output', destination]);
+      expect(result).toSucceed();
+      const generated = JSON.parse(await readFile(destination, 'utf8'));
+      expect(validate(generated)).toEqual({ valid: true, errors: [] });
+      expect(generated.commands['demo docgen'].summary).toBe('Write the OpenCLI document to a file');
+      const discovered = await cli.run(['--opencli']);
+      expect(generated).toEqual(discovered.json());
+    } finally {
+      await rm(directory, { recursive: true, force: true });
+    }
   });
 });

@@ -30,7 +30,7 @@ export default function Home() {
       </section>
       <section className={styles.example}>
         <div><h2>Use the same contract everywhere</h2><p>Generate once from your CLI, check it with the core library, and publish command pages in your documentation site.</p><Link to="/docs/guides/cli">Read the CLI guide →</Link></div>
-        <pre><code>{`$ clidoc generate --help\n$ clidoc validate --help\n$ clidoc markdown --help`}</code></pre>
+        <pre><code>{`$ npm install -g @clidoc/cli\n$ mycli docgen --output cli.json\n$ clidoc validate cli.json\n$ clidoc markdown cli.json --output reference.md`}</code></pre>
       </section>
     </main>
   </Layout>;

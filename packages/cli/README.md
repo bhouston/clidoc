@@ -9,13 +9,20 @@
 Generate OpenCLI JSON from framework metadata, validate JSON/YAML documents, and
 render Markdown. Node 22.12+; ESM only.
 
+The CLI being documented should provide its own `docgen` command. Install
+clidoc globally to validate and render the resulting file:
+
 ```sh
-clidoc generate ./definition.mjs --adapter yargs --output cli.json
+npm install -g @clidoc/cli
+mycli docgen --output cli.json
 clidoc validate cli.json
 clidoc markdown cli.json --output reference.md
 ```
 
-Omit `--output` to print the result. Invalid input or command usage exits with
+`mycli --opencli` can also print the same document for discovery. As a secondary
+option, trusted command definitions can be imported with
+`clidoc generate ./definition.mjs --adapter yargs --output cli.json`.
+Omit `--output` from `clidoc generate` or `clidoc markdown` to print the result. Invalid input or command usage exits with
 status 1. `--help` describes command arguments.
 
 The generation module must export `info` (`title`, `binary`, `version`) and a
