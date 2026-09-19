@@ -122,7 +122,10 @@ the structure used by [hdrify](https://github.com/bhouston/hdrify).
 
 The [generated CLI reference](docs/generated/cli.md) and
 [OpenCLI JSON](docs/generated/clidoc.json) come from the actual command modules.
-`pnpm docs:generate` refreshes them; both sites consume the same JSON.
+They are committed, unlike each site's own `outputDir`, so the demo sites and
+website build straight from a checkout with no generation step; `pnpm docs:generate`
+refreshes them locally, and CI's `docs:build` regenerates them before building
+the sites.
 
 ## Compatibility and scope
 

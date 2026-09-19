@@ -217,21 +217,46 @@ export function renderMarkdown(document: OpenCliDocument): string {
 }
 
 export type GeneratedPage = { id: string; title: string; path: string; content: string };
-const slug = (name: string) => {
-  const readable =
-    name
+
+/** Strip the leading `<binary> ` prefix commands are keyed with, e.g. `acme run` -> `run`. */
+function withoutBinaryPrefix(name: string, binary: string): string {
+  if (binary && name.startsWith(`${binary} `)) {
+    const rest = name.slice(binary.length + 1).trim();
+    if (rest) return rest;
+  }
+  return name;
+}
+function readableSlug(text: string): string {
+  return (
+    text
       .toLowerCase()
       .normalize('NFKD')
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-+|-+$/g, '')
-      .slice(0, 64) || 'command';
+      .slice(0, 64) || 'command'
+  );
+}
+function fnvHash(name: string): string {
   let hash = 2166136261;
   for (const codePoint of name) {
     hash ^= codePoint.codePointAt(0)!;
     hash = Math.imul(hash, 16777619);
   }
-  return `${readable}-${(hash >>> 0).toString(16).padStart(8, '0')}`;
-};
+  return (hash >>> 0).toString(16).padStart(8, '0');
+}
+
+/** Map each visible command name to a readable route, appending a hash only when two names collide. */
+function routesFor(names: string[], binary: string): Map<string, string> {
+  const readable = new Map(names.map((name) => [name, readableSlug(withoutBinaryPrefix(name, binary))]));
+  const counts = new Map<string, number>();
+  for (const base of readable.values()) counts.set(base, (counts.get(base) ?? 0) + 1);
+  return new Map(
+    names.map((name) => {
+      const base = readable.get(name)!;
+      return [name, (counts.get(base) ?? 0) > 1 ? `${base}-${fnvHash(name)}` : base];
+    }),
+  );
+}
 
 /** Produce a landing page and one page per visible command with safe, stable routes. */
 export function generatePages(document: OpenCliDocument, options: { basePath?: string } = {}): GeneratedPage[] {
@@ -245,15 +270,18 @@ export function generatePages(document: OpenCliDocument, options: { basePath?: s
   const names = Object.keys(document.commands ?? {})
     .filter((name) => !document.commands?.[name]?.hidden)
     .toSorted((a, b) => a.localeCompare(b));
+  const routes = routesFor(names, document.info.binary);
   let landing = renderDocumentHeader(document);
   if (names.length)
     landing +=
       heading(2, 'Commands') +
-      names.map((name) => `- [${name.replace(/[[\]\\]/g, '\\$&')}](${`${prefix}/commands/${slug(name)}`})`).join('\n') +
+      names
+        .map((name) => `- [${name.replace(/[[\]\\]/g, '\\$&')}](${`${prefix}/commands/${routes.get(name)}`})`)
+        .join('\n') +
       '\n\n';
   pages.push({ id: 'index', title: document.info.title, path: prefix || '/', content: landing.trimEnd() + '\n' });
   for (const name of names) {
-    const route = slug(name);
+    const route = routes.get(name)!;
     pages.push({
       id: `command-${route}`,
       title: name,
