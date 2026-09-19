@@ -1,0 +1,81 @@
+{
+  "opencliVersion": "1.0.0-alpha.14",
+  "info": {
+    "title": "OpenCLI JS/TS",
+    "binary": "opencli",
+    "version": "0.1.0",
+    "summary": "Generate, validate, and publish CLI documentation through OpenCLI."
+  },
+  "commands": {
+    "opencli generate": {
+      "summary": "Import a trusted framework definition module and generate OpenCLI JSON",
+      "args": [
+        {
+          "name": "module",
+          "required": true,
+          "type": "string",
+          "summary": "Trusted JS module exporting default metadata and info"
+        }
+      ],
+      "flags": [
+        {
+          "name": "adapter",
+          "type": "string",
+          "summary": "Framework adapter",
+          "required": true,
+          "choices": [
+            {
+              "value": "yargs"
+            },
+            {
+              "value": "commander"
+            },
+            {
+              "value": "oclif"
+            }
+          ]
+        },
+        {
+          "name": "output",
+          "type": "string",
+          "aliases": [
+            "o"
+          ],
+          "summary": "Output JSON file; defaults to stdout"
+        }
+      ]
+    },
+    "opencli markdown": {
+      "summary": "Render an OpenCLI document as Markdown",
+      "args": [
+        {
+          "name": "input",
+          "required": true,
+          "type": "string",
+          "summary": "OpenCLI JSON or YAML filename"
+        }
+      ],
+      "flags": [
+        {
+          "name": "output",
+          "type": "string",
+          "aliases": [
+            "o"
+          ],
+          "summary": "Output file; defaults to stdout"
+        }
+      ]
+    },
+    "opencli validate": {
+      "summary": "Validate an OpenCLI JSON or YAML document",
+      "args": [
+        {
+          "name": "input",
+          "required": true,
+          "type": "string",
+          "summary": "OpenCLI document filename"
+        }
+      ]
+    }
+  }
+}

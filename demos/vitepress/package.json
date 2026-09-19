@@ -1,0 +1,13 @@
+{
+  "name": "@opencli/demo-vitepress",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vitepress build",
+    "dev": "vitepress dev"
+  },
+  "dependencies": {
+    "@opencli/vitepress": "workspace:^",
+    "vitepress": "^1.6.4"
+  }
+}

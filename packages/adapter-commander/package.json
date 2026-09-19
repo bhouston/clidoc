@@ -1,0 +1,46 @@
+{
+  "name": "@opencli/adapter-commander",
+  "version": "0.1.0",
+  "description": "OpenCLI adapter for commander",
+  "license": "MIT",
+  "author": "Ben Houston <ben@ben3d.ca> (https://ben3d.ca)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bhouston/opencli.git",
+    "directory": "packages/adapter-commander"
+  },
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.js.map",
+    "dist/**/*.d.ts",
+    "dist/**/*.d.ts.map",
+    "src/**/*.ts",
+    "!src/**/*.test.ts",
+    "CHANGELOG.md"
+  ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "tsc": "tsc"
+  },
+  "dependencies": {
+    "@opencli/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "commander": "^15.0.0"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}

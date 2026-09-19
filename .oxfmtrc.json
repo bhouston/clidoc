@@ -1,0 +1,19 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "singleQuote": true,
+  "printWidth": 120,
+  "ignorePatterns": [
+    "upstream/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/.docusaurus/**",
+    "**/.vitepress/.temp/**",
+    "**/.vitepress/cache/**",
+    "coverage/**",
+    "docs/generated/**",
+    "demos/docusaurus/docs/reference/**",
+    "demos/vitepress/reference/**",
+    "demos/vitepress/reference.md",
+    "pnpm-lock.yaml"
+  ]
+}
