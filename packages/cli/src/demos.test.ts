@@ -2,7 +2,7 @@ import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { commandLine, extendMatchers } from 'vitest-command-line';
-import { validate } from '@opencli/core';
+import { validate } from '@clidoc/core';
 
 extendMatchers();
 
@@ -29,7 +29,7 @@ describe.each(runners)('%s demo', (runner) => {
   });
 
   it('exports a valid OpenCLI contract for its real command', async () => {
-    const result = await cli.run(['--opencli']);
+    const result = await cli.run(['--clidoc']);
     expect(result).toSucceed();
     const document = result.json();
     expect(validate(document)).toEqual({ valid: true, errors: [] });
