@@ -32,6 +32,11 @@ locations below `outputDir`. Regeneration removes only files recorded in
 after upgrading from OpenCLI, it also removes stale pages listed in
 `.opencli-generated.json` and deletes that legacy manifest.
 
+`<` and `>` outside fenced code blocks and inline code spans are escaped to
+entities, since `v-pre` stops Vue mustache interpolation but not its SFC
+parser's tag scanning; as a result, HTML written in a description renders as
+literal text rather than as markup on VitePress.
+
 ## License
 
 MIT. See [LICENSE](../../LICENSE).

@@ -8,6 +8,32 @@ export interface VitePressOptions {
   basePath?: string;
 }
 
+/**
+ * VitePress's `v-pre` container stops Vue mustache interpolation but not Vue's
+ * SFC template parser, which still tries to parse tag-shaped text like
+ * `use <profile> to override`. Escape `<`/`>` outside fenced code blocks and
+ * inline code spans so the build never sees an unbalanced "tag".
+ */
+function escapeAngleBrackets(content: string): string {
+  const lines = content.split('\n');
+  let inFence = false;
+  return lines
+    .map((line) => {
+      const fence = /^\s*(`{3,}|~{3,})/.exec(line);
+      if (fence) {
+        inFence = !inFence;
+        return line;
+      }
+      if (inFence) return line;
+      // Split on inline code spans (backtick runs) and only escape outside them.
+      return line
+        .split(/(`+.*?`+)/)
+        .map((part, index) => (index % 2 === 0 ? part.replace(/</g, '&lt;').replace(/>/g, '&gt;') : part))
+        .join('');
+    })
+    .join('\n');
+}
+
 const manifestName = '.clidoc-generated.json';
 const legacyManifestName = '.opencli-generated.json';
 function ownedPath(outputDir: string, name: string): string {
@@ -42,8 +68,10 @@ export async function writeVitePress(document: OpenCliDocument, options: VitePre
   for (const [index, page] of pages.entries()) {
     const filename = ownedPath(outputDir, current[index]!);
     await mkdir(dirname(filename), { recursive: true });
-    // VitePress's v-pre container keeps Vue expressions literal while parsing Markdown.
-    await writeFile(filename, `::: v-pre\n\n${page.content.trimEnd()}\n\n:::\n`);
+    // VitePress's v-pre container keeps Vue expressions literal while parsing Markdown;
+    // escaping angle brackets keeps Vue's SFC parser from choking on tag-shaped prose.
+    const content = escapeAngleBrackets(page.content.trimEnd());
+    await writeFile(filename, `::: v-pre\n\n${content}\n\n:::\n`);
   }
   for (const name of [...previous, ...legacy])
     if (!current.includes(name)) await rm(ownedPath(outputDir, name), { force: true });
