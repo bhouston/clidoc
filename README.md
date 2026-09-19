@@ -26,9 +26,6 @@ own `yargs-file-commands` definitions.
 | [`@clidoc/docusaurus`](packages/docusaurus)               | Generated Markdown pages for the Docusaurus docs plugin                              |
 | [`@clidoc/vitepress`](packages/vitepress)                 | Generated Markdown and matching VitePress sidebar links                              |
 
-Packages are not published by creating or merging a PR. Use the workspace
-commands below until a maintainer runs the first release.
-
 ## Run from source
 
 For repository development, use the Node version in `.nvmrc` and pnpm specified in `package.json`.

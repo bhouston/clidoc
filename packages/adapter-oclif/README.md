@@ -16,7 +16,6 @@ Add `mycli docgen --output cli.json` to write the OpenCLI document from your CLI
 
 ```ts
 import { readFileSync } from 'node:fs';
-import { writeFile } from 'node:fs/promises';
 import { run } from '@oclif/core';
 import { fromOclif } from '@clidoc/adapter-oclif';
 
@@ -55,14 +54,16 @@ export default class Docgen extends Command {
     const { flags } = await this.parse(Docgen);
     const manifest = JSON.parse(readFileSync(new URL('../../manifest.json', import.meta.url), 'utf8'));
     const document = fromOclif(manifest, {
-      title: 'My CLI', binary: 'mycli', version: '1.0.0',
+      title: 'My CLI',
+      binary: 'mycli',
+      version: '1.0.0',
     });
     await writeFile(flags.output, `${JSON.stringify(document, null, 2)}\n`);
   }
 }
+```
 
-
-The [runnable oclif demo](../../demos/oclif/src/index.ts) implements `docgen` with a required `--output` flag and writes `document()` to that path. Adjust the manifest paths for your built executable and command. Run `mycli docgen --output cli.json`, then `npm install -g @clidoc/cli`, `clidoc validate cli.json`, and `clidoc markdown cli.json --output reference.md`. Consumers can also run `mycli --opencli > mycli.opencli.json` for discovery. See the [oclif demo](../../demos/oclif) for a runnable example using an in-memory manifest with the same command shape.
+The [runnable oclif demo](../../demos/oclif/src/index.ts) implements `docgen` with a required `--output` flag and writes `document()` to that path. Adjust the manifest paths for your built executable and command. Run `mycli docgen --output cli.json`, then `npm install -g @clidoc/cli`, `clidoc validate cli.json`, and `clidoc markdown cli.json --output reference.md`. Consumers can also run `mycli --opencli > mycli.opencli.json` for discovery.
 
 ## Supported metadata
 
@@ -75,4 +76,3 @@ MIT. See [LICENSE](../../LICENSE).
 ## Author
 
 [Ben Houston](https://ben3d.ca), Sponsored by [Land of Assets](https://landofassets.com).
-```
