@@ -137,8 +137,10 @@ The upstream Go project retains its own license; see
 Framework metadata cannot express every runtime behavior. The adapters document
 what their supported metadata exposes; they do not infer custom validation,
 coercion, middleware, or application behavior. See each adapter README for limits.
-Schema validation follows the upstream JSON Schema, rather than claiming identical
-behavior to every semantic check in the Go CLI.
+Schema validation follows the upstream JSON Schema and is paired with the logical
+checks ported from upstream's `validate/validate.go` (argument ordering, variadic
+constraints, `$FILE` config references, duplicate flags), rather than claiming
+identical behavior to every semantic check in the Go CLI.
 
 This first implementation focuses on the CLI-to-Markdown pipeline. OpenAPI and
 TypeDoc ingestion, a standalone embeddable React viewer, additional site platforms,

@@ -19,6 +19,8 @@ const pages = generatePages(document, { basePath: '/cli' });
 
 `generatePages` returns a landing page and one page per visible command. Each page has `id`, `title`, `path`, and Markdown `content`. Command routes use readable ASCII slugs with stable hash suffixes, and landing links use the generated base path. The bundled JSON Schema is also available at `@clidoc/core/schema`.
 
+`validate` checks documents against the vendored JSON Schema and, once that passes, against the logical rules ported from upstream's `validate/validate.go`: positional arguments must not place a required argument after an optional one, `minItems`/`maxItems` are only valid on variadic arguments and flags (with `minItems <= maxItems`), `$FILE` alternative sources must have a matching file declared in `global.config`, flag names and aliases must be unique per command, variadic flags cannot be `required`, and group commands cannot declare `args` or `flags`. Errors use the same `instancePath message` shape as schema errors.
+
 ## License
 
 MIT. See [LICENSE](../../LICENSE).

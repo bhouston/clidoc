@@ -145,8 +145,8 @@ describe('optional document sections', () => {
       ],
       global: { exitCodes: [{ code: 1, status: 'BAD_USER_INPUT_ERROR', summary: 'Bad' }] },
       commands: {
+        'rich group': { kind: 'group' },
         'rich build': {
-          kind: 'group',
           description: 'Build things',
           aliases: ['b'],
           args: [
