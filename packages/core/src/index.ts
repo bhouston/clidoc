@@ -3,6 +3,7 @@ import { Ajv2020 } from 'ajv/dist/2020.js';
 import * as formatsModule from 'ajv-formats';
 import { parse as parseYaml } from 'yaml';
 import { schema } from './schema.js';
+import { logicalErrors } from './logical.js';
 import type {
   OpenCliDocument,
   CommandItemObject,
@@ -23,15 +24,17 @@ const ajv = new Ajv2020({ allErrors: true, strict: false });
 (formatsModule.default as unknown as (instance: Ajv2020) => void)(ajv);
 const check = ajv.compile(schema);
 
-/** Validate against the exact vendored upstream JSON Schema. */
+/** Validate against the exact vendored upstream JSON Schema, plus upstream's logical checks. */
 export function validate(document: unknown): { valid: boolean; errors: string[] } {
-  const valid = check(document);
-  return {
-    valid,
-    errors: valid
-      ? []
-      : (check.errors ?? []).map((error) => `${error.instancePath || '/'} ${error.message ?? 'is invalid'}`),
-  };
+  const schemaValid = check(document);
+  if (!schemaValid) {
+    return {
+      valid: false,
+      errors: (check.errors ?? []).map((error) => `${error.instancePath || '/'} ${error.message ?? 'is invalid'}`),
+    };
+  }
+  const errors = logicalErrors(document as OpenCliDocument);
+  return { valid: errors.length === 0, errors };
 }
 
 /** Parse JSON or YAML and reject documents that do not match the specification. */
