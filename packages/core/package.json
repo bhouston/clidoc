@@ -1,0 +1,54 @@
+{
+  "name": "@opencli/core",
+  "version": "0.1.0",
+  "description": "OpenCLI specification types, validation, and Markdown documentation generation",
+  "homepage": "https://github.com/bhouston/opencli#readme",
+  "bugs": {
+    "url": "https://github.com/bhouston/opencli/issues"
+  },
+  "license": "MIT",
+  "author": "Ben Houston <ben@ben3d.ca> (https://ben3d.ca)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bhouston/opencli.git",
+    "directory": "packages/core"
+  },
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.js.map",
+    "dist/**/*.d.ts",
+    "dist/**/*.d.ts.map",
+    "schema/spec.schema.json",
+    "src/**/*.ts",
+    "!src/**/*.test.ts",
+    "THIRD_PARTY_NOTICES.md",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./schema": "./schema/spec.schema.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "tsc": "tsc"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "yaml": "^2.8.1"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}

@@ -1,0 +1,15 @@
+node_modules
+dist
+coverage
+publish
+*.tsbuildinfo
+.DS_Store
+demos/docusaurus/build/
+demos/vitepress/.vitepress/dist/
+demos/vitepress/.vitepress/cache/
+demos/docusaurus/.docusaurus/
+demos/docusaurus/docs/reference/
+demos/vitepress/.vitepress/.temp/
+demos/vitepress/reference/
+demos/vitepress/reference.md
+demos/vitepress/.opencli-generated.json

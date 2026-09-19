@@ -1,0 +1,3 @@
+[submodule "upstream/opencli"]
+	path = upstream/opencli
+	url = https://github.com/bcdxn/opencli.git

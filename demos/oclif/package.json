@@ -1,0 +1,19 @@
+{
+  "name": "@opencli/demo-oclif",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "tsc": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@oclif/core": "^5.0.0",
+    "@opencli/adapter-oclif": "workspace:*",
+    "@opencli/core": "workspace:*"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}

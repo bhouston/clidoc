@@ -1,0 +1,19 @@
+{
+  "name": "@opencli/demo-commander",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "tsc": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@opencli/adapter-commander": "workspace:*",
+    "@opencli/core": "workspace:*",
+    "commander": "^15.0.0"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}

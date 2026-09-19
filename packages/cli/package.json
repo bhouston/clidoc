@@ -1,0 +1,54 @@
+{
+  "name": "@opencli/cli",
+  "version": "0.1.0",
+  "description": "Generate and validate OpenCLI documentation",
+  "license": "MIT",
+  "author": "Ben Houston <ben@ben3d.ca> (https://ben3d.ca)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bhouston/opencli.git",
+    "directory": "packages/cli"
+  },
+  "bin": {
+    "opencli": "./dist/bin.js"
+  },
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.js.map",
+    "dist/**/*.d.ts",
+    "dist/**/*.d.ts.map",
+    "src/**/*.ts",
+    "!src/**/*.test.ts",
+    "CHANGELOG.md"
+  ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "tsc": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@opencli/adapter-commander": "workspace:^",
+    "@opencli/adapter-oclif": "workspace:^",
+    "@opencli/adapter-yargs": "workspace:^",
+    "@opencli/core": "workspace:^",
+    "yargs": "^18.1.0",
+    "yargs-file-commands": "^2.0.1"
+  },
+  "devDependencies": {
+    "@types/yargs": "^17.0.35"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "name": "@opencli/docusaurus",
+  "version": "0.1.0",
+  "description": "Publish OpenCLI Markdown in Docusaurus",
+  "license": "MIT",
+  "author": "Ben Houston <ben@ben3d.ca> (https://ben3d.ca)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bhouston/opencli.git",
+    "directory": "packages/docusaurus"
+  },
+  "files": [
+    "index.cjs",
+    "dist/**/*.js",
+    "dist/**/*.js.map",
+    "dist/**/*.d.ts",
+    "dist/**/*.d.ts.map",
+    "src/**/*.ts",
+    "!src/**/*.test.ts",
+    "CHANGELOG.md"
+  ],
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./index.cjs"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "tsc": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@opencli/core": "workspace:^"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}
