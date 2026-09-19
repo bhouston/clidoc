@@ -2,6 +2,17 @@
   "name": "@clidoc/cli",
   "version": "0.1.0",
   "description": "Generate and validate OpenCLI documentation",
+  "keywords": [
+    "cli",
+    "docs",
+    "documentation",
+    "opencli",
+    "yargs"
+  ],
+  "homepage": "https://github.com/bhouston/clidoc#readme",
+  "bugs": {
+    "url": "https://github.com/bhouston/clidoc/issues"
+  },
   "license": "MIT",
   "author": "Ben Houston <ben@ben3d.ca> (https://ben3d.ca)",
   "repository": {
