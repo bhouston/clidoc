@@ -2,6 +2,18 @@
   "name": "@clidoc/vitepress",
   "version": "0.1.0",
   "description": "Publish OpenCLI Markdown in VitePress",
+  "keywords": [
+    "cli",
+    "docs",
+    "documentation",
+    "markdown",
+    "opencli",
+    "vitepress"
+  ],
+  "homepage": "https://github.com/bhouston/clidoc#readme",
+  "bugs": {
+    "url": "https://github.com/bhouston/clidoc/issues"
+  },
   "license": "MIT",
   "author": "Ben Houston <ben@ben3d.ca> (https://ben3d.ca)",
   "repository": {
