@@ -57,6 +57,40 @@ it('rejects invalid ownership metadata and never deletes a path outside output',
   );
 });
 
+it('escapes angle brackets outside code so an unbalanced tag cannot break the VitePress build', async () => {
+  const outputDir = await site();
+  const doc: OpenCliDocument = {
+    ...document,
+    commands: {
+      send: {
+        summary: 'Has {curly} and <angle> and {{mustache}}.',
+        examples: [{ content: 'echo <not-a-tag>' }],
+      },
+    },
+  };
+  await writeVitePress(doc, { outputDir, basePath: '/cli' });
+  const files = await readdir(join(outputDir, 'cli', 'commands'));
+  const page = await readFile(join(outputDir, 'cli', 'commands', files[0]!), 'utf8');
+  // Prose keeps angle brackets escaped so Vue's SFC parser never sees a "tag".
+  expect(page).toContain('&lt;angle&gt;');
+  expect(page).not.toMatch(/[^&]<angle>/);
+  // Mustaches stay literal for v-pre.
+  expect(page).toContain('{{mustache}}');
+  // Fenced example code keeps its angle brackets literal.
+  expect(page).toContain('echo <not-a-tag>');
+});
+
+it('keeps angle brackets literal inside inline code spans', async () => {
+  const outputDir = await site();
+  const doc: OpenCliDocument = {
+    ...document,
+    info: { ...document.info, description: 'Use `<profile>` for the flag value.' },
+  };
+  const sidebar = await writeVitePress(doc, { outputDir, basePath: '/cli' });
+  const landing = await readFile(join(outputDir, sidebar[0]!.link.replace(/^\//, '') + '.md'), 'utf8');
+  expect(landing).toContain('`<profile>`');
+});
+
 it('migrates the old manifest while keeping current and handwritten pages', async () => {
   const outputDir = await site();
   await writeFile(join(outputDir, 'stale.md'), '# Old generated page\n');
