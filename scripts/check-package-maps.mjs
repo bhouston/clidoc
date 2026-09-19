@@ -6,7 +6,7 @@ import { dirname, join, relative, resolve, sep } from 'node:path';
 
 const workspace = process.cwd();
 const packagesDirectory = join(workspace, 'packages');
-const temporaryDirectory = mkdtempSync(join(tmpdir(), 'opencli-package-maps-'));
+const temporaryDirectory = mkdtempSync(join(tmpdir(), 'clidoc-package-maps-'));
 
 const findFiles = (directory) =>
   readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {

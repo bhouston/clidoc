@@ -1,16 +1,16 @@
 {
-  "name": "@opencli/cli",
+  "name": "@clidoc/cli",
   "version": "0.1.0",
   "description": "Generate and validate OpenCLI documentation",
   "license": "MIT",
   "author": "Ben Houston <ben@ben3d.ca> (https://ben3d.ca)",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bhouston/opencli.git",
+    "url": "git+https://github.com/bhouston/clidoc.git",
     "directory": "packages/cli"
   },
   "bin": {
-    "opencli": "./dist/bin.js"
+    "clidoc": "./dist/bin.js"
   },
   "files": [
     "dist/**/*.js",
@@ -38,10 +38,10 @@
     "tsc": "tsc --noEmit"
   },
   "dependencies": {
-    "@opencli/adapter-commander": "workspace:^",
-    "@opencli/adapter-oclif": "workspace:^",
-    "@opencli/adapter-yargs": "workspace:^",
-    "@opencli/core": "workspace:^",
+    "@clidoc/adapter-commander": "workspace:^",
+    "@clidoc/adapter-oclif": "workspace:^",
+    "@clidoc/adapter-yargs": "workspace:^",
+    "@clidoc/core": "workspace:^",
     "yargs": "^18.1.0",
     "yargs-file-commands": "^2.0.1"
   },

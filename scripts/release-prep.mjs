@@ -4,8 +4,8 @@ import { internalDependencies, readVersions, registryVersion, stagePackage } fro
 
 export async function prepare(_pluginConfig, context) {
   const packageDir = process.cwd();
-  const stageDir = process.env.OPENCLI_RELEASE_PKG_ROOT;
-  const stateFile = process.env.OPENCLI_RELEASE_STATE;
+  const stageDir = process.env.CLIDOC_RELEASE_PKG_ROOT;
+  const stateFile = process.env.CLIDOC_RELEASE_STATE;
   if (!stageDir || !stateFile) throw new Error('Use pnpm release to set up package staging');
   const manifest = JSON.parse(readFileSync(join(packageDir, 'package.json'), 'utf8'));
   const versions = readVersions(stateFile);

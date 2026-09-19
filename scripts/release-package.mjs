@@ -5,7 +5,7 @@ import { execFileSync } from 'node:child_process';
 export function internalDependencies(manifest) {
   return Object.entries({ ...manifest.dependencies, ...manifest.optionalDependencies, ...manifest.peerDependencies })
     .filter(
-      ([name, range]) => name.startsWith('@opencli/') && typeof range === 'string' && range.startsWith('workspace:'),
+      ([name, range]) => name.startsWith('@clidoc/') && typeof range === 'string' && range.startsWith('workspace:'),
     )
     .map(([name]) => name);
 }

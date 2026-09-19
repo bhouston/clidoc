@@ -2,12 +2,12 @@ import { mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, expect, it } from 'vitest';
-import { OPENCLI_VERSION, type OpenCliDocument } from '@opencli/core';
+import { OPENCLI_VERSION, type OpenCliDocument } from '@clidoc/core';
 import { writeVitePress } from './index.js';
 
 const directories: string[] = [];
 async function site() {
-  const directory = await mkdtemp(join(tmpdir(), 'opencli-vitepress-'));
+  const directory = await mkdtemp(join(tmpdir(), 'clidoc-vitepress-'));
   directories.push(directory);
   return directory;
 }
@@ -46,12 +46,12 @@ it('rejects output traversal and supports a root landing page', async () => {
 
 it('rejects invalid ownership metadata and never deletes a path outside output', async () => {
   const outputDir = await site();
-  await writeFile(join(outputDir, '.opencli-generated.json'), '{}');
+  await writeFile(join(outputDir, '.clidoc-generated.json'), '{}');
   await expect(writeVitePress(document, { outputDir })).rejects.toThrow('Invalid generated file manifest');
-  await writeFile(join(outputDir, '.opencli-generated.json'), JSON.stringify(['../outside.md', null, 'manual.txt']));
+  await writeFile(join(outputDir, '.clidoc-generated.json'), JSON.stringify(['../outside.md', null, 'manual.txt']));
   await writeVitePress({ ...document, commands: {} }, { outputDir });
   expect((await readdir(outputDir)).includes('index.md')).toBe(true);
-  await writeFile(join(outputDir, '.opencli-generated.json'), JSON.stringify(['/tmp/escape.md']));
+  await writeFile(join(outputDir, '.clidoc-generated.json'), JSON.stringify(['/tmp/escape.md']));
   await expect(writeVitePress({ ...document, commands: {} }, { outputDir })).rejects.toThrow(
     'escapes output directory',
   );

@@ -1,5 +1,5 @@
 import { Command, Option } from 'commander';
-import { fromCommander } from '@opencli/adapter-commander';
+import { fromCommander } from '@clidoc/adapter-commander';
 
 const cli = new Command('demo');
 cli.description('Commander demo CLI');
@@ -10,7 +10,7 @@ cli
   .action((name: string, options: { language: string }) => {
     console.log(`${options.language === 'fr' ? 'Bonjour' : 'Hello'}, ${name}!`);
   });
-if (process.argv.includes('--opencli')) {
+if (process.argv.includes('--clidoc')) {
   console.log(
     JSON.stringify(fromCommander(cli, { title: 'Commander demo', binary: 'demo', version: '0.0.0' }), null, 2),
   );

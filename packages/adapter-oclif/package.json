@@ -1,12 +1,12 @@
 {
-  "name": "@opencli/adapter-oclif",
+  "name": "@clidoc/adapter-oclif",
   "version": "0.1.0",
   "description": "OpenCLI adapter for oclif",
   "license": "MIT",
   "author": "Ben Houston <ben@ben3d.ca> (https://ben3d.ca)",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bhouston/opencli.git",
+    "url": "git+https://github.com/bhouston/clidoc.git",
     "directory": "packages/adapter-oclif"
   },
   "files": [
@@ -35,7 +35,7 @@
     "tsc": "tsc"
   },
   "dependencies": {
-    "@opencli/core": "workspace:*"
+    "@clidoc/core": "workspace:*"
   },
   "peerDependencies": {
     "@oclif/core": "^5.0.0"

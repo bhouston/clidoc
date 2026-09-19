@@ -10,7 +10,7 @@ export default {
     ['@semantic-release/release-notes-generator', { preset: 'conventionalcommits' }],
     ['@semantic-release/changelog', { changelogFile: 'CHANGELOG.md' }],
     prepare,
-    ['@semantic-release/npm', { pkgRoot: process.env.OPENCLI_RELEASE_PKG_ROOT ?? '.' }],
+    ['@semantic-release/npm', { pkgRoot: process.env.CLIDOC_RELEASE_PKG_ROOT ?? '.' }],
     record,
     [
       '@semantic-release/github',

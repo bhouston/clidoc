@@ -1,10 +1,10 @@
-# OpenCLI JS/TS
+# clidoc
 
 Generate, validate, and publish CLI documentation through OpenCLI.
 
-Binary: `opencli` · Version: `0.1.0`
+Binary: `clidoc` · Version: `0.1.0`
 
-## opencli generate
+## clidoc generate
 
 Import a trusted framework definition module and generate OpenCLI JSON
 
@@ -17,7 +17,7 @@ Import a trusted framework definition module and generate OpenCLI JSON
 | `--adapter` | string | Yes | Framework adapter; Choices: yargs, commander, oclif |
 | `--output` | string | No | Output JSON file; defaults to stdout; Aliases: `o` |
 
-## opencli markdown
+## clidoc markdown
 
 Render an OpenCLI document as Markdown
 
@@ -29,7 +29,7 @@ Render an OpenCLI document as Markdown
 | --- | --- | --- | --- |
 | `--output` | string | No | Output file; defaults to stdout; Aliases: `o` |
 
-## opencli validate
+## clidoc validate
 
 Validate an OpenCLI JSON or YAML document
 

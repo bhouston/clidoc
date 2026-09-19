@@ -1,5 +1,5 @@
 {
-  "name": "@opencli/demo-vitepress",
+  "name": "@clidoc/demo-vitepress",
   "private": true,
   "type": "module",
   "scripts": {
@@ -7,7 +7,7 @@
     "dev": "vitepress dev"
   },
   "dependencies": {
-    "@opencli/vitepress": "workspace:^",
+    "@clidoc/vitepress": "workspace:^",
     "vitepress": "^1.6.4"
   }
 }

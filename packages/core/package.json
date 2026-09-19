@@ -1,16 +1,16 @@
 {
-  "name": "@opencli/core",
+  "name": "@clidoc/core",
   "version": "0.1.0",
   "description": "OpenCLI specification types, validation, and Markdown documentation generation",
-  "homepage": "https://github.com/bhouston/opencli#readme",
+  "homepage": "https://github.com/bhouston/clidoc#readme",
   "bugs": {
-    "url": "https://github.com/bhouston/opencli/issues"
+    "url": "https://github.com/bhouston/clidoc/issues"
   },
   "license": "MIT",
   "author": "Ben Houston <ben@ben3d.ca> (https://ben3d.ca)",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bhouston/opencli.git",
+    "url": "git+https://github.com/bhouston/clidoc.git",
     "directory": "packages/core"
   },
   "files": [

@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises';
-import { parse, renderMarkdown } from '@opencli/core';
+import { parse, renderMarkdown } from '@clidoc/core';
 import { defineCommand } from 'yargs-file-commands';
 import { output } from '../io.js';
 

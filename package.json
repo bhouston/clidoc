@@ -1,12 +1,12 @@
 {
-  "name": "opencli-js",
+  "name": "clidoc",
   "private": true,
   "description": "JavaScript and TypeScript tooling for the OpenCLI specification",
   "license": "MIT",
   "author": "Ben Houston <ben@ben3d.ca> (https://ben3d.ca)",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bhouston/opencli.git"
+    "url": "git+https://github.com/bhouston/clidoc.git"
   },
   "type": "module",
   "scripts": {
@@ -24,7 +24,7 @@
     "package:check": "pnpm package:maps && node scripts/check-release-package.mjs",
     "test:workflow": "node --test scripts/workflow.test.mjs scripts/release-package.test.mjs",
     "docs:generate": "pnpm build && node scripts/generate-docs.mjs",
-    "docs:build": "pnpm docs:generate && pnpm --filter @opencli/demo-docusaurus build && pnpm --filter @opencli/demo-vitepress build",
+    "docs:build": "pnpm docs:generate && pnpm --filter @clidoc/demo-docusaurus build && pnpm --filter @clidoc/demo-vitepress build",
     "release:bootstrap:stage": "pnpm build && node scripts/stage-bootstrap.mjs"
   },
   "devDependencies": {

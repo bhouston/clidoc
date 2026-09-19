@@ -30,7 +30,7 @@ function visit(name) {
   order.push(name);
 }
 for (const name of packages.keys()) visit(name);
-const temp = mkdtempSync(join(tmpdir(), 'opencli-release-'));
+const temp = mkdtempSync(join(tmpdir(), 'clidoc-release-'));
 const state = join(temp, 'versions.json');
 writeFileSync(state, '{}\n');
 try {
@@ -52,7 +52,7 @@ try {
       {
         cwd: path,
         stdio: 'inherit',
-        env: { ...process.env, OPENCLI_RELEASE_STATE: state, OPENCLI_RELEASE_PKG_ROOT: stage },
+        env: { ...process.env, CLIDOC_RELEASE_STATE: state, CLIDOC_RELEASE_PKG_ROOT: stage },
       },
     );
     if (result.error) throw result.error;

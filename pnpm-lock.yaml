@@ -73,10 +73,10 @@ importers:
 
   demos/commander:
     dependencies:
-      '@opencli/adapter-commander':
+      '@clidoc/adapter-commander':
         specifier: workspace:*
         version: link:../../packages/adapter-commander
-      '@opencli/core':
+      '@clidoc/core':
         specifier: workspace:*
         version: link:../../packages/core
       commander:
@@ -85,15 +85,15 @@ importers:
 
   demos/docusaurus:
     dependencies:
+      '@clidoc/docusaurus':
+        specifier: workspace:^
+        version: link:../../packages/docusaurus
       '@docusaurus/core':
         specifier: ^3.10.2
         version: 3.10.2(@mdx-js/react@3.1.1(@types/react@19.3.0)(react@19.3.0))(postcss@8.5.28)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@7.0.2)
       '@docusaurus/preset-classic':
         specifier: ^3.10.2
         version: 3.10.2(@algolia/client-search@5.59.0)(@mdx-js/react@3.1.1(@types/react@19.3.0)(react@19.3.0))(@types/react@19.3.0)(postcss@8.5.28)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(search-insights@2.17.3)(typescript@7.0.2)
-      '@opencli/docusaurus':
-        specifier: workspace:^
-        version: link:../../packages/docusaurus
       react:
         specifier: ^19.3.0
         version: 19.3.0
@@ -103,19 +103,19 @@ importers:
 
   demos/oclif:
     dependencies:
+      '@clidoc/adapter-oclif':
+        specifier: workspace:*
+        version: link:../../packages/adapter-oclif
+      '@clidoc/core':
+        specifier: workspace:*
+        version: link:../../packages/core
       '@oclif/core':
         specifier: ^5.0.0
         version: 5.0.0
-      '@opencli/adapter-oclif':
-        specifier: workspace:*
-        version: link:../../packages/adapter-oclif
-      '@opencli/core':
-        specifier: workspace:*
-        version: link:../../packages/core
 
   demos/vitepress:
     dependencies:
-      '@opencli/vitepress':
+      '@clidoc/vitepress':
         specifier: workspace:^
         version: link:../../packages/vitepress
       vitepress:
@@ -124,10 +124,10 @@ importers:
 
   demos/yargs:
     dependencies:
-      '@opencli/adapter-yargs':
+      '@clidoc/adapter-yargs':
         specifier: workspace:*
         version: link:../../packages/adapter-yargs
-      '@opencli/core':
+      '@clidoc/core':
         specifier: workspace:*
         version: link:../../packages/core
       yargs:
@@ -140,7 +140,7 @@ importers:
 
   packages/adapter-commander:
     dependencies:
-      '@opencli/core':
+      '@clidoc/core':
         specifier: workspace:*
         version: link:../core
       commander:
@@ -149,16 +149,16 @@ importers:
 
   packages/adapter-oclif:
     dependencies:
+      '@clidoc/core':
+        specifier: workspace:*
+        version: link:../core
       '@oclif/core':
         specifier: ^5.0.0
         version: 5.0.0
-      '@opencli/core':
-        specifier: workspace:*
-        version: link:../core
 
   packages/adapter-yargs:
     dependencies:
-      '@opencli/core':
+      '@clidoc/core':
         specifier: workspace:*
         version: link:../core
       yargs:
@@ -171,16 +171,16 @@ importers:
 
   packages/cli:
     dependencies:
-      '@opencli/adapter-commander':
+      '@clidoc/adapter-commander':
         specifier: workspace:^
         version: link:../adapter-commander
-      '@opencli/adapter-oclif':
+      '@clidoc/adapter-oclif':
         specifier: workspace:^
         version: link:../adapter-oclif
-      '@opencli/adapter-yargs':
+      '@clidoc/adapter-yargs':
         specifier: workspace:^
         version: link:../adapter-yargs
-      '@opencli/core':
+      '@clidoc/core':
         specifier: workspace:^
         version: link:../core
       yargs:
@@ -208,13 +208,13 @@ importers:
 
   packages/docusaurus:
     dependencies:
-      '@opencli/core':
+      '@clidoc/core':
         specifier: workspace:^
         version: link:../core
 
   packages/vitepress:
     dependencies:
-      '@opencli/core':
+      '@clidoc/core':
         specifier: workspace:^
         version: link:../core
 

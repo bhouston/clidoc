@@ -1,5 +1,5 @@
-import { OPENCLI_VERSION } from '@opencli/core';
-import type { OpenCliDocument, InfoObject, CommandItemObject, FlagItemObject, ArgumentItemObject } from '@opencli/core';
+import { OPENCLI_VERSION } from '@clidoc/core';
+import type { OpenCliDocument, InfoObject, CommandItemObject, FlagItemObject, ArgumentItemObject } from '@clidoc/core';
 
 export interface OclifManifestFlag {
   description?: string;
