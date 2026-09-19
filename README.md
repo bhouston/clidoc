@@ -31,7 +31,7 @@ commands below until a maintainer runs the first release.
 
 ## Run from source
 
-Use the Node version in `.nvmrc` and pnpm specified in `package.json`.
+For repository development, use the Node version in `.nvmrc` and pnpm specified in `package.json`.
 
 ```sh
 git clone --recurse-submodules https://github.com/bhouston/clidoc.git
@@ -48,41 +48,30 @@ Already cloned? Run `git submodule update --init --recursive` before the tests.
 
 ## Generate from your CLI
 
-For CLI authors, expose the exact top-level `mycli --opencli` invocation. It
-prints only one UTF-8 OpenCLI JSON document followed by a newline to stdout and
-exits with status 0. Check for exactly that argument before your framework
-parses the command line; do not run handlers. Report errors on stderr and exit
-nonzero. Let other invocations use normal parsing. This gives tools a consistent
-discovery command: `mycli --opencli > mycli.opencli.json`. The
-[Yargs](packages/adapter-yargs), [Commander](packages/adapter-commander), and
-[oclif](packages/adapter-oclif) adapter guides show the entry-point code.
-
-You can also generate a document from a trusted local module that exports its
-framework definitions as `default` and CLI metadata as `info`:
-
-```js
-// definition.mjs — ordinary Yargs command metadata
-export const info = {
-  title: 'Example CLI',
-  binary: 'example',
-  version: '1.0.0',
-};
-
-export default [
-  {
-    command: 'greet <name>',
-    describe: 'Greet a person',
-    builder: {
-      language: { type: 'string', choices: ['en', 'fr'], default: 'en' },
-    },
-  },
-];
-```
+Add a `docgen` command to the CLI you document. It should use the same command
+metadata as the running CLI and write an OpenCLI JSON file:
 
 ```sh
-node packages/cli/dist/bin.js generate ./definition.mjs --adapter yargs --output cli.json
-node packages/cli/dist/bin.js validate cli.json
-node packages/cli/dist/bin.js markdown cli.json --output reference.md
+npm install -g @clidoc/cli
+mycli docgen --output cli.json
+clidoc validate cli.json
+clidoc markdown cli.json --output reference.md
+```
+
+For tool discovery, also expose the exact top-level `mycli --opencli`
+invocation. It prints only one UTF-8 OpenCLI JSON document followed by a newline
+to stdout and exits with status 0. Check for exactly that argument before your
+framework parses the command line; do not run handlers. Report errors on stderr
+and exit nonzero. For example, `mycli --opencli > mycli.opencli.json` captures
+the same document. The [Yargs](packages/adapter-yargs),
+[Commander](packages/adapter-commander), and [oclif](packages/adapter-oclif)
+adapter guides and runnable demos show both commands.
+
+As an optional path for trusted local modules, `clidoc generate` imports a
+module exporting framework definitions as `default` and CLI metadata as `info`:
+
+```sh
+clidoc generate ./definition.mjs --adapter yargs --output cli.json
 ```
 
 For Commander, export a configured `Command`; for oclif, export its manifest
@@ -127,7 +116,7 @@ pnpm --filter @clidoc/demo-docusaurus dev
 pnpm --filter @clidoc/demo-vitepress dev
 ```
 
-Each CLI demo accepts standalone `--opencli` to print its document. The Yargs demo uses
+Each CLI demo supports `docgen --output cli.json` and standalone `--opencli` to print its document. The Yargs demo uses
 barebones Yargs; the clidoc tool uses `defineCommand` and `fileCommands`, following
 the structure used by [hdrify](https://github.com/bhouston/hdrify).
 
