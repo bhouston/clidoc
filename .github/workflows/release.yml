@@ -25,17 +25,17 @@ jobs:
             echo "Release must be dispatched with --ref main, not ${{ github.ref }}." >&2
             exit 1
           fi
-      - name: Require release activation for publishing
-        if: ${{ !inputs.dry_run && vars.NPM_RELEASE_ENABLED != 'true' }}
+      - name: Explain inactive release
+        if: ${{ vars.NPM_RELEASE_ENABLED != 'true' }}
         run: |
-          echo "::error::Publishing is disabled. Complete npm bootstrap and trusted publisher setup, then set NPM_RELEASE_ENABLED=true. Use dry_run=true to preview." 
-          exit 1
+          echo "Release job is disabled. Complete npm bootstrap and trusted publisher setup, then set NPM_RELEASE_ENABLED=true." >> "$GITHUB_STEP_SUMMARY"
   checks:
     needs: guard
     uses: ./.github/workflows/ci.yml
     secrets: inherit
   release:
     needs: checks
+    if: vars.NPM_RELEASE_ENABLED == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -53,7 +53,6 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - name: Require published package baselines
-        if: ${{ !inputs.dry_run }}
         run: node scripts/check-release-baselines.mjs
       - run: pnpm build
       - name: Publish with npm trusted publishing

@@ -61,8 +61,12 @@ test('all seven public packages require their initial version tags', () => {
   assert.equal(baselineCommits(tags, (tag) => (tag === tags[0] ? 'other' : 'bootstrap')).size, 2);
 });
 
-test('release workflow guards publishing while allowing dry runs before activation', () => {
+test('release workflow skips semantic-release until activation, including dry runs', () => {
   const workflow = readFileSync('.github/workflows/release.yml', 'utf8');
-  assert.match(workflow, /!inputs\.dry_run && vars\.NPM_RELEASE_ENABLED != 'true'/);
-  assert.match(workflow, /if: \$\{\{ !inputs\.dry_run \}\}\n\s+run: node scripts\/check-release-baselines\.mjs/);
+  assert.match(workflow, /release:\n\s+needs: checks\n\s+if: vars\.NPM_RELEASE_ENABLED == 'true'/);
+  assert.match(
+    workflow,
+    /name: Require published package baselines\n\s+run: node scripts\/check-release-baselines\.mjs/,
+  );
+  assert.match(workflow, /run: pnpm release \$\{\{ inputs\.dry_run && '--dry-run' \|\| '' \}\}/);
 });
