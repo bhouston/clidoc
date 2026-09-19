@@ -26,12 +26,12 @@ const server = createServer(async (request, response) => {
     response.writeHead(404).end();
   }
 });
-await new Promise((resolve) => server.listen(4173, '127.0.0.1', resolve));
+await new Promise((done) => server.listen(4173, '127.0.0.1', done));
 try {
   const runner = spawn('pnpm', ['exec', 'vitest', 'run', '--config', 'vitest.browser.config.mjs'], {
     stdio: 'inherit',
   });
-  const code = await new Promise((resolve) => runner.on('exit', resolve));
+  const code = await new Promise((done) => runner.on('exit', done));
   if (code !== 0) process.exitCode = code ?? 1;
 } finally {
   server.close();

@@ -17,6 +17,7 @@ const findFiles = (directory) =>
 try {
   const packageDirectories = readdirSync(packagesDirectory, { withFileTypes: true })
     .filter((entry) => entry.isDirectory() && existsSync(join(packagesDirectory, entry.name, 'package.json')))
+    .filter((entry) => !JSON.parse(readFileSync(join(packagesDirectory, entry.name, 'package.json'), 'utf8')).private)
     .map((entry) => join(packagesDirectory, entry.name));
 
   for (const packageDirectory of packageDirectories) {

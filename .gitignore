@@ -12,7 +12,7 @@ demos/docusaurus/docs/reference/
 demos/vitepress/.vitepress/.temp/
 demos/vitepress/reference/
 demos/vitepress/reference.md
-demos/vitepress/.opencli-generated.json
+demos/vitepress/.clidoc-generated.json
 packages/website/.docusaurus/
 packages/website/build/
 packages/website/docs/api/
