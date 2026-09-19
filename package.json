@@ -11,7 +11,7 @@
   "type": "module",
   "scripts": {
     "prepare": "husky",
-    "build": "pnpm -r --filter './packages/*' build",
+    "build": "pnpm -r --filter './packages/*' --filter '!@clidoc/website' build",
     "tsc": "pnpm -r tsc",
     "test": "pnpm build && vitest run",
     "test:coverage": "pnpm build && vitest run --coverage",
@@ -24,7 +24,7 @@
     "package:check": "pnpm package:maps && node scripts/check-release-package.mjs",
     "test:workflow": "node --test scripts/workflow.test.mjs scripts/release-package.test.mjs",
     "docs:generate": "pnpm build && node scripts/generate-docs.mjs",
-    "docs:build": "pnpm docs:generate && pnpm --filter @clidoc/demo-docusaurus build && pnpm --filter @clidoc/demo-vitepress build",
+    "docs:build": "pnpm docs:generate && pnpm --filter @clidoc/website generate:api && pnpm --filter @clidoc/website build && pnpm --filter @clidoc/demo-docusaurus build && pnpm --filter @clidoc/demo-vitepress build",
     "release:bootstrap:stage": "pnpm build && node scripts/stage-bootstrap.mjs"
   },
   "devDependencies": {

@@ -5,7 +5,9 @@ import { schema } from './schema.js';
 import type { OpenCliDocument, CommandItemObject, FlagItemObject } from './types.js';
 export type * from './types.js';
 
+/** Supported version of the vendored OpenCLI schema. */
 export const OPENCLI_VERSION = '1.0.0-alpha.14' as const;
+/** Vendored JSON Schema used to validate OpenCLI documents. */
 export const openCliSchema = schema;
 const ajv = new Ajv2020({ allErrors: true, strict: false });
 (formatsModule.default as unknown as (instance: Ajv2020) => void)(ajv);

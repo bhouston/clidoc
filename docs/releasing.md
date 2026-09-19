@@ -75,8 +75,8 @@ project as unreleased and may compute a different first version.
 ## GitHub Pages
 
 In repository Settings → Pages, set the source to **GitHub Actions**. The
-`pages.yml` workflow builds the Docusaurus demo from `main` and deploys it to
-the `github-pages` environment. Enable Pages and allow that environment before
+`pages.yml` workflow builds the clidoc website from `packages/website` on
+`main` and deploys it to the `github-pages` environment. Enable Pages and allow that environment before
 expecting the first deployment. The workflow uses the repository's built-in
 `GITHUB_TOKEN`; no separate deployment secret is needed.
 

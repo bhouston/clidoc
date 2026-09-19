@@ -4,7 +4,9 @@ import { join } from 'node:path';
 import { stagePackage } from './release-package.mjs';
 
 const root = new URL('../packages/', import.meta.url);
-const dirs = readdirSync(root, { withFileTypes: true }).filter((item) => item.isDirectory());
+const dirs = readdirSync(root, { withFileTypes: true })
+  .filter((item) => item.isDirectory())
+  .filter((item) => !JSON.parse(readFileSync(new URL(`${item.name}/package.json`, root), 'utf8')).private);
 const versions = Object.fromEntries(
   dirs.map((item) => {
     const manifest = JSON.parse(readFileSync(new URL(`${item.name}/package.json`, root), 'utf8'));
