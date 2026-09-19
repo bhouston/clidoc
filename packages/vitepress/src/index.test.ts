@@ -56,3 +56,19 @@ it('rejects invalid ownership metadata and never deletes a path outside output',
     'escapes output directory',
   );
 });
+
+it('migrates the old manifest while keeping current and handwritten pages', async () => {
+  const outputDir = await site();
+  await writeFile(join(outputDir, 'stale.md'), '# Old generated page\n');
+  await writeFile(join(outputDir, 'manual.md'), '# Keep me\n');
+  await writeFile(
+    join(outputDir, '.opencli-generated.json'),
+    JSON.stringify(['stale.md', 'index.md', '../outside.md']),
+  );
+  await writeVitePress({ ...document, commands: {} }, { outputDir });
+  const names = await readdir(outputDir);
+  expect(names).not.toContain('stale.md');
+  expect(names).not.toContain('.opencli-generated.json');
+  expect(await readFile(join(outputDir, 'index.md'), 'utf8')).toContain('# Sample CLI');
+  expect(await readFile(join(outputDir, 'manual.md'), 'utf8')).toBe('# Keep me\n');
+});

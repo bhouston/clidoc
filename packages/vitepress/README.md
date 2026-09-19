@@ -22,4 +22,6 @@ The output contains ordinary Markdown. VitePress's `v-pre` custom container
 keeps CLI-authored Vue expressions literal while still rendering headings,
 links, tables, and fenced code. `basePath` determines both routes and file
 locations below `outputDir`. Regeneration removes only files recorded in
-`.clidoc-generated.json`, leaving hand-written pages intact.
+`.clidoc-generated.json`, leaving hand-written pages intact. On the first run
+after upgrading from OpenCLI, it also removes stale pages listed in
+`.opencli-generated.json` and deletes that legacy manifest.

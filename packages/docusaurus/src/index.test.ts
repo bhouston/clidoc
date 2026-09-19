@@ -58,3 +58,19 @@ it('rejects an invalid manifest and ignores unowned entries', async () => {
   await writeDocusaurus(document, { outputDir });
   expect(await readFile(join(outputDir, 'manual.md'), 'utf8')).toBe('# Keep me\n');
 });
+
+it('removes only legacy generated pages named by the old manifest', async () => {
+  const outputDir = await site();
+  const oldPage = 'opencli-0123456789abcdef0123.md';
+  await writeFile(join(outputDir, oldPage), '# Old generated page\n');
+  await writeFile(join(outputDir, 'opencli-manual.md'), '# Keep me\n');
+  await writeFile(
+    join(outputDir, '.opencli-generated.json'),
+    JSON.stringify([oldPage, 'opencli-manual.md', '../outside.md']),
+  );
+  await writeDocusaurus(document, { outputDir });
+  const names = await readdir(outputDir);
+  expect(names).not.toContain(oldPage);
+  expect(names).not.toContain('.opencli-generated.json');
+  expect(await readFile(join(outputDir, 'opencli-manual.md'), 'utf8')).toBe('# Keep me\n');
+});

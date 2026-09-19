@@ -14,14 +14,17 @@ export interface DocusaurusOptions {
 }
 
 const manifestName = '.clidoc-generated.json';
+const legacyManifestName = '.opencli-generated.json';
 function filename(id: string): string {
   return `clidoc-${createHash('sha256').update(id).digest('hex').slice(0, 20)}.md`;
 }
-async function previousFiles(outputDir: string): Promise<string[]> {
+async function previousFiles(outputDir: string, name: string, prefix: string): Promise<string[]> {
   try {
-    const value: unknown = JSON.parse(await readFile(join(outputDir, manifestName), 'utf8'));
+    const value: unknown = JSON.parse(await readFile(join(outputDir, name), 'utf8'));
     if (!Array.isArray(value)) throw new Error('Invalid generated file manifest');
-    return value.filter((name): name is string => typeof name === 'string' && /^clidoc-[a-f0-9]{20}\.md$/.test(name));
+    return value.filter(
+      (entry): entry is string => typeof entry === 'string' && new RegExp(`^${prefix}-[a-f0-9]{20}\\.md$`).test(entry),
+    );
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === 'ENOENT') return [];
     throw error;
@@ -35,7 +38,8 @@ export async function writeDocusaurus(
 ) {
   const pages = generatePages(document, { basePath: options.basePath });
   await mkdir(options.outputDir, { recursive: true });
-  const previous = await previousFiles(options.outputDir);
+  const previous = await previousFiles(options.outputDir, manifestName, 'clidoc');
+  const legacy = await previousFiles(options.outputDir, legacyManifestName, 'opencli');
   const current = pages.map((page) => filename(page.id));
   for (const [position, page] of pages.entries()) {
     const frontmatter = [
@@ -56,8 +60,10 @@ export async function writeDocusaurus(
         : page.content;
     await writeFile(join(options.outputDir, current[position]!), frontmatter + content);
   }
-  for (const name of previous) if (!current.includes(name)) await rm(join(options.outputDir, name), { force: true });
+  for (const name of [...previous, ...legacy])
+    if (!current.includes(name)) await rm(join(options.outputDir, name), { force: true });
   await writeFile(join(options.outputDir, manifestName), JSON.stringify(current, null, 2) + '\n');
+  await rm(join(options.outputDir, legacyManifestName), { force: true });
   return pages.map((page) => ({ type: 'doc' as const, id: page.id, label: page.title }));
 }
 
