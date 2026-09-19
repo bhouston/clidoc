@@ -112,7 +112,7 @@ pnpm --filter @clidoc/demo-docusaurus dev
 pnpm --filter @clidoc/demo-vitepress dev
 ```
 
-Each CLI demo accepts `--opencli` to print its document. The Yargs demo uses
+Each CLI demo accepts `--clidoc` to print its document. The Yargs demo uses
 barebones Yargs; the clidoc tool uses `defineCommand` and `fileCommands`, following
 the structure used by [hdrify](https://github.com/bhouston/hdrify).
 

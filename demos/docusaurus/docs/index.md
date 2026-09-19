@@ -6,8 +6,8 @@ sidebar_position: 0
 
 # One CLI contract. Documentation everywhere.
 
-OpenCLI brings Yargs, Commander, and oclif metadata into a shared, validated
-JSON contract. Markdown is the publishing format, so generated reference pages
+clidoc brings Yargs, Commander, and oclif metadata into a shared, validated
+OpenCLI document. Markdown is the publishing format, so generated reference pages
 can live alongside your hand-written guides.
 
 This site is built with Docusaurus. Its CLI reference is generated from the
