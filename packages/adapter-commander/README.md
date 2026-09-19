@@ -16,8 +16,9 @@ Add `mycli docgen --output cli.json` to write the OpenCLI document from your CLI
 
 ```ts
 import { writeFile } from 'node:fs/promises';
-import { Command } from 'commander';
+import { Command, Option } from 'commander';
 import { fromCommander } from '@clidoc/adapter-commander';
+import { renderMarkdown } from '@clidoc/core';
 
 const program = new Command('mycli');
 program
@@ -30,9 +31,14 @@ program
 program
   .command('docgen')
   .description('Write the OpenCLI document to a file')
-  .requiredOption('--output <file>', 'Output JSON file')
-  .action(async (options: { output: string }) => {
-    await writeFile(options.output, `${JSON.stringify(document(), null, 2)}\n`);
+  .requiredOption('--output <file>', 'Output file')
+  .addOption(new Option('--format <format>', 'Output format').choices(['json', 'markdown']).default('json'))
+  .action(async (options: { output: string; format: 'json' | 'markdown' }) => {
+    const generated = document();
+    await writeFile(
+      options.output,
+      options.format === 'markdown' ? renderMarkdown(generated) : `${JSON.stringify(generated, null, 2)}\n`,
+    );
   });
 const document = () =>
   fromCommander(program, {
@@ -48,7 +54,7 @@ if (args.length === 1 && args[0] === '--opencli') {
 }
 ```
 
-Run `mycli docgen --output cli.json`, then `npm install -g @clidoc/cli`, `clidoc validate cli.json`, and `clidoc markdown cli.json --output reference.md`. Consumers can also run `mycli --opencli > mycli.opencli.json` for discovery. See the [Commander demo](../../demos/commander) for a runnable example.
+Run `mycli docgen --output cli.json` for JSON (the default), or `mycli docgen --format markdown --output reference.md` to render Markdown directly. Install the validator with `npm install -g @clidoc/cli` and run `clidoc validate cli.json`. Consumers can also run `mycli --opencli > mycli.opencli.json` for discovery. See the [Commander demo](../../demos/commander) for a runnable example.
 
 ## Supported metadata
 

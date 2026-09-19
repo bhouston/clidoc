@@ -1,6 +1,7 @@
 import { writeFile } from 'node:fs/promises';
 import { Args, Command, Flags } from '@oclif/core';
 import { fromOclif } from '@clidoc/adapter-oclif';
+import { renderMarkdown } from '@clidoc/core';
 
 class Greet extends Command {
   static override description = 'Greet a person';
@@ -14,10 +15,17 @@ class Greet extends Command {
 
 class Docgen extends Command {
   static override description = 'Write the OpenCLI document to a file';
-  static override flags = { output: Flags.string({ description: 'Output JSON file', required: true }) };
+  static override flags = {
+    output: Flags.string({ description: 'Output file', required: true }),
+    format: Flags.string({ description: 'Output format', options: ['json', 'markdown'], default: 'json' }),
+  };
   async run(): Promise<void> {
     const { flags } = await this.parse(Docgen);
-    await writeFile(flags.output, `${JSON.stringify(document(), null, 2)}\n`);
+    const generated = document();
+    await writeFile(
+      flags.output,
+      flags.format === 'markdown' ? renderMarkdown(generated) : `${JSON.stringify(generated, null, 2)}\n`,
+    );
   }
 }
 

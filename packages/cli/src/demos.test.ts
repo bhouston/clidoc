@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { commandLine, extendMatchers } from 'vitest-command-line';
-import { validate } from '@clidoc/core';
+import { renderMarkdown, validate } from '@clidoc/core';
 
 extendMatchers();
 
@@ -54,5 +54,23 @@ describe.each(runners)('%s demo', (runner) => {
     } finally {
       await rm(directory, { recursive: true, force: true });
     }
+  });
+
+  it('renders the same document as Markdown through docgen', async () => {
+    const directory = await mkdtemp(resolve(tmpdir(), `clidoc-${runner}-`));
+    try {
+      const destination = resolve(directory, 'reference.md');
+      const result = await cli.run(['docgen', '--format', 'markdown', '--output', destination]);
+      expect(result).toSucceed();
+      const discovered = await cli.run(['--opencli']);
+      expect(await readFile(destination, 'utf8')).toBe(renderMarkdown(discovered.json()));
+    } finally {
+      await rm(directory, { recursive: true, force: true });
+    }
+  });
+
+  it('rejects unsupported docgen formats', async () => {
+    const result = await cli.run(['docgen', '--format', 'html', '--output', 'reference.html']);
+    expect(result).toFail();
   });
 });

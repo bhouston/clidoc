@@ -44,11 +44,13 @@ import { writeFile } from 'node:fs/promises';
 import { Command, Flags } from '@oclif/core';
 import { fromOclif } from '@clidoc/adapter-oclif';
 import { readFileSync } from 'node:fs';
+import { renderMarkdown } from '@clidoc/core';
 
 export default class Docgen extends Command {
   static override description = 'Write the OpenCLI document to a file';
   static override flags = {
-    output: Flags.string({ description: 'Output JSON file', required: true }),
+    output: Flags.string({ description: 'Output file', required: true }),
+    format: Flags.string({ description: 'Output format', options: ['json', 'markdown'], default: 'json' }),
   };
   async run(): Promise<void> {
     const { flags } = await this.parse(Docgen);
@@ -58,12 +60,15 @@ export default class Docgen extends Command {
       binary: 'mycli',
       version: '1.0.0',
     });
-    await writeFile(flags.output, `${JSON.stringify(document, null, 2)}\n`);
+    await writeFile(
+      flags.output,
+      flags.format === 'markdown' ? renderMarkdown(document) : `${JSON.stringify(document, null, 2)}\n`,
+    );
   }
 }
 ```
 
-The [runnable oclif demo](../../demos/oclif/src/index.ts) implements `docgen` with a required `--output` flag and writes `document()` to that path. Adjust the manifest paths for your built executable and command. Run `mycli docgen --output cli.json`, then `npm install -g @clidoc/cli`, `clidoc validate cli.json`, and `clidoc markdown cli.json --output reference.md`. Consumers can also run `mycli --opencli > mycli.opencli.json` for discovery.
+The [runnable oclif demo](../../demos/oclif/src/index.ts) implements `docgen` with a required `--output` flag. Adjust the manifest paths for your built executable and command. Run `mycli docgen --output cli.json` for JSON (the default), or `mycli docgen --format markdown --output reference.md` to render Markdown directly. Install the validator with `npm install -g @clidoc/cli` and run `clidoc validate cli.json`. Consumers can also run `mycli --opencli > mycli.opencli.json` for discovery.
 
 ## Supported metadata
 
