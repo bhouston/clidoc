@@ -106,7 +106,9 @@ export function fromCommander(root: Command, info: InfoObject): OpenCliDocument 
     if (aliases.length) item.aliases = aliases;
     if (command.registeredArguments.length) item.args = command.registeredArguments.map(argumentToOpenCli);
     if (command.options.length) item.flags = optionsToOpenCli(command.options);
-    if (command.commands.length) item.kind = 'group';
+    // Upstream rejects group commands that carry args or flags, so a parent with its own
+    // options is documented as an action that also has subcommands.
+    if (command.commands.length && !item.args && !item.flags) item.kind = 'group';
     // Commander has no public getter for hidden state; `_hidden` has been a stable internal
     // field since Commander 8 (this adapter targets Commander 15).
     const hidden = (command as unknown as { _hidden?: boolean })._hidden;
