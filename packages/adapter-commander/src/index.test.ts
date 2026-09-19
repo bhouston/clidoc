@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { Argument, Command, Option } from 'commander';
+import { validate } from '@clidoc/core';
 import { fromCommander } from './index.js';
 
 const info = { title: 'Demo', binary: 'demo', version: '1.0.0' };
@@ -54,5 +55,116 @@ describe('Commander metadata variants', () => {
       { name: 'quiet', aliases: ['q'], type: 'boolean' },
       { name: 'items', variadic: true, default: false },
     ]);
+  });
+});
+
+describe('negated options (#35)', () => {
+  it('types a standalone --no-foo flag as boolean with default true', () => {
+    const root = new Command('demo');
+    root.addOption(new Option('--no-color', 'Disable color output'));
+    const doc = fromCommander(root, info);
+    expect(doc.commands?.demo?.flags).toEqual([
+      { name: 'color', type: 'boolean', default: true, summary: 'Disable color output' },
+    ]);
+  });
+
+  it('merges --foo and --no-foo on the same command into one boolean flag', () => {
+    const root = new Command('demo');
+    root.addOption(new Option('--color', 'Use color output'));
+    root.addOption(new Option('--no-color', 'Disable color output'));
+    const doc = fromCommander(root, info);
+    expect(doc.commands?.demo?.flags).toEqual([
+      { name: 'color', type: 'boolean', default: true, summary: 'Use color output Negate with --no-color.' },
+    ]);
+  });
+
+  it('types an option with an optional value as string and does not mark it required', () => {
+    const root = new Command('demo');
+    root.addOption(new Option('--foo [value]', 'Optional value'));
+    const doc = fromCommander(root, info);
+    expect(doc.commands?.demo?.flags).toEqual([{ name: 'foo', type: 'string', summary: 'Optional value' }]);
+  });
+});
+
+describe('hidden commands, summary, env sources (#36)', () => {
+  it('marks commands created with { hidden: true } as hidden', () => {
+    const root = new Command('demo');
+    root.command('secret', { hidden: true }).description('Internal only');
+    const doc = fromCommander(root, info);
+    expect(doc.commands?.['demo secret']?.hidden).toBe(true);
+  });
+
+  it('maps summary() to summary and description() to description when both are set', () => {
+    const root = new Command('demo');
+    const child = root.command('build');
+    child.summary('Build the project');
+    child.description('Build the project from source, running the full pipeline.');
+    const doc = fromCommander(root, info);
+    expect(doc.commands?.['demo build']).toMatchObject({
+      summary: 'Build the project',
+      description: 'Build the project from source, running the full pipeline.',
+    });
+  });
+
+  it('maps summary() to summary when description() is not set', () => {
+    const root = new Command('demo');
+    root.command('build').summary('Build the project');
+    const doc = fromCommander(root, info);
+    expect(doc.commands?.['demo build']).toMatchObject({ summary: 'Build the project' });
+    expect(doc.commands?.['demo build'].description).toBeUndefined();
+  });
+
+  it('falls back to description() as summary when summary() is not set', () => {
+    const root = new Command('demo');
+    root.command('build').description('Build the project');
+    const doc = fromCommander(root, info);
+    expect(doc.commands?.['demo build']).toMatchObject({ summary: 'Build the project' });
+    expect(doc.commands?.['demo build'].description).toBeUndefined();
+  });
+
+  it('maps Option.env to alternativeSources', () => {
+    const root = new Command('demo');
+    root.addOption(new Option('--token <token>', 'API token').env('DEMO_TOKEN'));
+    const doc = fromCommander(root, info);
+    expect(doc.commands?.demo?.flags).toMatchObject([
+      { name: 'token', alternativeSources: [{ type: '$ENV', property: 'DEMO_TOKEN' }] },
+    ]);
+  });
+
+  it('appends the default value to an argument summary', () => {
+    const root = new Command('demo');
+    root.argument('[mode]', 'Mode', 'fast');
+    const doc = fromCommander(root, info);
+    expect(doc.commands?.demo?.args?.[0]).toMatchObject({ name: 'mode', summary: 'Mode Default: fast.' });
+  });
+
+  it('uses the default value as the summary when the argument has no description', () => {
+    const root = new Command('demo');
+    root.addArgument(new Argument('[mode]').default('fast'));
+    const doc = fromCommander(root, info);
+    expect(doc.commands?.demo?.args?.[0]).toMatchObject({ name: 'mode', summary: 'Default: fast.' });
+  });
+
+  it('sets kind: group whenever a command has subcommands, even with its own flags', () => {
+    const root = new Command('demo');
+    const parent = root.command('parent').option('--verbose', 'Verbose');
+    parent.command('child');
+    const doc = fromCommander(root, info);
+    expect(doc.commands?.['demo parent']?.kind).toBe('group');
+  });
+
+  it('produces a document that passes @clidoc/core validate()', () => {
+    const root = new Command('demo').description('Demo CLI');
+    root.command('secret', { hidden: true }).description('Internal only');
+    const build = root.command('build');
+    build.summary('Build it');
+    build.description('Build it from source.');
+    build
+      .addOption(new Option('--color', 'Use color'))
+      .addOption(new Option('--no-color', 'Disable color'))
+      .addOption(new Option('--token <token>', 'Token').env('DEMO_TOKEN'))
+      .argument('[target]', 'Build target', 'all');
+    const doc = fromCommander(root, info);
+    expect(validate(doc)).toEqual({ valid: true, errors: [] });
   });
 });
