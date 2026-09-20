@@ -17,7 +17,7 @@ clidoc validate cli.json
 clidoc markdown cli.json --output reference.md
 ```
 
-`mycli --opencli` prints the same JSON to stdout for tool discovery. If you have
+`mycli __opencli` prints the same JSON to stdout for tool discovery. If you have
 a trusted JavaScript module exporting command definitions and `info` metadata,
 `clidoc generate ./definition.mjs --adapter yargs --output cli.json` is an
 optional way to create the file. The module and supported Yargs builders execute

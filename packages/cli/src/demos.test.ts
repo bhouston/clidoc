@@ -40,13 +40,6 @@ describe.each(runners)('%s demo', (runner) => {
     expect(document.commands['demo docgen'].summary).toBe('Write the OpenCLI document to a file');
   });
 
-  it('exports the same OpenCLI contract via the --opencli compatibility alias', async () => {
-    const opencli = await cli.run(['__opencli']);
-    const flag = await cli.run(['--opencli']);
-    expect(flag).toSucceed();
-    expect(flag.json()).toEqual(opencli.json());
-  });
-
   it('hides __opencli from --help output', async () => {
     const result = await cli.run(['--help']);
     expect(result.stdout).not.toMatch(/__opencli/);
@@ -67,7 +60,7 @@ describe.each(runners)('%s demo', (runner) => {
       const generated = JSON.parse(await readFile(destination, 'utf8'));
       expect(validate(generated)).toEqual({ valid: true, errors: [] });
       expect(generated.commands['demo docgen'].summary).toBe('Write the OpenCLI document to a file');
-      const discovered = await cli.run(['--opencli']);
+      const discovered = await cli.run(['__opencli']);
       expect(generated).toEqual(discovered.json());
     } finally {
       await rm(directory, { recursive: true, force: true });
@@ -80,7 +73,7 @@ describe.each(runners)('%s demo', (runner) => {
       const destination = resolve(directory, 'reference.md');
       const result = await cli.run(['docgen', '--format', 'markdown', '--output', destination]);
       expect(result).toSucceed();
-      const discovered = await cli.run(['--opencli']);
+      const discovered = await cli.run(['__opencli']);
       expect(await readFile(destination, 'utf8')).toBe(renderMarkdown(discovered.json()));
     } finally {
       await rm(directory, { recursive: true, force: true });
