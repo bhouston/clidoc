@@ -289,6 +289,14 @@ describe('createDocgenCommand', () => {
     expect(await readFile(output, 'utf8')).toContain('# Demo');
   });
 
+  it('writes YAML when format is yaml', async () => {
+    const doc = fromYargs([], info);
+    const module = createDocgenCommand(() => doc);
+    const output = join(dir, 'cli.yaml');
+    await module.handler({ output, format: 'yaml' });
+    expect(await readFile(output, 'utf8')).toContain('binary: demo');
+  });
+
   it('accepts a custom command string', () => {
     const module = createDocgenCommand(() => fromYargs([], info), { command: 'gen-docs' });
     expect(module.command).toBe('gen-docs');

@@ -32,6 +32,13 @@ describe('createDocgenCommand', () => {
     expect(await readFile(output, 'utf8')).toContain('# Demo');
   });
 
+  it('writes YAML when --format yaml is passed', async () => {
+    const Docgen = createDocgenCommand(() => ({ manifest: { commands: {} }, info }));
+    const output = join(dir, 'cli.yaml');
+    await Docgen.run(['--output', output, '--format', 'yaml']);
+    expect(await readFile(output, 'utf8')).toContain('binary: demo');
+  });
+
   it('accepts a custom description', () => {
     const Docgen = createDocgenCommand(() => ({ manifest: { commands: {} }, info }), { description: 'Custom' });
     expect(Docgen.description).toBe('Custom');

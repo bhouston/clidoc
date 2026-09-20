@@ -59,6 +59,9 @@ describe('CLI', () => {
     const markdown = join(path, 'clidoc.md');
     await runCli(['docgen', '--format', 'markdown', '--output', markdown]);
     expect(await readFile(markdown, 'utf8')).toContain('# clidoc');
+    const yaml = join(path, 'clidoc.yaml');
+    await runCli(['docgen', '--format', 'yaml', '--output', yaml]);
+    expect(await readFile(yaml, 'utf8')).toContain('binary: clidoc');
     const stdout = vi.spyOn(process.stdout, 'write').mockReturnValue(true);
     await runCli(['docgen']);
     expect(stdout).toHaveBeenCalledWith(`${JSON.stringify(cliDocument(), null, 2)}\n`);

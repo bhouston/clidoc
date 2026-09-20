@@ -11,7 +11,7 @@ export interface CreateDocgenCommandOptions {
 
 /**
  * Build a ready-to-export oclif `docgen` command: `--output <file>` (defaults to stdout) and
- * `--format <json|markdown>` (default `json`), writing the document produced from
+ * `--format <json|yaml|markdown>` (default `json`), writing the document produced from
  * `getManifestAndInfo()` via `@clidoc/core`'s `writeOpenCliDocument`. Default-export the result
  * from `src/commands/docgen.ts`. Kept in its own entry point (`@clidoc/adapter-oclif/docgen`) so
  * importing `fromOclif` from the package root never requires `@oclif/core` to be installed.
@@ -25,7 +25,7 @@ export function createDocgenCommand(
       options.description ?? 'Write the OpenCLI document to a file, or stdout if --output is omitted';
     static override flags = {
       output: Flags.string({ char: 'o', description: 'Output file; defaults to stdout' }),
-      format: Flags.string({ description: 'Output format', options: ['json', 'markdown'], default: 'json' }),
+      format: Flags.string({ description: 'Output format', options: ['json', 'yaml', 'markdown'], default: 'json' }),
     };
     async run(): Promise<void> {
       const { flags } = await this.parse(Docgen);
