@@ -1,4 +1,5 @@
 import { writeFile } from 'node:fs/promises';
+import { stringify as stringifyYaml } from 'yaml';
 import { renderMarkdown } from './index.js';
 import type { InfoObject, OpenCliDocument } from './types.js';
 
@@ -35,18 +36,23 @@ export function infoFromPackageJson(pkg: PackageJsonLike, overrides: Partial<Inf
 }
 
 /** Output format for {@link writeOpenCliDocument}. */
-export type DocumentFormat = 'json' | 'markdown';
+export type DocumentFormat = 'json' | 'yaml' | 'markdown';
 
 /**
- * Render `document` (JSON or Markdown) and write it to `output`, or to stdout if `output` is
- * omitted. Shared by every adapter's docgen command and by `handleOpenCliRequest`.
+ * Render `document` (JSON, YAML, or Markdown) and write it to `output`, or to stdout if `output`
+ * is omitted. Shared by every adapter's docgen command and by `handleOpenCliRequest`.
  */
 export async function writeOpenCliDocument(
   document: OpenCliDocument,
   output?: string,
   format: DocumentFormat = 'json',
 ): Promise<void> {
-  const content = format === 'markdown' ? renderMarkdown(document) : `${JSON.stringify(document, null, 2)}\n`;
+  const content =
+    format === 'markdown'
+      ? renderMarkdown(document)
+      : format === 'yaml'
+        ? stringifyYaml(document)
+        : `${JSON.stringify(document, null, 2)}\n`;
   if (output === undefined) {
     process.stdout.write(content);
     return;

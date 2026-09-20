@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { infoFromPackageJson, writeOpenCliDocument } from './docgen.js';
-import { OPENCLI_VERSION } from './index.js';
+import { OPENCLI_VERSION, parse } from './index.js';
 import type { OpenCliDocument } from './types.js';
 
 describe('infoFromPackageJson', () => {
@@ -86,6 +86,15 @@ describe('writeOpenCliDocument', () => {
     const content = await readFile(output, 'utf8');
     expect(content).toContain('# Acme CLI');
     expect(content).toContain('## acme greet');
+  });
+
+  it('writes YAML when asked, round-tripping through parse', async () => {
+    const output = join(dir, 'cli.yaml');
+    await writeOpenCliDocument(document, output, 'yaml');
+    const content = await readFile(output, 'utf8');
+    expect(content).toContain('opencliVersion:');
+    expect(content).not.toMatch(/^\{/);
+    expect(parse(content)).toEqual(document);
   });
 
   it('writes to stdout when output is omitted', async () => {

@@ -10,7 +10,7 @@ Write clidoc’s own OpenCLI document
 
 | Flag | Type | Required | Description |
 | --- | --- | --- | --- |
-| `--format` | string | No | Output format; Choices: json, markdown; Default: `json` |
+| `--format` | string | No | Output format; Choices: json, yaml, markdown; Default: `json` |
 | `--output` | string | No | Output file; defaults to stdout; Aliases: `o` |
 
 ## clidoc generate

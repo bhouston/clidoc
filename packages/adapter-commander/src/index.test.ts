@@ -217,6 +217,14 @@ describe('createDocgenCommand', () => {
     expect(await readFile(output, 'utf8')).toContain('# Demo');
   });
 
+  it('writes YAML when --format yaml is passed', async () => {
+    const doc = fromCommander(new Command('demo'), info);
+    const output = join(dir, 'cli.yaml');
+    const command = createDocgenCommand(() => doc);
+    await command.parseAsync(['--output', output, '--format', 'yaml'], { from: 'user' });
+    expect(await readFile(output, 'utf8')).toContain('binary: demo');
+  });
+
   it('accepts a custom command name', () => {
     const command = createDocgenCommand(() => fromCommander(new Command('demo'), info), { name: 'gen-docs' });
     expect(command.name()).toBe('gen-docs');

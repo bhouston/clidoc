@@ -170,7 +170,7 @@ export interface CreateDocgenCommandOptions {
 
 /**
  * Build a ready-to-register `docgen` command module: `--output <file>` (defaults to stdout) and
- * `--format <json|markdown>` (default `json`), writing `getDocument()`'s result via
+ * `--format <json|yaml|markdown>` (default `json`), writing `getDocument()`'s result via
  * `@clidoc/core`'s `writeOpenCliDocument`. Add it to your commands array/`.command(...)` calls.
  */
 export function createDocgenCommand(
@@ -182,7 +182,7 @@ export function createDocgenCommand(
     describe: 'Write the OpenCLI document to a file, or stdout if --output is omitted',
     builder: {
       output: { type: 'string', alias: 'o', description: 'Output file; defaults to stdout' },
-      format: { type: 'string', choices: ['json', 'markdown'], default: 'json', description: 'Output format' },
+      format: { type: 'string', choices: ['json', 'yaml', 'markdown'], default: 'json', description: 'Output format' },
     },
     async handler(argv: unknown) {
       const { output, format } = argv as { output?: string; format: DocumentFormat };
