@@ -28,7 +28,7 @@ const greet = {
 const document = () => fromYargs([greet, docgen], info);
 const docgen = createDocgenCommand(document);
 
-if (!handleOpenCliRequest(hideBin(process.argv), document)) {
+if (!(await handleOpenCliRequest(hideBin(process.argv), document))) {
   // createDocgenCommand()'s return type is structural (no yargs dependency in @clidoc/adapter-yargs);
   // it matches yargs's own CommandModule shape at runtime.
   yargs(hideBin(process.argv))

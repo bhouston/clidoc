@@ -60,21 +60,23 @@ clidoc validate cli.json
 ```
 
 For machine discovery, also attach the hidden `__opencli` subcommand, matching
-[upstream OpenCLI's Go adapters](https://github.com/bcdxn/opencli). It prints
-only one UTF-8 OpenCLI JSON document followed by a newline to stdout and exits
-with status 0. `@clidoc/core` exports a `handleOpenCliRequest(argv, document)`
-helper that checks argv for `__opencli` before your framework parses the
-command line, so handlers never run:
+[upstream OpenCLI's Go adapters](https://github.com/bcdxn/opencli). With no
+flags it writes one UTF-8 OpenCLI JSON document followed by a newline to
+stdout and exits with status 0; `-o`/`--out <file>` (upstream's own flag)
+writes it to a file instead. `@clidoc/core` exports an async
+`handleOpenCliRequest(argv, document)` helper that checks argv for `__opencli`
+before your framework parses the command line, so handlers never run:
 
 ```ts
 import { handleOpenCliRequest } from '@clidoc/core';
 
-if (!handleOpenCliRequest(process.argv.slice(2), buildDocument)) {
+if (!(await handleOpenCliRequest(process.argv.slice(2), buildDocument))) {
   // parse and run the CLI as usual
 }
 ```
 
-For example, `mycli __opencli > mycli.opencli.json` captures the document. The
+For example, `mycli __opencli > mycli.opencli.json` or
+`mycli __opencli --out mycli.opencli.json` both capture the document. The
 [Yargs](packages/adapter-yargs), [Commander](packages/adapter-commander), and
 [oclif](packages/adapter-oclif) adapter guides and runnable demos show this.
 

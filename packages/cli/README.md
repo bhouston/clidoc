@@ -20,13 +20,15 @@ clidoc markdown cli.json --output reference.md
 ```
 
 `mycli __opencli` is the hidden, machine-facing discovery subcommand, matching
-upstream OpenCLI's Go adapters. clidoc dogfoods this exact workflow on
-itself: `clidoc docgen` and `clidoc __opencli` both describe
-the `clidoc` binary. As a secondary option, trusted command definitions can be
-imported with `clidoc generate ./definition.mjs --adapter yargs --output cli.json`.
-Omit `--output` from `clidoc generate`, `clidoc markdown`, or `clidoc docgen` to
-print the result. Invalid input or command usage exits with status 1. `--help`
-describes command arguments, and `--version` prints the installed package version.
+upstream OpenCLI's Go adapters, including its `-o`/`--out <file>` flag
+(`mycli __opencli --out cli.json`); omitted, it writes to stdout like
+`clidoc docgen`/`clidoc generate`/`clidoc markdown` do when their own
+`--output` is omitted. clidoc dogfoods this exact workflow on itself:
+`clidoc docgen` and `clidoc __opencli` both describe the `clidoc` binary. As a
+secondary option, trusted command definitions can be imported with
+`clidoc generate ./definition.mjs --adapter yargs --output cli.json`. Invalid
+input or command usage exits with status 1. `--help` describes command
+arguments, and `--version` prints the installed package version.
 
 The generation module must export `info` (`title`, `binary`, `version`) and a
 default value: Yargs command modules, a Commander `Command`, or an oclif manifest.

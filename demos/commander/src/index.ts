@@ -19,6 +19,6 @@ cli
 const document = () => fromCommander(cli, info);
 cli.addCommand(createDocgenCommand(document));
 
-if (!handleOpenCliRequest(process.argv.slice(2), document)) {
+if (!(await handleOpenCliRequest(process.argv.slice(2), document))) {
   cli.parse();
 }

@@ -1,7 +1,7 @@
 import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Argument, Command, Option } from 'commander';
 import { validate } from '@clidoc/core';
 import { createDocgenCommand, fromCommander } from './index.js';
@@ -190,6 +190,23 @@ describe('createDocgenCommand', () => {
     const command = createDocgenCommand(() => doc);
     await command.parseAsync(['--output', output], { from: 'user' });
     expect(JSON.parse(await readFile(output, 'utf8'))).toEqual(doc);
+  });
+
+  it('writes JSON to -o', async () => {
+    const doc = fromCommander(new Command('demo'), info);
+    const output = join(dir, 'cli.json');
+    const command = createDocgenCommand(() => doc);
+    await command.parseAsync(['-o', output], { from: 'user' });
+    expect(JSON.parse(await readFile(output, 'utf8'))).toEqual(doc);
+  });
+
+  it('writes to stdout when --output is omitted', async () => {
+    const doc = fromCommander(new Command('demo'), info);
+    const stdout = vi.spyOn(process.stdout, 'write').mockReturnValue(true);
+    const command = createDocgenCommand(() => doc);
+    await command.parseAsync([], { from: 'user' });
+    expect(stdout).toHaveBeenCalledWith(`${JSON.stringify(doc, null, 2)}\n`);
+    stdout.mockRestore();
   });
 
   it('writes Markdown when --format markdown is passed', async () => {

@@ -134,7 +134,7 @@ export interface CreateDocgenCommandOptions {
 }
 
 /**
- * Build a ready-to-register `docgen` command: `--output <file>` (required) and
+ * Build a ready-to-register `docgen` command: `--output <file>` (defaults to stdout) and
  * `--format <json|markdown>` (default `json`), writing `getDocument()`'s result via
  * `@clidoc/core`'s `writeOpenCliDocument`. Register it with `program.addCommand(...)`.
  */
@@ -143,10 +143,10 @@ export function createDocgenCommand(
   options: CreateDocgenCommandOptions = {},
 ): Command {
   return new CommanderCommand(options.name ?? 'docgen')
-    .description('Write the OpenCLI document to a file')
-    .requiredOption('--output <file>', 'Output file')
+    .description('Write the OpenCLI document to a file, or stdout if --output is omitted')
+    .option('-o, --output <file>', 'Output file; defaults to stdout')
     .addOption(new CommanderOption('--format <format>', 'Output format').choices(['json', 'markdown']).default('json'))
-    .action(async (opts: { output: string; format: DocumentFormat }) => {
+    .action(async (opts: { output?: string; format: DocumentFormat }) => {
       await writeOpenCliDocument(getDocument(), opts.output, opts.format);
     });
 }

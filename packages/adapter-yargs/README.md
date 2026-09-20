@@ -10,7 +10,7 @@ An [OpenCLI](https://github.com/bcdxn/opencli) spec generator for [Yargs](https:
 
 ## Add `docgen` and `__opencli` to your CLI
 
-`createDocgenCommand` builds a ready-to-register `docgen` command module: `--output <file>` (required) and `--format <json|markdown>` (default `json`). `infoFromPackageJson` derives the document's title, binary name, and version from your `package.json`. For machine discovery, attach the hidden `__opencli` subcommand, matching [upstream OpenCLI's Go adapters](https://github.com/bcdxn/opencli): `handleOpenCliRequest` checks argv for `__opencli` before Yargs parses arguments, prints one JSON document to stdout, and exits 0, so command handlers never run.
+`createDocgenCommand` builds a ready-to-register `docgen` command module: `-o`/`--output <file>` (defaults to stdout) and `--format <json|markdown>` (default `json`). `infoFromPackageJson` derives the document's title, binary name, and version from your `package.json`. For machine discovery, attach the hidden `__opencli` subcommand, matching [upstream OpenCLI's Go adapters](https://github.com/bcdxn/opencli): `handleOpenCliRequest` checks argv for `__opencli` before Yargs parses arguments, prints one JSON document to stdout (or writes it to a file with upstream's own `-o`/`--out <file>` flag), and exits 0, so command handlers never run.
 
 ```ts
 import { readFileSync } from 'node:fs';
@@ -27,12 +27,12 @@ const document = () => fromYargs([greet, docgen], info);
 const docgen = createDocgenCommand(document);
 
 const args = hideBin(process.argv);
-if (!handleOpenCliRequest(args, document)) {
+if (!(await handleOpenCliRequest(args, document))) {
   yargs(args).command(greet).command(docgen).demandCommand().parse();
 }
 ```
 
-Run `mycli docgen --output cli.json` for JSON (the default), or `mycli docgen --format markdown --output reference.md` to render Markdown directly. Install the validator with `npm install -g @clidoc/cli` and run `clidoc validate cli.json`. Consumers can also run `mycli __opencli > mycli.opencli.json` for discovery. See the [Yargs demo](../../demos/yargs) for a runnable example.
+Run `mycli docgen --output cli.json` for JSON (the default), or `mycli docgen --format markdown --output reference.md` to render Markdown directly; omit `--output` to print to stdout. Install the validator with `npm install -g @clidoc/cli` and run `clidoc validate cli.json`. Consumers can also run `mycli __opencli > mycli.opencli.json` or `mycli __opencli --out mycli.opencli.json` for discovery. See the [Yargs demo](../../demos/yargs) for a runnable example.
 
 ## Supported metadata
 
