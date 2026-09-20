@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "build": "docusaurus build",
-    "dev": "docusaurus start",
+    "dev": "docusaurus start --port 4000",
     "generate:api": "typedoc --options typedoc.json",
     "test:browser": "node scripts/run-browser-tests.mjs"
   },

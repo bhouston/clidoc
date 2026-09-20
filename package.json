@@ -11,7 +11,8 @@
   "type": "module",
   "scripts": {
     "prepare": "husky",
-    "build": "pnpm -r --filter './packages/*' --filter '!@clidoc/website' build",
+    "build": "pnpm -r --filter './packages/*' --filter './demos/*' --filter '!@clidoc/website' build",
+    "dev": "pnpm --parallel --filter @clidoc/website --filter @clidoc/demo-docusaurus --filter @clidoc/demo-vitepress dev",
     "tsc": "pnpm -r tsc",
     "test": "pnpm build && vitest run",
     "test:coverage": "pnpm build && vitest run --coverage",
