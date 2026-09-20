@@ -74,12 +74,9 @@ if (!handleOpenCliRequest(process.argv.slice(2), buildDocument)) {
 }
 ```
 
-`mycli --opencli` also works as a documented clidoc-only alias for tools that
-still expect a flag; prefer `__opencli` for new integrations. For example,
-`mycli __opencli > mycli.opencli.json` captures the same document. The
+For example, `mycli __opencli > mycli.opencli.json` captures the document. The
 [Yargs](packages/adapter-yargs), [Commander](packages/adapter-commander), and
-[oclif](packages/adapter-oclif) adapter guides and runnable demos show both
-commands.
+[oclif](packages/adapter-oclif) adapter guides and runnable demos show this.
 
 As an optional path for trusted local modules, `clidoc generate` imports a
 module exporting framework definitions as `default` and CLI metadata as `info`:
@@ -148,8 +145,8 @@ pnpm --filter @clidoc/demo-vitepress dev
 ```
 
 Each CLI demo supports `docgen --output cli.json` for humans and the hidden
-`__opencli` subcommand (plus the `--opencli` compatibility alias) for machine
-discovery, e.g. `pnpm --filter @clidoc/demo-yargs start __opencli`. The Yargs
+`__opencli` subcommand for machine discovery, e.g.
+`pnpm --filter @clidoc/demo-yargs start __opencli`. The Yargs
 demo uses barebones Yargs; the clidoc tool uses `defineCommand` and
 `fileCommands`, following the structure used by
 [hdrify](https://github.com/bhouston/hdrify). `clidoc` itself dogfoods this

@@ -20,9 +20,8 @@ clidoc markdown cli.json --output reference.md
 ```
 
 `mycli __opencli` is the hidden, machine-facing discovery subcommand, matching
-upstream OpenCLI's Go adapters; `mycli --opencli` is a documented clidoc-only
-alias kept for backwards compatibility. clidoc dogfoods this exact workflow on
-itself: `clidoc docgen`, `clidoc __opencli`, and `clidoc --opencli` all describe
+upstream OpenCLI's Go adapters. clidoc dogfoods this exact workflow on
+itself: `clidoc docgen` and `clidoc __opencli` both describe
 the `clidoc` binary. As a secondary option, trusted command definitions can be
 imported with `clidoc generate ./definition.mjs --adapter yargs --output cli.json`.
 Omit `--output` from `clidoc generate`, `clidoc markdown`, or `clidoc docgen` to

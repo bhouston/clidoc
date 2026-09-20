@@ -12,6 +12,6 @@ clidoc validate cli.json
 clidoc markdown cli.json --output reference.md
 ```
 
-`mycli --opencli` prints the same document for discovery.
+`mycli __opencli` prints the same document for discovery.
 
 Choose a command in the sidebar to explore the generated reference.

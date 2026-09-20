@@ -21,7 +21,7 @@ same `yargs-file-commands` definitions that run the clidoc tool.
 4. Run `clidoc validate cli.json`.
 5. Run `clidoc markdown cli.json --output reference.md`, or use a site consumer.
 
-The exact `mycli --opencli` invocation can print the same document for discovery.
+The hidden `mycli __opencli` subcommand can print the same document for discovery.
 
 Browse **clidoc** in the sidebar for the generated command reference.
 
