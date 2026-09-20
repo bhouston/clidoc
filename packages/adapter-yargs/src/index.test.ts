@@ -1,7 +1,7 @@
 import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createDocgenCommand, fromYargs } from './index.js';
 import { validate } from '@clidoc/core';
 import { defineCommand } from 'yargs-file-commands';
@@ -292,5 +292,14 @@ describe('createDocgenCommand', () => {
   it('accepts a custom command string', () => {
     const module = createDocgenCommand(() => fromYargs([], info), { command: 'gen-docs' });
     expect(module.command).toBe('gen-docs');
+  });
+
+  it('writes to stdout when output is omitted', async () => {
+    const doc = fromYargs([], info);
+    const module = createDocgenCommand(() => doc);
+    const stdout = vi.spyOn(process.stdout, 'write').mockReturnValue(true);
+    await module.handler({ format: 'json' });
+    expect(stdout).toHaveBeenCalledWith(`${JSON.stringify(doc, null, 2)}\n`);
+    stdout.mockRestore();
   });
 });

@@ -10,7 +10,7 @@ export interface CreateDocgenCommandOptions {
 }
 
 /**
- * Build a ready-to-export oclif `docgen` command: `--output <file>` (required) and
+ * Build a ready-to-export oclif `docgen` command: `--output <file>` (defaults to stdout) and
  * `--format <json|markdown>` (default `json`), writing the document produced from
  * `getManifestAndInfo()` via `@clidoc/core`'s `writeOpenCliDocument`. Default-export the result
  * from `src/commands/docgen.ts`. Kept in its own entry point (`@clidoc/adapter-oclif/docgen`) so
@@ -21,9 +21,10 @@ export function createDocgenCommand(
   options: CreateDocgenCommandOptions = {},
 ): Command.Class {
   return class Docgen extends Command {
-    static override description = options.description ?? 'Write the OpenCLI document to a file';
+    static override description =
+      options.description ?? 'Write the OpenCLI document to a file, or stdout if --output is omitted';
     static override flags = {
-      output: Flags.string({ description: 'Output file', required: true }),
+      output: Flags.string({ char: 'o', description: 'Output file; defaults to stdout' }),
       format: Flags.string({ description: 'Output format', options: ['json', 'markdown'], default: 'json' }),
     };
     async run(): Promise<void> {

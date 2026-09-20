@@ -35,3 +35,18 @@ it('answers __opencli discovery requests without invoking runCli', async () => {
   expect(stdout).toHaveBeenCalledWith(`${JSON.stringify(document, null, 2)}\n`);
   expect(runCli).not.toHaveBeenCalled();
 });
+
+it('writes __opencli discovery requests to --out <file> without invoking runCli', async () => {
+  const { mkdtemp, readFile, rm } = await import('node:fs/promises');
+  const { tmpdir } = await import('node:os');
+  const { join } = await import('node:path');
+  const dir = await mkdtemp(join(tmpdir(), 'clidoc-bin-'));
+  const file = join(dir, 'cli.json');
+  vi.resetModules();
+  vi.mocked(runCli).mockClear();
+  process.argv = [...process.argv.slice(0, 2), '__opencli', '--out', file];
+  await import('./bin.js');
+  expect(JSON.parse(await readFile(file, 'utf8'))).toEqual(document);
+  expect(runCli).not.toHaveBeenCalled();
+  await rm(dir, { recursive: true, force: true });
+});

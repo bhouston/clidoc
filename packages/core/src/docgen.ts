@@ -37,12 +37,19 @@ export function infoFromPackageJson(pkg: PackageJsonLike, overrides: Partial<Inf
 /** Output format for {@link writeOpenCliDocument}. */
 export type DocumentFormat = 'json' | 'markdown';
 
-/** Render `document` (JSON or Markdown) and write it to `output`, shared by every adapter's docgen command. */
+/**
+ * Render `document` (JSON or Markdown) and write it to `output`, or to stdout if `output` is
+ * omitted. Shared by every adapter's docgen command and by `handleOpenCliRequest`.
+ */
 export async function writeOpenCliDocument(
   document: OpenCliDocument,
-  output: string,
+  output?: string,
   format: DocumentFormat = 'json',
 ): Promise<void> {
   const content = format === 'markdown' ? renderMarkdown(document) : `${JSON.stringify(document, null, 2)}\n`;
+  if (output === undefined) {
+    process.stdout.write(content);
+    return;
+  }
   await writeFile(output, content);
 }

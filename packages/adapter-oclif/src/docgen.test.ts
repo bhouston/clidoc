@@ -1,7 +1,7 @@
 import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createDocgenCommand } from './docgen.js';
 
 const info = { title: 'Demo', binary: 'demo', version: '1.0.0' };
@@ -35,5 +35,20 @@ describe('createDocgenCommand', () => {
   it('accepts a custom description', () => {
     const Docgen = createDocgenCommand(() => ({ manifest: { commands: {} }, info }), { description: 'Custom' });
     expect(Docgen.description).toBe('Custom');
+  });
+
+  it('writes JSON to -o', async () => {
+    const Docgen = createDocgenCommand(() => ({ manifest: { commands: {} }, info }));
+    const output = join(dir, 'cli.json');
+    await Docgen.run(['-o', output]);
+    expect(JSON.parse(await readFile(output, 'utf8'))).toMatchObject({ info });
+  });
+
+  it('writes to stdout when --output is omitted', async () => {
+    const Docgen = createDocgenCommand(() => ({ manifest: { commands: {} }, info }));
+    const stdout = vi.spyOn(process.stdout, 'write').mockReturnValue(true);
+    await Docgen.run([]);
+    expect(stdout).toHaveBeenCalled();
+    stdout.mockRestore();
   });
 });

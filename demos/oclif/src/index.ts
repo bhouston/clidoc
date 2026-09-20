@@ -62,7 +62,7 @@ const document = () => fromOclif(manifest, info);
 const Docgen = createDocgenCommand(() => ({ manifest, info }));
 const manifest = { commands: { greet: metadata(Greet), docgen: metadata(Docgen) } };
 
-if (!handleOpenCliRequest(process.argv.slice(2), document)) {
+if (!(await handleOpenCliRequest(process.argv.slice(2), document))) {
   const argv = process.argv.slice(2);
   await (argv[0] === 'docgen' ? Docgen.run(argv.slice(1)) : Greet.run(argv[0] === 'greet' ? argv.slice(1) : argv));
 }

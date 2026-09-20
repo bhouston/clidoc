@@ -1,7 +1,7 @@
 import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { infoFromPackageJson, writeOpenCliDocument } from './docgen.js';
 import { OPENCLI_VERSION } from './index.js';
 import type { OpenCliDocument } from './types.js';
@@ -86,5 +86,12 @@ describe('writeOpenCliDocument', () => {
     const content = await readFile(output, 'utf8');
     expect(content).toContain('# Acme CLI');
     expect(content).toContain('## acme greet');
+  });
+
+  it('writes to stdout when output is omitted', async () => {
+    const stdout = vi.spyOn(process.stdout, 'write').mockReturnValue(true);
+    await writeOpenCliDocument(document);
+    expect(stdout).toHaveBeenCalledWith(`${JSON.stringify(document, null, 2)}\n`);
+    stdout.mockRestore();
   });
 });

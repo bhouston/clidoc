@@ -10,7 +10,7 @@ An [OpenCLI](https://github.com/bcdxn/opencli) spec generator for [oclif](https:
 
 ## Add `docgen` and `__opencli` to your CLI
 
-`@clidoc/adapter-oclif/docgen`'s `createDocgenCommand` builds a ready-to-export oclif command: `--output <file>` (required) and `--format <json|markdown>` (default `json`). It lives at its own entry point so importing `fromOclif` from the package root never requires `@oclif/core` to be installed. `infoFromPackageJson` derives the document's title, binary name, and version from your `package.json`. For machine discovery, attach the hidden `__opencli` subcommand, matching [upstream OpenCLI's Go adapters](https://github.com/bcdxn/opencli): `handleOpenCliRequest` checks argv for `__opencli` in your executable entry point before handing arguments to oclif, prints one JSON document to stdout, and exits 0, so command handlers never run.
+`@clidoc/adapter-oclif/docgen`'s `createDocgenCommand` builds a ready-to-export oclif command: `-o`/`--output <file>` (defaults to stdout) and `--format <json|markdown>` (default `json`). It lives at its own entry point so importing `fromOclif` from the package root never requires `@oclif/core` to be installed. `infoFromPackageJson` derives the document's title, binary name, and version from your `package.json`. For machine discovery, attach the hidden `__opencli` subcommand, matching [upstream OpenCLI's Go adapters](https://github.com/bcdxn/opencli): `handleOpenCliRequest` checks argv for `__opencli` in your executable entry point before handing arguments to oclif, prints one JSON document to stdout (or writes it to a file with upstream's own `-o`/`--out <file>` flag), and exits 0, so command handlers never run.
 
 ```ts
 // src/commands/docgen.ts
@@ -37,12 +37,12 @@ const document = () => {
   return fromOclif(manifest, infoFromPackageJson(pkg));
 };
 const args = process.argv.slice(2);
-if (!handleOpenCliRequest(args, document)) {
+if (!(await handleOpenCliRequest(args, document))) {
   await run(args);
 }
 ```
 
-Generate or refresh the oclif manifest (`manifest.json`) as part of your build — via `oclif manifest` or your own `oclif.config` build step — so both the `docgen` command and `__opencli` reflect the current commands. The [runnable oclif demo](../../demos/oclif/src/index.ts) builds this manifest inline to stay a single file; adjust the manifest and `package.json` paths for your project's layout. Run `mycli docgen --output cli.json` for JSON (the default), or `mycli docgen --format markdown --output reference.md` to render Markdown directly. Install the validator with `npm install -g @clidoc/cli` and run `clidoc validate cli.json`. Consumers can also run `mycli __opencli > mycli.opencli.json` for discovery.
+Generate or refresh the oclif manifest (`manifest.json`) as part of your build — via `oclif manifest` or your own `oclif.config` build step — so both the `docgen` command and `__opencli` reflect the current commands. The [runnable oclif demo](../../demos/oclif/src/index.ts) builds this manifest inline to stay a single file; adjust the manifest and `package.json` paths for your project's layout. Run `mycli docgen --output cli.json` for JSON (the default), or `mycli docgen --format markdown --output reference.md` to render Markdown directly; omit `--output` to print to stdout. Install the validator with `npm install -g @clidoc/cli` and run `clidoc validate cli.json`. Consumers can also run `mycli __opencli > mycli.opencli.json` or `mycli __opencli --out mycli.opencli.json` for discovery.
 
 ## Supported metadata
 

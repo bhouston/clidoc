@@ -37,7 +37,9 @@ describe.each(runners)('%s demo', (runner) => {
     expect(validate(document)).toEqual({ valid: true, errors: [] });
     expect(document.info.binary).toBe('demo');
     expect(document.commands['demo greet'].summary).toBe('Greet a person');
-    expect(document.commands['demo docgen'].summary).toBe('Write the OpenCLI document to a file');
+    expect(document.commands['demo docgen'].summary).toBe(
+      'Write the OpenCLI document to a file, or stdout if --output is omitted',
+    );
   });
 
   it('hides __opencli from --help output', async () => {
@@ -59,7 +61,9 @@ describe.each(runners)('%s demo', (runner) => {
       expect(result).toSucceed();
       const generated = JSON.parse(await readFile(destination, 'utf8'));
       expect(validate(generated)).toEqual({ valid: true, errors: [] });
-      expect(generated.commands['demo docgen'].summary).toBe('Write the OpenCLI document to a file');
+      expect(generated.commands['demo docgen'].summary).toBe(
+        'Write the OpenCLI document to a file, or stdout if --output is omitted',
+      );
       const discovered = await cli.run(['__opencli']);
       expect(generated).toEqual(discovered.json());
     } finally {
