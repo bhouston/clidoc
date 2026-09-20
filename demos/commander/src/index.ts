@@ -1,7 +1,10 @@
-import { writeFile } from 'node:fs/promises';
+import { readFileSync } from 'node:fs';
 import { Command, Option } from 'commander';
-import { fromCommander } from '@clidoc/adapter-commander';
-import { handleOpenCliRequest, renderMarkdown } from '@clidoc/core';
+import { createDocgenCommand, fromCommander } from '@clidoc/adapter-commander';
+import { handleOpenCliRequest, infoFromPackageJson } from '@clidoc/core';
+
+const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
+const info = infoFromPackageJson(pkg, { title: 'Commander demo', binary: 'demo' });
 
 const cli = new Command('demo');
 cli.description('Commander demo CLI');
@@ -12,20 +15,9 @@ cli
   .action((name: string, options: { language: string }) => {
     console.log(`${options.language === 'fr' ? 'Bonjour' : 'Hello'}, ${name}!`);
   });
-cli
-  .command('docgen')
-  .description('Write the OpenCLI document to a file')
-  .requiredOption('--output <file>', 'Output file')
-  .addOption(new Option('--format <format>', 'Output format').choices(['json', 'markdown']).default('json'))
-  .action(async (options: { output: string; format: 'json' | 'markdown' }) => {
-    const generated = document();
-    await writeFile(
-      options.output,
-      options.format === 'markdown' ? renderMarkdown(generated) : `${JSON.stringify(generated, null, 2)}\n`,
-    );
-  });
 
-const document = () => fromCommander(cli, { title: 'Commander demo', binary: 'demo', version: '0.0.0' });
+const document = () => fromCommander(cli, info);
+cli.addCommand(createDocgenCommand(document));
 
 if (!handleOpenCliRequest(process.argv.slice(2), document)) {
   cli.parse();

@@ -1,7 +1,10 @@
-import { describe, expect, it } from 'vitest';
+import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { Argument, Command, Option } from 'commander';
 import { validate } from '@clidoc/core';
-import { fromCommander } from './index.js';
+import { createDocgenCommand, fromCommander } from './index.js';
 
 const info = { title: 'Demo', binary: 'demo', version: '1.0.0' };
 describe('fromCommander', () => {
@@ -167,5 +170,38 @@ describe('hidden commands, summary, env sources (#36)', () => {
       .argument('[target]', 'Build target', 'all');
     const doc = fromCommander(root, info);
     expect(validate(doc)).toEqual({ valid: true, errors: [] });
+  });
+});
+
+describe('createDocgenCommand', () => {
+  let dir: string;
+
+  beforeEach(async () => {
+    dir = await mkdtemp(join(tmpdir(), 'clidoc-commander-docgen-'));
+  });
+
+  afterEach(async () => {
+    await rm(dir, { recursive: true, force: true });
+  });
+
+  it('writes JSON to --output by default', async () => {
+    const doc = fromCommander(new Command('demo'), info);
+    const output = join(dir, 'cli.json');
+    const command = createDocgenCommand(() => doc);
+    await command.parseAsync(['--output', output], { from: 'user' });
+    expect(JSON.parse(await readFile(output, 'utf8'))).toEqual(doc);
+  });
+
+  it('writes Markdown when --format markdown is passed', async () => {
+    const doc = fromCommander(new Command('demo'), info);
+    const output = join(dir, 'cli.md');
+    const command = createDocgenCommand(() => doc);
+    await command.parseAsync(['--output', output, '--format', 'markdown'], { from: 'user' });
+    expect(await readFile(output, 'utf8')).toContain('# Demo');
+  });
+
+  it('accepts a custom command name', () => {
+    const command = createDocgenCommand(() => fromCommander(new Command('demo'), info), { name: 'gen-docs' });
+    expect(command.name()).toBe('gen-docs');
   });
 });

@@ -1,5 +1,8 @@
-import { describe, expect, it } from 'vitest';
-import { fromYargs } from './index.js';
+import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { createDocgenCommand, fromYargs } from './index.js';
 import { validate } from '@clidoc/core';
 import { defineCommand } from 'yargs-file-commands';
 const info = { title: 'Demo', binary: 'demo', version: '1.0.0' };
@@ -255,5 +258,39 @@ describe('option type mapping (#34)', () => {
     const result = validate(doc);
     expect(result.errors).toEqual([]);
     expect(result.valid).toBe(true);
+  });
+});
+
+describe('createDocgenCommand', () => {
+  let dir: string;
+
+  beforeEach(async () => {
+    dir = await mkdtemp(join(tmpdir(), 'clidoc-yargs-docgen-'));
+  });
+
+  afterEach(async () => {
+    await rm(dir, { recursive: true, force: true });
+  });
+
+  it('defaults to a "docgen" command that writes JSON', async () => {
+    const doc = fromYargs([], info);
+    const module = createDocgenCommand(() => doc);
+    expect(module.command).toBe('docgen');
+    const output = join(dir, 'cli.json');
+    await module.handler({ output, format: 'json' });
+    expect(JSON.parse(await readFile(output, 'utf8'))).toEqual(doc);
+  });
+
+  it('writes Markdown when format is markdown', async () => {
+    const doc = fromYargs([], info);
+    const module = createDocgenCommand(() => doc);
+    const output = join(dir, 'cli.md');
+    await module.handler({ output, format: 'markdown' });
+    expect(await readFile(output, 'utf8')).toContain('# Demo');
+  });
+
+  it('accepts a custom command string', () => {
+    const module = createDocgenCommand(() => fromYargs([], info), { command: 'gen-docs' });
+    expect(module.command).toBe('gen-docs');
   });
 });
