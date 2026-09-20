@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "vitepress build",
-    "dev": "vitepress dev"
+    "dev": "vitepress dev --port 4002"
   },
   "dependencies": {
     "@clidoc/vitepress": "workspace:^",

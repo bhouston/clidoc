@@ -131,18 +131,17 @@ Hand-written guides stay as ordinary Markdown alongside generated reference page
 ## Demos and dogfooding
 
 ```sh
-pnpm --filter @clidoc/demo-yargs build
+pnpm build
 pnpm --filter @clidoc/demo-yargs start greet Ada --language fr
-pnpm --filter @clidoc/demo-commander build
 pnpm --filter @clidoc/demo-commander start greet Ada
-pnpm --filter @clidoc/demo-oclif build
 pnpm --filter @clidoc/demo-oclif start Ada
 
-pnpm docs:build
-pnpm --filter @clidoc/demo-docusaurus dev
-# Or:
-pnpm --filter @clidoc/demo-vitepress dev
+pnpm dev
 ```
+
+`pnpm build` builds every package and demo. `pnpm dev` starts the website and
+demo site dev servers together: the main website on port 4000, the
+Docusaurus demo on 4001, and the VitePress demo on 4002.
 
 Each CLI demo supports `docgen --output cli.json` for humans and the hidden
 `__opencli` subcommand for machine discovery, e.g.
