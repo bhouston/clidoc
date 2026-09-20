@@ -1,6 +1,14 @@
+import { Command as CommanderCommand, Option as CommanderOption } from 'commander';
 import type { Command, Option, Argument } from 'commander';
-import { OPENCLI_VERSION } from '@clidoc/core';
-import type { OpenCliDocument, InfoObject, CommandItemObject, FlagItemObject, ArgumentItemObject } from '@clidoc/core';
+import { OPENCLI_VERSION, writeOpenCliDocument } from '@clidoc/core';
+import type {
+  OpenCliDocument,
+  InfoObject,
+  CommandItemObject,
+  FlagItemObject,
+  ArgumentItemObject,
+  DocumentFormat,
+} from '@clidoc/core';
 
 function argumentToOpenCli(argument: Argument): ArgumentItemObject {
   const result: ArgumentItemObject = { name: argument.name() };
@@ -118,4 +126,27 @@ export function fromCommander(root: Command, info: InfoObject): OpenCliDocument 
   }
   visit(root, binary);
   return { opencliVersion: OPENCLI_VERSION, info, commands };
+}
+
+export interface CreateDocgenCommandOptions {
+  /** Command name; defaults to `docgen`. */
+  name?: string;
+}
+
+/**
+ * Build a ready-to-register `docgen` command: `--output <file>` (required) and
+ * `--format <json|markdown>` (default `json`), writing `getDocument()`'s result via
+ * `@clidoc/core`'s `writeOpenCliDocument`. Register it with `program.addCommand(...)`.
+ */
+export function createDocgenCommand(
+  getDocument: () => OpenCliDocument,
+  options: CreateDocgenCommandOptions = {},
+): Command {
+  return new CommanderCommand(options.name ?? 'docgen')
+    .description('Write the OpenCLI document to a file')
+    .requiredOption('--output <file>', 'Output file')
+    .addOption(new CommanderOption('--format <format>', 'Output format').choices(['json', 'markdown']).default('json'))
+    .action(async (opts: { output: string; format: DocumentFormat }) => {
+      await writeOpenCliDocument(getDocument(), opts.output, opts.format);
+    });
 }

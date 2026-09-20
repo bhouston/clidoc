@@ -7,7 +7,7 @@ sidebar_position: 5
 
 clidoc adapters convert framework definitions into an OpenCLI document. The resulting document can be validated, rendered, and published through either documentation integration.
 
-First, add `mycli docgen --output cli.json` to write a document derived from the same framework definitions as your CLI. Install the validator with `npm install -g @clidoc/cli`, then run `clidoc validate cli.json` and `clidoc markdown cli.json --output reference.md`.
+First, add `mycli docgen --output cli.json` to write a document derived from the same framework definitions as your CLI. Each adapter exports a `createDocgenCommand` helper that builds this command for you, wired to `--output`/`--format`, so you only need to register it. Install the validator with `npm install -g @clidoc/cli`, then run `clidoc validate cli.json` and `clidoc markdown cli.json --output reference.md`.
 
 For consistent discovery by documentation tools, add the hidden `mycli __opencli` subcommand to your CLI. Check for exactly that argument before normal argument parsing, print only one UTF-8 JSON OpenCLI document followed by a newline to stdout, and exit with status 0. Do not run handlers. Report errors on stderr and exit nonzero. For example, `mycli __opencli > mycli.opencli.json` captures the document for validation and rendering.
 
