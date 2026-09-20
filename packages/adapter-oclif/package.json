@@ -36,6 +36,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./docgen": {
+      "types": "./dist/docgen.d.ts",
+      "import": "./dist/docgen.js"
     }
   },
   "publishConfig": {
@@ -48,6 +52,9 @@
   },
   "dependencies": {
     "@clidoc/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@oclif/core": "^5.0.0"
   },
   "peerDependencies": {
     "@oclif/core": "^5.0.0"

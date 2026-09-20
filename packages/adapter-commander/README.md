@@ -6,21 +6,22 @@
 [![Coverage](https://codecov.io/gh/bhouston/clidoc/graph/badge.svg)](https://codecov.io/gh/bhouston/clidoc)
 [![Documentation](https://img.shields.io/badge/docs-clidoc.ben3d.ca-blue)](https://clidoc.ben3d.ca)
 
-Part of [clidoc](https://clidoc.ben3d.ca), tooling for publishing CLI reference documentation from an [OpenCLI](https://github.com/bcdxn/opencli) document.
-
-`fromCommander` converts a configured Commander `Command` tree into an OpenCLI `1.0.0-alpha.14` document. Configure the tree once and pass its root command with the CLI title, executable name, and version. The adapter traverses commands and reads their metadata without parsing arguments or running actions.
+An [OpenCLI](https://github.com/bcdxn/opencli) spec generator for [Commander](https://github.com/tj/commander.js). clidoc is a JavaScript suite of tools for generating, transforming, and publishing OpenCLI specifications, with wide compatibility across the standard ecosystem tooling.
 
 ## Add `docgen` and `__opencli` to your CLI
 
-Add `mycli docgen --output cli.json`, the human-facing command, to write the OpenCLI document from your CLI metadata. For machine discovery, attach the hidden `__opencli` subcommand, matching [upstream OpenCLI's Go adapters](https://github.com/bcdxn/opencli): print only one UTF-8 JSON OpenCLI document followed by a newline to stdout, then exit with status 0. `@clidoc/core` exports `handleOpenCliRequest`, which checks argv for `__opencli` before Commander parses arguments, so command handlers never run:
+`createDocgenCommand` builds a ready-to-register `docgen` command: `--output <file>` (required) and `--format <json|markdown>` (default `json`). `infoFromPackageJson` derives the document's title, binary name, and version from your `package.json`. For machine discovery, attach the hidden `__opencli` subcommand, matching [upstream OpenCLI's Go adapters](https://github.com/bcdxn/opencli): `handleOpenCliRequest` checks argv for `__opencli` before Commander parses arguments, prints one JSON document to stdout, and exits 0, so command handlers never run.
 
 ```ts
-import { writeFile } from 'node:fs/promises';
-import { Command, Option } from 'commander';
-import { fromCommander } from '@clidoc/adapter-commander';
-import { handleOpenCliRequest, renderMarkdown } from '@clidoc/core';
+import { readFileSync } from 'node:fs';
+import { Command } from 'commander';
+import { createDocgenCommand, fromCommander } from '@clidoc/adapter-commander';
+import { handleOpenCliRequest, infoFromPackageJson } from '@clidoc/core';
 
-const program = new Command('mycli');
+const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
+const info = infoFromPackageJson(pkg);
+
+const program = new Command(info.binary);
 program
   .command('greet <name>')
   .description('Greet a person')
@@ -28,27 +29,11 @@ program
     console.log(`Hello, ${name}!`);
   });
 
-program
-  .command('docgen')
-  .description('Write the OpenCLI document to a file')
-  .requiredOption('--output <file>', 'Output file')
-  .addOption(new Option('--format <format>', 'Output format').choices(['json', 'markdown']).default('json'))
-  .action(async (options: { output: string; format: 'json' | 'markdown' }) => {
-    const generated = document();
-    await writeFile(
-      options.output,
-      options.format === 'markdown' ? renderMarkdown(generated) : `${JSON.stringify(generated, null, 2)}\n`,
-    );
-  });
-const document = () =>
-  fromCommander(program, {
-    title: 'My CLI',
-    binary: 'mycli',
-    version: '1.0.0',
-  });
-const args = process.argv.slice(2);
-if (!handleOpenCliRequest(args, document)) {
-  program.parse(process.argv);
+const document = () => fromCommander(program, info);
+program.addCommand(createDocgenCommand(document));
+
+if (!handleOpenCliRequest(process.argv.slice(2), document)) {
+  program.parse();
 }
 ```
 
@@ -57,6 +42,18 @@ Run `mycli docgen --output cli.json` for JSON (the default), or `mycli docgen --
 ## Supported metadata
 
 The adapter traverses nested commands and reads descriptions, aliases, registered arguments, and options, including required and variadic status, choices, simple defaults, and hidden options and commands. `command.summary()` maps to `summary` and `command.description()` to `description` when both are set; a command with only a description keeps mapping it to `summary`. A `--foo`/`--no-foo` pair on the same command is merged into a single boolean flag named `foo`, with the negation noted in its summary; a standalone `--no-foo` maps to a boolean flag defaulting to `true`. `Option.env()` maps to `alternativeSources` with type `$ENV`. A command with subcommands and no arguments or options of its own is marked `kind: 'group'`; the OpenCLI validator rejects groups that carry flags, so a parent with options stays an ordinary command. Argument defaults have no dedicated field in the OpenCLI spec, so they are appended to the argument's summary instead. Custom parsers, hooks, and action behavior cannot be inferred from the command tree.
+
+## Advanced: using `fromCommander` directly
+
+`createDocgenCommand` is a thin convenience layer over `fromCommander`, which does the actual conversion and remains fully supported for callers who want to build their own `docgen` command, run the conversion at a different time, or skip `package.json` entirely:
+
+```ts
+import { fromCommander } from '@clidoc/adapter-commander';
+
+const document = fromCommander(program, { title: 'My CLI', binary: 'mycli', version: '1.0.0' });
+```
+
+`fromCommander` converts a configured Commander `Command` tree into an OpenCLI `1.0.0-alpha.14` document. Configure the tree once and pass its root command with the CLI title, executable name, and version. The adapter traverses commands and reads their metadata without parsing arguments or running actions.
 
 ## Adding examples and exit codes
 
@@ -68,7 +65,7 @@ and metadata like `info.license` never appear in the generated document. Add the
 import { mergeDocument } from '@clidoc/core';
 
 const document = () =>
-  mergeDocument(fromCommander(program, { title: 'My CLI', binary: 'mycli', version: '1.0.0' }), {
+  mergeDocument(fromCommander(program, info), {
     info: { license: { name: 'MIT', spdxId: 'MIT' } },
     commands: {
       greet: {

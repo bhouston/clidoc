@@ -155,6 +155,7 @@ importers:
       '@clidoc/core':
         specifier: workspace:*
         version: link:../core
+    devDependencies:
       '@oclif/core':
         specifier: ^5.0.0
         version: 5.0.0

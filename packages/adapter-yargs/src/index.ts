@@ -1,5 +1,12 @@
-import { OPENCLI_VERSION } from '@clidoc/core';
-import type { OpenCliDocument, InfoObject, CommandItemObject, FlagItemObject, ArgumentItemObject } from '@clidoc/core';
+import { OPENCLI_VERSION, writeOpenCliDocument } from '@clidoc/core';
+import type {
+  OpenCliDocument,
+  InfoObject,
+  CommandItemObject,
+  FlagItemObject,
+  ArgumentItemObject,
+  DocumentFormat,
+} from '@clidoc/core';
 
 export interface YargsOption {
   alias?: string | readonly string[];
@@ -154,4 +161,32 @@ export function fromYargs(modules: readonly YargsCommandModule[], info: InfoObje
   const commands: Record<string, CommandItemObject> = {};
   for (const module of modules) addCommandModule(module, info.binary, commands);
   return { opencliVersion: OPENCLI_VERSION, info, commands };
+}
+
+export interface CreateDocgenCommandOptions {
+  /** Command string; defaults to `docgen`. */
+  command?: string;
+}
+
+/**
+ * Build a ready-to-register `docgen` command module: `--output <file>` (required) and
+ * `--format <json|markdown>` (default `json`), writing `getDocument()`'s result via
+ * `@clidoc/core`'s `writeOpenCliDocument`. Add it to your commands array/`.command(...)` calls.
+ */
+export function createDocgenCommand(
+  getDocument: () => OpenCliDocument,
+  options: CreateDocgenCommandOptions = {},
+): YargsCommandModule & { handler: (argv: unknown) => Promise<void> } {
+  return {
+    command: options.command ?? 'docgen',
+    describe: 'Write the OpenCLI document to a file',
+    builder: {
+      output: { type: 'string', demandOption: true, description: 'Output file' },
+      format: { type: 'string', choices: ['json', 'markdown'], default: 'json', description: 'Output format' },
+    },
+    async handler(argv: unknown) {
+      const { output, format } = argv as { output: string; format: DocumentFormat };
+      await writeOpenCliDocument(getDocument(), output, format);
+    },
+  };
 }

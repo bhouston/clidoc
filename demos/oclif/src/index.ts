@@ -1,7 +1,12 @@
-import { writeFile } from 'node:fs/promises';
+import { readFileSync } from 'node:fs';
 import { Args, Command, Flags } from '@oclif/core';
 import { fromOclif } from '@clidoc/adapter-oclif';
-import { handleOpenCliRequest, renderMarkdown } from '@clidoc/core';
+import type { OclifManifestCommand } from '@clidoc/adapter-oclif';
+import { createDocgenCommand } from '@clidoc/adapter-oclif/docgen';
+import { handleOpenCliRequest, infoFromPackageJson } from '@clidoc/core';
+
+const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
+const info = infoFromPackageJson(pkg, { title: 'oclif demo', binary: 'demo' });
 
 class Greet extends Command {
   static override description = 'Greet a person';
@@ -21,23 +26,7 @@ class Greet extends Command {
   }
 }
 
-class Docgen extends Command {
-  static override description = 'Write the OpenCLI document to a file';
-  static override flags = {
-    output: Flags.string({ description: 'Output file', required: true }),
-    format: Flags.string({ description: 'Output format', options: ['json', 'markdown'], default: 'json' }),
-  };
-  async run(): Promise<void> {
-    const { flags } = await this.parse(Docgen);
-    const generated = document();
-    await writeFile(
-      flags.output,
-      flags.format === 'markdown' ? renderMarkdown(generated) : `${JSON.stringify(generated, null, 2)}\n`,
-    );
-  }
-}
-
-function metadata(command: typeof Greet | typeof Docgen) {
+function metadata(command: Command.Class): OclifManifestCommand {
   const flags = Object.fromEntries(
     Object.entries(command.flags).map(([name, flag]) => [
       name,
@@ -54,19 +43,24 @@ function metadata(command: typeof Greet | typeof Docgen) {
       },
     ]),
   );
-  return {
-    description: command.description,
-    examples: command.examples,
-    args: command === Greet ? Greet.args : {},
-    flags,
-  };
+  const args = Object.fromEntries(
+    Object.entries(command.args).map(([name, arg]) => [
+      name,
+      {
+        description: arg.description,
+        required: arg.required,
+        default: typeof arg.default === 'function' ? undefined : arg.default,
+      },
+    ]),
+  );
+  return { description: command.description, examples: command.examples, args, flags };
 }
 
-const document = () =>
-  fromOclif(
-    { commands: { greet: metadata(Greet), docgen: metadata(Docgen) } },
-    { title: 'oclif demo', binary: 'demo', version: '0.0.0' },
-  );
+// Real oclif projects generate this manifest at build time (`oclif manifest`); this demo builds
+// it inline to stay a single file.
+const document = () => fromOclif(manifest, info);
+const Docgen = createDocgenCommand(() => ({ manifest, info }));
+const manifest = { commands: { greet: metadata(Greet), docgen: metadata(Docgen) } };
 
 if (!handleOpenCliRequest(process.argv.slice(2), document)) {
   const argv = process.argv.slice(2);

@@ -1,9 +1,12 @@
-import { writeFile } from 'node:fs/promises';
+import { readFileSync } from 'node:fs';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import type { ArgumentsCamelCase } from 'yargs';
-import { fromYargs } from '@clidoc/adapter-yargs';
-import { handleOpenCliRequest, renderMarkdown } from '@clidoc/core';
+import type { ArgumentsCamelCase, CommandModule } from 'yargs';
+import { createDocgenCommand, fromYargs } from '@clidoc/adapter-yargs';
+import { handleOpenCliRequest, infoFromPackageJson } from '@clidoc/core';
+
+const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
+const info = infoFromPackageJson(pkg, { title: 'Yargs demo', binary: 'demo' });
 
 const greet = {
   command: 'greet <name>',
@@ -22,29 +25,15 @@ const greet = {
   },
 };
 
-const docgen = {
-  command: 'docgen',
-  describe: 'Write the OpenCLI document to a file',
-  builder: {
-    output: { type: 'string' as const, demandOption: true, describe: 'Output file' },
-    format: {
-      type: 'string' as const,
-      choices: ['json', 'markdown'] as const,
-      default: 'json',
-      describe: 'Output format',
-    },
-  },
-  async handler(argv: ArgumentsCamelCase<{ output: string; format: 'json' | 'markdown' }>) {
-    const generated = document();
-    await writeFile(
-      argv.output,
-      argv.format === 'markdown' ? renderMarkdown(generated) : `${JSON.stringify(generated, null, 2)}\n`,
-    );
-  },
-};
-
-const document = () => fromYargs([greet, docgen], { title: 'Yargs demo', binary: 'demo', version: '0.0.0' });
+const document = () => fromYargs([greet, docgen], info);
+const docgen = createDocgenCommand(document);
 
 if (!handleOpenCliRequest(hideBin(process.argv), document)) {
-  yargs(hideBin(process.argv)).command(greet).command(docgen).demandCommand().parse();
+  // createDocgenCommand()'s return type is structural (no yargs dependency in @clidoc/adapter-yargs);
+  // it matches yargs's own CommandModule shape at runtime.
+  yargs(hideBin(process.argv))
+    .command(greet)
+    .command(docgen as CommandModule)
+    .demandCommand()
+    .parse();
 }
