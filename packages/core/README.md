@@ -50,6 +50,16 @@ without repeating the rest of it. Commands not present in the generated document
 `mergeDocument` throws an `Error` listing every problem if the merged result fails schema
 validation.
 
+## Shell completion generation
+
+`generateCompletion(document, { shell: 'bash' | 'zsh' | 'fish', binary?: string })`
+validates an OpenCLI document and returns a standalone completion script. It
+supports nested commands, aliases, global/local flags, option and positional
+choices, and hidden entries, with no runtime dependency on Node or the target CLI.
+The optional `binary` overrides only the registered executable name. See the
+[completion guide](https://clidoc.ben3d.ca/docs/guides/completion) for activation,
+supported syntax, and limitations.
+
 ## License
 
 MIT. See [LICENSE](../../LICENSE).
