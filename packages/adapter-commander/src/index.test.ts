@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Argument, Command, Option } from 'commander';
-import { validate } from '@clidoc/core';
+import { renderMarkdown, validate } from '@clidoc/core';
 import { createDocgenCommand, fromCommander } from './index.js';
 
 const info = { title: 'Demo', binary: 'demo', version: '1.0.0' };
@@ -82,12 +82,27 @@ describe('Commander metadata variants', () => {
 });
 
 describe('negated options (#35)', () => {
-  it('types a standalone --no-foo flag as boolean with default true', () => {
+  it('preserves the invocable name and explains the backing property default of a standalone negation', () => {
     const root = new Command('demo');
     root.addOption(new Option('--no-color', 'Disable color output'));
     const doc = fromCommander(root, info);
     expect(doc.commands?.demo?.flags).toEqual([
-      { name: 'color', type: 'boolean', default: true, summary: 'Disable color output' },
+      { name: 'no-color', type: 'boolean', summary: 'Disable color output. Sets color to false; default color: true.' },
+    ]);
+    expect(renderMarkdown(doc)).toContain(
+      '`--no-color` | boolean | No | Disable color output. Sets color to false; default color: true.',
+    );
+    expect(renderMarkdown(doc)).not.toContain('Default: `true`');
+    expect(root.options.map((option) => option.long)).toContain(`--${doc.commands?.demo?.flags?.[0]?.name}`);
+    root.parse(['node', 'demo', '--no-color']);
+    expect(root.opts().color).toBe(false);
+  });
+
+  it('preserves an explicit default on a standalone negation', () => {
+    const root = new Command('demo');
+    root.addOption(new Option('--no-color').default(false));
+    expect(fromCommander(root, info).commands?.demo?.flags).toEqual([
+      { name: 'no-color', type: 'boolean', summary: 'Sets color to false; default color: false.' },
     ]);
   });
 
@@ -99,6 +114,11 @@ describe('negated options (#35)', () => {
     expect(doc.commands?.demo?.flags).toEqual([
       { name: 'color', type: 'boolean', default: true, summary: 'Use color output Negate with --no-color.' },
     ]);
+    expect(root.options.map((option) => option.long)).toEqual(['--color', '--no-color']);
+    root.parse(['node', 'demo', '--color']);
+    expect(root.opts().color).toBe(true);
+    root.parse(['node', 'demo', '--no-color']);
+    expect(root.opts().color).toBe(false);
   });
 
   it('types an option with an optional value as string and does not mark it required', () => {

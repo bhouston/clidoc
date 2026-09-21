@@ -47,8 +47,9 @@ function pickDefault(...values: unknown[]): string | number | boolean | undefine
 function optionToOpenCli(positive: Option | undefined, negative: Option | undefined): FlagItemObject {
   // optionsToOpenCli always passes at least one of the two.
   const option = (positive ?? negative) as Option;
-  const name = optionBaseName(option);
   const negatedOnly = !positive && !!negative;
+  // A standalone negation has no positive spelling to invoke. Keep its registered flag name.
+  const name = negatedOnly ? negative.long!.replace(/^--/, '') : optionBaseName(option);
   // A negated option (standalone or merged with its `--foo` counterpart) is always boolean.
   // Otherwise fall back to Commander's own classification, which is false for options with a
   // required or optional value (e.g. `--foo [value]`), so those correctly type as `string`.
@@ -75,7 +76,15 @@ function optionToOpenCli(positive: Option | undefined, negative: Option | undefi
   const defaultValue = negatedOnly
     ? pickDefault(negative?.defaultValue, true)
     : pickDefault(source.defaultValue, negative ? true : undefined);
-  if (defaultValue !== undefined) result.default = defaultValue;
+  if (negatedOnly) {
+    // Commander stores the positive property (`color`), while the documented invocation is
+    // `--no-color`. A default field on `no-color` would describe the opposite meaning.
+    const backingName = optionBaseName(option);
+    const note = `Sets ${backingName} to false; default ${backingName}: ${String(defaultValue)}.`;
+    result.summary = result.summary ? `${result.summary}${/[.!?]$/.test(result.summary) ? ' ' : '. '}${note}` : note;
+  } else if (defaultValue !== undefined) {
+    result.default = defaultValue;
+  }
   if (source.hidden) result.hidden = true;
   if (source.envVar) result.alternativeSources = [{ type: '$ENV', property: source.envVar }];
   return result;
