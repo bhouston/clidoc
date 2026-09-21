@@ -51,7 +51,9 @@ describe('CLI', () => {
     expect(stdout).toHaveBeenCalledWith(expect.stringContaining('# clidoc'));
     const destination = join(path, 'nested', 'reference.md');
     await runCli(['markdown', input, '-o', destination]);
-    expect(await readFile(destination, 'utf8')).toContain('clidoc generate');
+    expect(await readFile(destination, 'utf8')).toContain(
+      '### Usage\n\n```sh\nclidoc validate <input> [--help] [--version]\n```',
+    );
   });
 
   it('generates self and JSON/YAML file completions and rejects invalid arguments', async () => {
@@ -83,7 +85,9 @@ describe('CLI', () => {
     expect(JSON.parse(await readFile(destination, 'utf8'))).toEqual(cliDocument());
     const markdown = join(path, 'clidoc.md');
     await runCli(['docgen', '--format', 'markdown', '--output', markdown]);
-    expect(await readFile(markdown, 'utf8')).toContain('# clidoc');
+    expect(await readFile(markdown, 'utf8')).toContain(
+      '### Usage\n\n```sh\nclidoc validate <input> [--help] [--version]\n```',
+    );
     const yaml = join(path, 'clidoc.yaml');
     await runCli(['docgen', '--format', 'yaml', '--output', yaml]);
     expect(await readFile(yaml, 'utf8')).toContain('binary: clidoc');
