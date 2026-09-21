@@ -34,6 +34,15 @@ describe('published website', () => {
     const cli = await documentAt('/docs/cli/reference');
     expect(cli.body.textContent).toContain('clidoc');
 
+    const validateLink = [...cli.querySelectorAll('a')].find((link) => link.textContent === 'clidoc validate');
+    expect(validateLink).toBeDefined();
+    const validate = await documentAt(validateLink.getAttribute('href'));
+    expect(validate.body.textContent).toContain('Usage');
+    const usage = [...validate.querySelectorAll('pre')].find((block) => block.textContent.includes('clidoc validate'));
+    expect(usage?.textContent).toContain('<input>');
+    expect(usage?.textContent).toContain('[--help]');
+    expect(usage?.textContent).toContain('[--version]');
+
     const core = await documentAt('/docs/api');
     expect(core.body.textContent).toContain('parse');
   });

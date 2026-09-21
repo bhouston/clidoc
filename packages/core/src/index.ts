@@ -120,18 +120,82 @@ function fenced(content: string, language = 'sh'): string {
   const fence = '`'.repeat(Math.max(3, longest + 1));
   return `${fence}${language}\n${content}\n${fence}\n\n`;
 }
-function renderCommand(name: string, command: CommandItemObject): string {
+function placeholder(name: string, hint?: string): string {
+  const value = hint?.trim();
+  if (value?.startsWith('<') && value.endsWith('>')) return value;
+  return `<${value || name}>`;
+}
+function repeatable(token: string, required: boolean): string {
+  return required ? `${token} [${token}]...` : `[${token}]...`;
+}
+function renderArgumentUsage(arg: NonNullable<CommandItemObject['args']>[number]): string {
+  const token = placeholder(arg.name);
+  const required = Boolean(arg.required || (arg.minItems ?? 0) > 0);
+  if (arg.passthrough) {
+    const operand = `${token}${arg.variadic ? '...' : ''}`;
+    return required ? `-- ${operand}` : `[-- ${operand}]`;
+  }
+  if (arg.variadic) return required ? `${token}...` : `[${token}...]`;
+  return required ? token : `[${token}]`;
+}
+function renderFlagUsage(flag: FlagItemObject): string {
+  const token = `--${flag.name}${flag.type === 'boolean' ? '' : ` ${placeholder(flag.name, flag.hint)}`}`;
+  const required = Boolean(flag.required || (flag.minItems ?? 0) > 0);
+  if (flag.variadic) return repeatable(token, required);
+  return required ? token : `[${token}]`;
+}
+function commandInvocation(name: string, binary: string): { command: string; syntax: string[] } {
+  const parts: string[] = [];
+  const allParts = name.trim().split(/\s+/);
+  for (const part of allParts) {
+    if (part === '--' || ['<', '{', '['].some((marker) => part.includes(marker))) break;
+    parts.push(part);
+  }
+  const relative = parts.join(' ');
+  const command =
+    !binary || relative === binary || relative.startsWith(`${binary} `) ? relative : `${binary} ${relative}`;
+  return { command, syntax: allParts.slice(parts.length) };
+}
+function renderUsage(name: string, command: CommandItemObject, binary: string, globalFlags: FlagItemObject[]): string {
+  const combinedFlags = new Map(globalFlags.map((flag) => [flag.name, flag]));
+  for (const flag of command.flags ?? []) combinedFlags.set(flag.name, flag);
+  const flags = [...combinedFlags.values()].filter((flag) => !flag.hidden).map(renderFlagUsage);
+  const args = (command.args ?? []).map(renderArgumentUsage);
+  const invocation = commandInvocation(name, binary);
+  const legacyArgs = args.length
+    ? []
+    : invocation.syntax.filter((part) => !/^\[?flags\]?$/.test(part) && !/^\{commands?\}$/.test(part));
+  const legacyFlags = combinedFlags.size ? [] : invocation.syntax.filter((part) => /^\[?flags\]?$/.test(part));
+  const operands = [...legacyArgs, ...args];
+  const options = [...legacyFlags, ...flags];
+  const optionTerminated = (command.args ?? []).some((arg) => arg.passthrough) || legacyArgs.includes('--');
+  return (
+    heading(3, 'Usage') +
+    fenced(
+      [invocation.command, ...(optionTerminated ? options : operands), ...(optionTerminated ? operands : options)].join(
+        ' ',
+      ),
+    )
+  );
+}
+function renderCommand(
+  name: string,
+  command: CommandItemObject,
+  binary = '',
+  globalFlags: FlagItemObject[] = [],
+): string {
   let out = heading(2, name);
   if (command.summary) out += `${command.summary}\n\n`;
   if (command.description) out += `${command.description}\n\n`;
   if (command.aliases?.length) out += `Aliases: ${command.aliases.map(code).join(', ')}\n\n`;
   if (command.kind === 'group') out += 'Command group\n\n';
+  out += renderUsage(name, command, binary, globalFlags);
   out += table(
     ['Argument', 'Type', 'Required', 'Description'],
     (command.args ?? []).map((arg) => [
       code(arg.name),
       arg.type ?? 'string',
-      arg.required ? 'Yes' : 'No',
+      arg.required || (arg.minItems ?? 0) > 0 ? 'Yes' : 'No',
       details(arg),
     ]),
   );
@@ -224,7 +288,7 @@ export function renderMarkdown(document: OpenCliDocument): string {
   assertDocument(document);
   let out = renderDocumentHeader(document);
   for (const [name, command] of Object.entries(document.commands ?? {}).toSorted(([a], [b]) => a.localeCompare(b))) {
-    if (!command.hidden) out += renderCommand(name, command);
+    if (!command.hidden) out += renderCommand(name, command, document.info.binary, document.global?.flags ?? []);
   }
   return out.trimEnd() + '\n';
 }
@@ -286,7 +350,9 @@ export function generatePages(document: OpenCliDocument, options: { basePath?: s
       id: `command-${route}`,
       title: name,
       path: `${prefix}/commands/${route}`,
-      content: renderCommand(name, document.commands![name]!).trimEnd() + '\n',
+      content:
+        renderCommand(name, document.commands![name]!, document.info.binary, document.global?.flags ?? []).trimEnd() +
+        '\n',
     });
   }
   return pages;
