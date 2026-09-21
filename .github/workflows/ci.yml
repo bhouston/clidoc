@@ -36,6 +36,12 @@ jobs:
       - run: pnpm audit --audit-level=high
       - run: pnpm package:check
       - run: pnpm docs:build
+      - name: Validate generated OpenCLI with the published action
+        uses: bhouston/clidoc-action@61df600ccfb0fd9dbbe7093b7e392b06662fac85 # v1
+        with:
+          files: docs/generated/clidoc.json
+          specification: bcdxn
+          format: json
       - uses: actions/upload-artifact@v4
         with:
           name: quality-reports-${{ matrix.os }}
