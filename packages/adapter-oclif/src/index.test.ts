@@ -42,7 +42,7 @@ describe('oclif metadata variants', () => {
             description: 'Administration',
             hidden: true,
             flags: {
-              count: { type: 'option', required: true, multiple: true, default: 2, description: 'Count' },
+              count: { type: 'option', required: true, multiple: true, description: 'Count' },
               verbose: { type: 'boolean', summary: 'Verbose' },
             },
           },
@@ -54,10 +54,20 @@ describe('oclif metadata variants', () => {
       summary: 'Administration',
       hidden: true,
       flags: [
-        { name: 'count', type: 'string', required: true, variadic: true, default: 2 },
+        { name: 'count', type: 'string', minItems: 1, variadic: true },
         { name: 'verbose', type: 'boolean' },
       ],
     });
+    expect(doc.commands?.['demo admin']?.flags?.[0]?.required).toBeUndefined();
+    expect(validate(doc)).toEqual({ valid: true, errors: [] });
+  });
+
+  it('reports defaulted required multiple flags whose presence rule OpenCLI cannot express', () => {
+    expect(() =>
+      fromOclif({ commands: { run: { flags: { count: { required: true, multiple: true, default: 2 } } } } }, info),
+    ).toThrow(
+      "oclif flag 'count' is required and multiple but has a default: OpenCLI cannot express when the flag may be omitted. Document this flag separately or change its CLI behavior.",
+    );
   });
 });
 

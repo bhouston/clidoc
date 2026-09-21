@@ -50,6 +50,8 @@ The adapter reads command IDs, descriptions, aliases, visibility, flags, argumen
 
 Flag `deprecated` and `deprecateAliases` are read by oclif's own help output but are not mapped to the OpenCLI document; there is no equivalent spec field. It cannot infer custom parsing, hooks, or command runtime behavior from the manifest.
 
+For a flag with both `required: true` and `multiple: true` and no default, the adapter emits `variadic: true` and `minItems: 1`. OpenCLI rejects `required: true` on variadic flags, so `minItems` expresses the required first value. A default can satisfy oclif's required check without the flag being present, so the adapter throws a diagnostic for that combination and asks callers to document it separately or change the CLI behavior.
+
 ## Advanced: using `fromOclif` directly
 
 `createDocgenCommand` is a thin convenience layer over `fromOclif`, which does the actual conversion and remains fully supported for callers who want to build their own `docgen` command, run the conversion at a different time, or skip `package.json` entirely:
@@ -74,13 +76,15 @@ import { mergeDocument } from '@clidoc/core';
 const document = mergeDocument(fromOclif(manifest, { title: 'My CLI', binary: 'mycli', version: '1.0.0' }), {
   info: { license: { name: 'MIT', spdxId: 'MIT' } },
   commands: {
-    greet: {
+    'mycli greet': {
       examples: [{ title: 'Basic', content: 'mycli greet Ada' }],
       exitCodes: [{ code: 1, status: 'BAD_USER_INPUT_ERROR', summary: 'Missing name' }],
     },
   },
 });
 ```
+
+Use the full generated command key (`mycli greet`) to add metadata to the existing command.
 
 See the [`@clidoc/core` README](../core/README.md#adding-author-supplied-metadata) for the merge rules.
 

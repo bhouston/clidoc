@@ -36,7 +36,9 @@ Run `mycli docgen --output cli.json` for JSON (the default), or `mycli docgen --
 
 ## Supported metadata
 
-Standard Yargs command modules and `defineCommand` results from `yargs-file-commands` work. Command patterns provide names and positional arguments: the command name is every leading pattern token that is not a positional (`<...>` / `[...]`), so `'config set <key> <value>'` becomes `config set`, not just `config`. The special `$0` default-command token maps to the binary itself and contributes no word of its own. The adapter reads descriptions, aliases, declarative option maps, and synchronous builder calls to `.option()`, `.options()`, `.positional()`, and `.command()`. Nested `.command()` calls inside a builder are recursed into and produce dotted-word keys (e.g. `demo config set`); a parent command that has no flags or args of its own and exists only to register children is marked `kind: 'group'`. It maps supported value types, defaults, choices, and required, hidden, and array/variadic flags; `count` options map to `integer`, and any other unrecognised option type falls back to `string`. Builder callbacks run to collect this metadata, so use trusted modules; asynchronous builders are unsupported. Custom parsing, coercion, validation, and middleware behavior cannot be inferred from command metadata.
+Standard Yargs command modules and `defineCommand` results from `yargs-file-commands` work. Command patterns provide names and positional arguments: the command name is every leading pattern token that is not a positional (`<...>` / `[...]`), so `'config set <key> <value>'` becomes `config set`, not just `config`. The special `$0` default-command token maps to the binary itself and contributes no word of its own. The adapter reads descriptions, aliases, declarative option maps, and synchronous builder calls to `.option()`, `.options()`, `.positional()`, and `.command()`. Chained `.alias()`, `.describe()`, `.default()`, `.choices()`, `.demandOption()`, `.boolean()`, `.string()`, `.number()`, `.array()`, and `.count()` calls contribute option metadata. Common parser configuration calls such as `.strict()`, `.help()`, `.version()`, and `.demandCommand()` are accepted; `.check()` and `.middleware()` callbacks are never invoked. Unsupported builder methods report their name and suggest using `.option()` or extending the adapter. Nested `.command()` calls inside a builder are recursed into and produce dotted-word keys (e.g. `demo config set`); a parent command that has no flags or args of its own and exists only to register children is marked `kind: 'group'`. It maps supported value types, defaults, choices, and required, hidden, and array/variadic flags; `count` options map to `integer`, and any other unrecognised option type falls back to `string`. Builder callbacks run to collect this metadata, so use trusted modules; asynchronous builders are unsupported. Custom parsing, coercion, validation, and middleware behavior cannot be inferred from command metadata.
+
+For an array option with `demandOption: true`, the adapter throws a diagnostic naming the option. Yargs accepts a present array flag with zero values, but OpenCLI rejects `required: true` on variadic flags and `minItems: 1` would incorrectly require a value. Change the source definition or document that option separately before publishing.
 
 ## Advanced: using `fromYargs` directly
 
@@ -70,6 +72,8 @@ const document = () =>
     },
   });
 ```
+
+Use the full generated command key (`mycli greet`) to add metadata to the existing command.
 
 See the [`@clidoc/core` README](../core/README.md#adding-author-supplied-metadata) for the merge rules.
 

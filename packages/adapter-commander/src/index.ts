@@ -47,14 +47,20 @@ function pickDefault(...values: unknown[]): string | number | boolean | undefine
 function optionToOpenCli(positive: Option | undefined, negative: Option | undefined): FlagItemObject {
   // optionsToOpenCli always passes at least one of the two.
   const option = (positive ?? negative) as Option;
-  const name = optionBaseName(option);
   const negatedOnly = !positive && !!negative;
+  // A standalone negation has no positive spelling to invoke. Keep its registered flag name.
+  const name = negatedOnly ? negative.long!.replace(/^--/, '') : optionBaseName(option);
   // A negated option (standalone or merged with its `--foo` counterpart) is always boolean.
   // Otherwise fall back to Commander's own classification, which is false for options with a
   // required or optional value (e.g. `--foo [value]`), so those correctly type as `string`.
   const isBoolean = negatedOnly || !!negative || option.isBoolean();
   const result: FlagItemObject = { name, type: isBoolean ? 'boolean' : 'string' };
   const source = positive ?? option;
+  if (source.mandatory && source.variadic && (source.optional || source.defaultValue !== undefined)) {
+    throw new TypeError(
+      `Commander option '${name}' is mandatory and variadic but can be omitted or supplied without values: OpenCLI cannot express this presence rule. Document this option separately or change its CLI behavior.`,
+    );
+  }
   if (source.short && source.short.replace(/^-+/, '') !== name) result.aliases = [source.short.replace(/^-+/, '')];
   if (source.description) result.summary = source.description;
   if (negative && positive) {
@@ -62,13 +68,23 @@ function optionToOpenCli(positive: Option | undefined, negative: Option | undefi
     const note = `Negate with ${negative.long}.`;
     result.summary = result.summary ? `${result.summary} ${note}` : note;
   }
-  if (source.mandatory) result.required = true;
-  if (source.variadic) result.variadic = true;
+  if (source.variadic) {
+    result.variadic = true;
+    if (source.mandatory) result.minItems = 1;
+  } else if (source.mandatory) result.required = true;
   if (source.argChoices) result.choices = source.argChoices.map((value) => ({ value }));
   const defaultValue = negatedOnly
     ? pickDefault(negative?.defaultValue, true)
     : pickDefault(source.defaultValue, negative ? true : undefined);
-  if (defaultValue !== undefined) result.default = defaultValue;
+  if (negatedOnly) {
+    // Commander stores the positive property (`color`), while the documented invocation is
+    // `--no-color`. A default field on `no-color` would describe the opposite meaning.
+    const backingName = optionBaseName(option);
+    const note = `Sets ${backingName} to false; default ${backingName}: ${String(defaultValue)}.`;
+    result.summary = result.summary ? `${result.summary}${/[.!?]$/.test(result.summary) ? ' ' : '. '}${note}` : note;
+  } else if (defaultValue !== undefined) {
+    result.default = defaultValue;
+  }
   if (source.hidden) result.hidden = true;
   if (source.envVar) result.alternativeSources = [{ type: '$ENV', property: source.envVar }];
   return result;

@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 export * from './discovery.js';
 export * from './merge.js';
 export * from './docgen.js';
@@ -149,7 +150,12 @@ function renderFlags(flags: FlagItemObject[]): string {
     ['Flag', 'Type', 'Required', 'Description'],
     flags
       .filter((flag) => !flag.hidden)
-      .map((flag) => [code(`--${flag.name}`), flag.type, flag.required ? 'Yes' : 'No', details(flag)]),
+      .map((flag) => [
+        code(`--${flag.name}`),
+        flag.type,
+        flag.required || (flag.minItems ?? 0) > 0 ? 'Yes' : 'No',
+        details(flag),
+      ]),
   );
 }
 function renderExitCodes(codes: NonNullable<CommandItemObject['exitCodes']>): string {
@@ -232,36 +238,22 @@ function withoutBinaryPrefix(name: string, binary: string): string {
   }
   return name;
 }
-function readableSlug(text: string): string {
-  return (
-    text
+/** Reserve `~` for deterministic names outside the readable namespace. */
+function commandRoute(name: string, binary: string): string {
+  const display = withoutBinaryPrefix(name, binary);
+  const hasPrefix = !binary || name === `${binary} ${display}`;
+  if (hasPrefix && display.length <= 64 && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(display)) return display;
+  // Hash UTF-16 code units to preserve distinctions even for lone surrogates.
+  const units = Buffer.allocUnsafe(name.length * 2);
+  for (let index = 0; index < name.length; index++) units.writeUInt16BE(name.charCodeAt(index), index * 2);
+  const readable =
+    display
       .toLowerCase()
       .normalize('NFKD')
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-+|-+$/g, '')
-      .slice(0, 64) || 'command'
-  );
-}
-function fnvHash(name: string): string {
-  let hash = 2166136261;
-  for (const codePoint of name) {
-    hash ^= codePoint.codePointAt(0)!;
-    hash = Math.imul(hash, 16777619);
-  }
-  return (hash >>> 0).toString(16).padStart(8, '0');
-}
-
-/** Map each visible command name to a readable route, appending a hash only when two names collide. */
-function routesFor(names: string[], binary: string): Map<string, string> {
-  const readable = new Map(names.map((name) => [name, readableSlug(withoutBinaryPrefix(name, binary))]));
-  const counts = new Map<string, number>();
-  for (const base of readable.values()) counts.set(base, (counts.get(base) ?? 0) + 1);
-  return new Map(
-    names.map((name) => {
-      const base = readable.get(name)!;
-      return [name, (counts.get(base) ?? 0) > 1 ? `${base}-${fnvHash(name)}` : base];
-    }),
-  );
+      .slice(0, 64) || 'command';
+  return `${readable}~${createHash('sha256').update(units).digest('hex')}`;
 }
 
 /** Produce a landing page and one page per visible command with safe, stable routes. */
@@ -276,7 +268,8 @@ export function generatePages(document: OpenCliDocument, options: { basePath?: s
   const names = Object.keys(document.commands ?? {})
     .filter((name) => !document.commands?.[name]?.hidden)
     .toSorted((a, b) => a.localeCompare(b));
-  const routes = routesFor(names, document.info.binary);
+  const routes = new Map(names.map((name) => [name, commandRoute(name, document.info.binary)]));
+  if (new Set(routes.values()).size !== routes.size) throw new Error('Generated command routes collide');
   let landing = renderDocumentHeader(document);
   if (names.length)
     landing +=
