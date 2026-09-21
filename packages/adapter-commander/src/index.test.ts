@@ -43,6 +43,14 @@ describe('fromCommander', () => {
 });
 
 describe('Commander metadata variants', () => {
+  it('maps mandatory variadic options to at least one occurrence', () => {
+    const root = new Command('demo');
+    root.addOption(new Option('--items <items...>').makeOptionMandatory());
+    const doc = fromCommander(root, info);
+    expect(doc.commands?.demo?.flags).toEqual([{ name: 'items', type: 'string', variadic: true, minItems: 1 }]);
+    expect(validate(doc)).toEqual({ valid: true, errors: [] });
+  });
+
   it('handles optional, variadic, boolean, default and choice values', () => {
     const root = new Command('demo');
     root.argument('[mode]', 'Mode');

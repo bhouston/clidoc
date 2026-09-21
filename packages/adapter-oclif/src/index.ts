@@ -68,8 +68,10 @@ function flagToOpenCli(name: string, source: OclifManifestFlag): FlagItemObject 
   const aliases = [...(source.char ? [source.char] : []), ...(source.aliases ?? []), ...(source.charAliases ?? [])];
   if (aliases.length) flag.aliases = aliases;
   if (source.summary ?? source.description) flag.summary = source.summary ?? source.description;
-  if (source.required) flag.required = true;
-  if (source.multiple) flag.variadic = true;
+  if (source.multiple) {
+    flag.variadic = true;
+    if (source.required) flag.minItems = 1;
+  } else if (source.required) flag.required = true;
   if (source.options?.length) flag.choices = source.options.map((value) => ({ value }));
   if (source.default !== undefined) flag.default = source.default;
   if (source.hidden) flag.hidden = true;

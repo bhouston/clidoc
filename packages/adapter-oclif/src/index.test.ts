@@ -54,10 +54,12 @@ describe('oclif metadata variants', () => {
       summary: 'Administration',
       hidden: true,
       flags: [
-        { name: 'count', type: 'string', required: true, variadic: true, default: 2 },
+        { name: 'count', type: 'string', minItems: 1, variadic: true, default: 2 },
         { name: 'verbose', type: 'boolean' },
       ],
     });
+    expect(doc.commands?.['demo admin']?.flags?.[0]?.required).toBeUndefined();
+    expect(validate(doc)).toEqual({ valid: true, errors: [] });
   });
 });
 

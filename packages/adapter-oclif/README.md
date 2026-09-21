@@ -50,6 +50,8 @@ The adapter reads command IDs, descriptions, aliases, visibility, flags, argumen
 
 Flag `deprecated` and `deprecateAliases` are read by oclif's own help output but are not mapped to the OpenCLI document; there is no equivalent spec field. It cannot infer custom parsing, hooks, or command runtime behavior from the manifest.
 
+For a flag with both `required: true` and `multiple: true`, the adapter emits `variadic: true` and `minItems: 1`. OpenCLI rejects `required: true` on variadic flags, so `minItems` expresses the required first value. It records a minimum number of values rather than oclif's exact flag occurrence rule.
+
 ## Advanced: using `fromOclif` directly
 
 `createDocgenCommand` is a thin convenience layer over `fromOclif`, which does the actual conversion and remains fully supported for callers who want to build their own `docgen` command, run the conversion at a different time, or skip `package.json` entirely:
