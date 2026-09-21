@@ -1,16 +1,42 @@
 import { validate } from './index.js';
-import type { CommandItemObject, GlobalObject, InfoObject, InstallMethodItemObject, OpenCliDocument } from './types.js';
+import type {
+  ArgumentItemObject,
+  CommandItemObject,
+  FlagItemObject,
+  GlobalObject,
+  InfoObject,
+  InstallMethodItemObject,
+  OpenCliDocument,
+} from './types.js';
+
+/** A named array entry merged with a generated entry of the same name. */
+export type NamedOverride<T extends { name: string }> = Pick<T, 'name'> & Partial<Omit<T, 'name'>>;
+/** Metadata layered onto a generated command. */
+export type CommandOverride = Omit<Partial<CommandItemObject>, 'args' | 'flags'> & {
+  args?: NamedOverride<ArgumentItemObject>[];
+  flags?: NamedOverride<FlagItemObject>[];
+};
+/** Metadata layered onto the generated global settings. */
+export type GlobalOverride = Omit<Partial<GlobalObject>, 'config' | 'flags'> & {
+  config?: Partial<NonNullable<GlobalObject['config']>>;
+  flags?: NamedOverride<FlagItemObject>[];
+};
+/** Metadata layered onto the generated CLI identity. */
+export type InfoOverride = Omit<Partial<InfoObject>, 'license' | 'contact'> & {
+  license?: Partial<NonNullable<InfoObject['license']>>;
+  contact?: Partial<NonNullable<InfoObject['contact']>>;
+};
 
 /**
  * Author-supplied additions layered onto a generated OpenCLI document by {@link mergeDocument}.
- * Every field mirrors the shape of {@link OpenCliDocument} but is optional throughout, so an
- * author only needs to specify what they want to add or change.
+ * Named flags and arguments require a name for matching, but their remaining fields may be
+ * supplied by the generated document. The merged result is validated before it is returned.
  */
 export type DocumentOverrides = {
-  info?: Partial<InfoObject>;
+  info?: InfoOverride;
   install?: InstallMethodItemObject[];
-  global?: Partial<GlobalObject>;
-  commands?: Record<string, Partial<CommandItemObject>>;
+  global?: GlobalOverride;
+  commands?: Record<string, CommandOverride>;
   [key: `x-${string}`]: unknown;
 };
 
