@@ -151,6 +151,53 @@
           "summary": "Output file; defaults to stdout"
         }
       ]
+    },
+    "clidoc mcp": {
+      "summary": "Export MCP tools or serve a trusted CLI over MCP stdio",
+      "args": [
+        {
+          "name": "input",
+          "required": true,
+          "type": "string",
+          "summary": "OpenCLI JSON or YAML filename"
+        }
+      ],
+      "flags": [
+        {
+          "name": "output",
+          "type": "string",
+          "aliases": [
+            "o"
+          ],
+          "summary": "Tool catalog output file; defaults to stdout"
+        },
+        {
+          "name": "serve",
+          "type": "boolean",
+          "summary": "Serve MCP over stdin/stdout",
+          "default": false
+        },
+        {
+          "name": "executable",
+          "type": "string",
+          "summary": "Trusted executable to run; required with --serve"
+        },
+        {
+          "name": "cwd",
+          "type": "string",
+          "summary": "Working directory for CLI invocations"
+        },
+        {
+          "name": "timeout-ms",
+          "type": "number",
+          "summary": "Invocation timeout in milliseconds (default: 30000)"
+        },
+        {
+          "name": "max-output-bytes",
+          "type": "number",
+          "summary": "Combined stdout/stderr limit (default: 1048576)"
+        }
+      ]
     }
   },
   "global": {

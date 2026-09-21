@@ -22,9 +22,17 @@ own `yargs-file-commands` definitions.
 | [`@clidoc/adapter-yargs`](packages/adapter-yargs)         | Yargs command modules, including supported `defineCommand` builders                  |
 | [`@clidoc/adapter-commander`](packages/adapter-commander) | Configured Commander command trees                                                   |
 | [`@clidoc/adapter-oclif`](packages/adapter-oclif)         | oclif manifest command metadata                                                      |
-| [`@clidoc/cli`](packages/cli)                             | `generate`, `validate`, `markdown`, and `docgen` commands, plus `__opencli`          |
+| [`@clidoc/cli`](packages/cli)                             | `generate`, `validate`, `markdown`, `docgen`, and `mcp` commands, plus `__opencli`   |
 | [`@clidoc/docusaurus`](packages/docusaurus)               | Generated Markdown pages for the Docusaurus docs plugin                              |
 | [`@clidoc/vitepress`](packages/vitepress)                 | Generated Markdown and matching VitePress sidebar links                              |
+
+## MCP support
+
+Export MCP tool definitions with `clidoc mcp cli.json -o tools.json`, or serve a
+trusted local executable with
+`clidoc mcp cli.json --serve --executable /absolute/path/to/mycli`.
+See the [MCP guide](packages/website/docs/guides/mcp.md) for client configuration,
+argument mapping, process limits, and the `@clidoc/cli/mcp` library API.
 
 ## Run from source
 

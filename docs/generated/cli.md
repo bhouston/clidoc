@@ -59,6 +59,23 @@ Render an OpenCLI document as Markdown
 | --- | --- | --- | --- |
 | `--output` | string | No | Output file; defaults to stdout; Aliases: `o` |
 
+## clidoc mcp
+
+Export MCP tools or serve a trusted CLI over MCP stdio
+
+| Argument | Type | Required | Description |
+| --- | --- | --- | --- |
+| `input` | string | Yes | OpenCLI JSON or YAML filename |
+
+| Flag | Type | Required | Description |
+| --- | --- | --- | --- |
+| `--output` | string | No | Tool catalog output file; defaults to stdout; Aliases: `o` |
+| `--serve` | boolean | No | Serve MCP over stdin/stdout; Default: `false` |
+| `--executable` | string | No | Trusted executable to run; required with --serve |
+| `--cwd` | string | No | Working directory for CLI invocations |
+| `--timeout-ms` | number | No | Invocation timeout in milliseconds (default: 30000) |
+| `--max-output-bytes` | number | No | Combined stdout/stderr limit (default: 1048576) |
+
 ## clidoc validate
 
 Validate an OpenCLI JSON or YAML document

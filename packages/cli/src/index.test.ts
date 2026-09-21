@@ -16,6 +16,8 @@ vi.mock('yargs-file-commands', async (importOriginal) => ({
     (await import('./commands/validate.js')).command,
     (await import('./commands/docgen.js')).command,
     (await import('./commands/completion.js')).command,
+
+    (await import('./commands/mcp.js')).command,
   ],
 }));
 
@@ -34,7 +36,7 @@ describe('CLI', () => {
   it('documents the exact command definitions as a valid contract', () => {
     const document = cliDocument();
     expect(validate(document)).toEqual({ valid: true, errors: [] });
-    expect(Object.keys(document.commands!)).toHaveLength(5);
+    expect(Object.keys(document.commands!)).toHaveLength(6);
     expect(JSON.stringify(document)).toContain('Framework adapter');
   });
 
@@ -167,4 +169,30 @@ describe('CLI', () => {
       cliDocument(),
     );
   });
+});
+
+it('exports MCP catalogs and rejects incompatible serving options', async () => {
+  const path = await directory();
+  const input = join(path, 'spec.json');
+  await writeFile(
+    input,
+    JSON.stringify({
+      opencliVersion: '1.0.0-alpha.14',
+      info: { title: 'Tool', binary: 'tool', version: '1' },
+      commands: { 'tool run': {} },
+    }),
+  );
+  const stdout = vi.spyOn(process.stdout, 'write').mockReturnValue(true);
+  await runCli(['mcp', input]);
+  expect(stdout).toHaveBeenCalledWith(expect.stringContaining('"tools"'));
+  const catalog = join(path, 'catalog.json');
+  await runCli(['mcp', input, '-o', catalog]);
+  expect(JSON.parse(await readFile(catalog, 'utf8')).tools).toHaveLength(1);
+  await expect(runCli(['mcp', input, '--serve'])).rejects.toThrow('requires --executable');
+  await expect(runCli(['mcp', input, '--serve', '--output', catalog])).rejects.toThrow('--output');
+  await expect(runCli(['mcp', input, '--executable', 'tool'])).rejects.toThrow('require --serve');
+  await expect(runCli(['mcp', input, '--timeout-ms', '10'])).rejects.toThrow('require --serve');
+  await expect(runCli(['mcp', input, '--serve', '--executable', 'tool', '--timeout-ms', '0'])).rejects.toThrow(
+    'timeoutMs',
+  );
 });
