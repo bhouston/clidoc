@@ -55,6 +55,11 @@ function optionToOpenCli(positive: Option | undefined, negative: Option | undefi
   const isBoolean = negatedOnly || !!negative || option.isBoolean();
   const result: FlagItemObject = { name, type: isBoolean ? 'boolean' : 'string' };
   const source = positive ?? option;
+  if (source.mandatory && source.variadic && (source.optional || source.defaultValue !== undefined)) {
+    throw new TypeError(
+      `Commander option '${name}' is mandatory and variadic but can be omitted or supplied without values: OpenCLI cannot express this presence rule. Document this option separately or change its CLI behavior.`,
+    );
+  }
   if (source.short && source.short.replace(/^-+/, '') !== name) result.aliases = [source.short.replace(/^-+/, '')];
   if (source.description) result.summary = source.description;
   if (negative && positive) {
@@ -62,8 +67,10 @@ function optionToOpenCli(positive: Option | undefined, negative: Option | undefi
     const note = `Negate with ${negative.long}.`;
     result.summary = result.summary ? `${result.summary} ${note}` : note;
   }
-  if (source.mandatory) result.required = true;
-  if (source.variadic) result.variadic = true;
+  if (source.variadic) {
+    result.variadic = true;
+    if (source.mandatory) result.minItems = 1;
+  } else if (source.mandatory) result.required = true;
   if (source.argChoices) result.choices = source.argChoices.map((value) => ({ value }));
   const defaultValue = negatedOnly
     ? pickDefault(negative?.defaultValue, true)
