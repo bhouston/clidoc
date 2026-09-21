@@ -13,7 +13,7 @@ jobs:
       context: .
       smoke_text: clidoc
       build_args: |
-        SITE_URL=${{ vars.CLIDOC_SITE_URL || 'https://clidoc.ben3d.ca' }}
+        SITE_URL=${{ vars.CLIDOC_SITE_URL || 'https://clidoc.dev' }}
         BASE_URL=/
     secrets:
       GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}

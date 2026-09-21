@@ -4,7 +4,7 @@
 [![npm downloads](https://img.shields.io/npm/dw/%40clidoc%2Fcore)](https://www.npmjs.com/package/@clidoc/core)
 [![CI](https://github.com/bhouston/clidoc/actions/workflows/ci.yml/badge.svg)](https://github.com/bhouston/clidoc/actions/workflows/ci.yml)
 [![Coverage](https://codecov.io/gh/bhouston/clidoc/graph/badge.svg)](https://codecov.io/gh/bhouston/clidoc)
-[![Documentation](https://img.shields.io/badge/docs-clidoc.ben3d.ca-blue)](https://clidoc.ben3d.ca)
+[![Documentation](https://img.shields.io/badge/docs-clidoc.dev-blue)](https://clidoc.dev)
 
 TypeScript types, offline JSON Schema validation, YAML/JSON parsing, and Markdown documentation generation for [OpenCLI 1.0.0-alpha.14](https://github.com/bcdxn/opencli). The published package bundles the exact schema pinned in `upstream/opencli/spec.schema.json`.
 
@@ -57,7 +57,7 @@ validates an OpenCLI document and returns a standalone completion script. It
 supports nested commands, aliases, global/local flags, option and positional
 choices, and hidden entries, with no runtime dependency on Node or the target CLI.
 The optional `binary` overrides only the registered executable name. See the
-[completion guide](https://clidoc.ben3d.ca/docs/guides/completion) for activation,
+[completion guide](https://clidoc.dev/docs/guides/completion) for activation,
 supported syntax, and limitations.
 
 ## License

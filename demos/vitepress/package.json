@@ -1,6 +1,7 @@
 {
   "name": "@clidoc/demo-vitepress",
   "private": true,
+  "homepage": "https://clidoc.dev",
   "type": "module",
   "scripts": {
     "build": "vitepress build",

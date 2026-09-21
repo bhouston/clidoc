@@ -4,7 +4,7 @@
 [![npm downloads](https://img.shields.io/npm/dw/%40clidoc%2Fcli)](https://www.npmjs.com/package/@clidoc/cli)
 [![CI](https://github.com/bhouston/clidoc/actions/workflows/ci.yml/badge.svg)](https://github.com/bhouston/clidoc/actions/workflows/ci.yml)
 [![Coverage](https://codecov.io/gh/bhouston/clidoc/graph/badge.svg)](https://codecov.io/gh/bhouston/clidoc)
-[![Documentation](https://img.shields.io/badge/docs-clidoc.ben3d.ca-blue)](https://clidoc.ben3d.ca)
+[![Documentation](https://img.shields.io/badge/docs-clidoc.dev-blue)](https://clidoc.dev)
 
 Turn CLI definitions into a portable OpenCLI document, then publish Markdown
 wherever your documentation lives.
@@ -71,7 +71,7 @@ OpenCLI specifications in pull requests:
 The action accepts JSON/YAML, multiple files, explicit specification dialects,
 and pinned validator versions. Its default uses a locked source build until the
 clidoc npm packages are published. See the
-[official CI guide](https://clidoc-l5su5qyryq-uc.a.run.app/docs/guides/github-action/) for a complete
+[official CI guide](https://clidoc.dev/docs/guides/github-action/) for a complete
 workflow and version selection. This repository runs the hosted action against
 its generated CLI specification on Linux and macOS.
 
