@@ -73,6 +73,105 @@ describe('fromYargs', () => {
   });
 });
 
+describe('common Yargs builder chains (#75)', () => {
+  it('records setters through strict/help chains without executing validation or middleware callbacks', () => {
+    const check = vi.fn(() => {
+      throw new Error('validation ran');
+    });
+    const middleware = vi.fn(() => {
+      throw new Error('middleware ran');
+    });
+    const handler = vi.fn();
+    const doc = fromYargs(
+      [
+        {
+          command: 'deploy <target>',
+          handler,
+          builder: (y: any) =>
+            y
+              .strict()
+              .help()
+              .version()
+              .demandCommand()
+              .option('force', { type: 'boolean' })
+              .alias('force', 'f')
+              .describe('force', 'Overwrite')
+              .default('force', false)
+              .demandOption('force')
+              .choices('mode', ['fast', 'safe'])
+              .string('mode')
+              .positional('target', { describe: 'Destination' })
+              .check(check)
+              .middleware(middleware),
+        },
+      ],
+      info,
+    );
+    expect(doc.commands?.['demo deploy']).toMatchObject({
+      args: [{ name: 'target', summary: 'Destination' }],
+      flags: [
+        { name: 'help', type: 'boolean', summary: 'Show help' },
+        { name: 'version', type: 'boolean', summary: 'Show version number' },
+        { name: 'force', type: 'boolean', aliases: ['f'], summary: 'Overwrite', default: false, required: true },
+        { name: 'mode', type: 'string', choices: [{ value: 'fast' }, { value: 'safe' }] },
+      ],
+    });
+    expect(check).not.toHaveBeenCalled();
+    expect(middleware).not.toHaveBeenCalled();
+    expect(handler).not.toHaveBeenCalled();
+  });
+  it('records common type setters and accepts parser configuration chains', () => {
+    const doc = fromYargs(
+      [
+        {
+          command: 'run',
+          builder: (y: any) =>
+            y
+              .strictOptions()
+              .strictCommands()
+              .recommendCommands()
+              .parserConfiguration({})
+              .exitProcess(false)
+              .showHelpOnFail(false)
+              .boolean(['quiet', 'debug'])
+              .number('retries')
+              .array('files')
+              .count('verbose')
+              .demandOption(['files', 'retries'], 'required')
+              .help(false)
+              .version(false),
+        },
+      ],
+      info,
+    );
+    expect(doc.commands?.['demo run']?.flags).toMatchObject([
+      { name: 'quiet', type: 'boolean' },
+      { name: 'debug', type: 'boolean' },
+      { name: 'retries', type: 'number', required: true },
+      { name: 'files', variadic: true, required: true },
+      { name: 'verbose', type: 'integer' },
+    ]);
+  });
+  it('keeps help and version flag names and rejects unsupported object setters', () => {
+    const doc = fromYargs(
+      [{ command: 'go', builder: (y: any) => y.help('usage', 'Print usage').version('1.2.3') }],
+      info,
+    );
+    expect(doc.commands?.['demo go']?.flags).toMatchObject([
+      { name: 'usage', summary: 'Print usage' },
+      { name: 'version', summary: 'Show version number' },
+    ]);
+    expect(() => fromYargs([{ command: 'go', builder: (y: any) => y.alias({ foo: 'f' }) }], info)).toThrow(
+      'Unsupported Yargs .alias() overload',
+    );
+  });
+  it('reports unsupported metadata setters clearly', () => {
+    expect(() => fromYargs([{ command: 'go', builder: (y: any) => y.nargs('files', 2) }], info)).toThrow(
+      'Unsupported Yargs builder method .nargs(). Add metadata with .option() or extend the adapter.',
+    );
+  });
+});
+
 describe('Yargs metadata variants', () => {
   it('supports aliases, choices, arrays, and options() builder', () => {
     const doc = fromYargs(
