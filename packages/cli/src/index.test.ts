@@ -15,6 +15,7 @@ vi.mock('yargs-file-commands', async (importOriginal) => ({
     (await import('./commands/markdown.js')).command,
     (await import('./commands/validate.js')).command,
     (await import('./commands/docgen.js')).command,
+    (await import('./commands/convert.js')).command,
   ],
 }));
 
@@ -33,7 +34,7 @@ describe('CLI', () => {
   it('documents the exact command definitions as a valid contract', () => {
     const document = cliDocument();
     expect(validate(document)).toEqual({ valid: true, errors: [] });
-    expect(Object.keys(document.commands!)).toHaveLength(4);
+    expect(Object.keys(document.commands!)).toHaveLength(5);
     expect(JSON.stringify(document)).toContain('Framework adapter');
   });
 
@@ -49,6 +50,38 @@ describe('CLI', () => {
     const destination = join(path, 'nested', 'reference.md');
     await runCli(['markdown', input, '-o', destination]);
     expect(await readFile(destination, 'utf8')).toContain('clidoc generate');
+  });
+
+  it('validates and renders an opencli-dev document while rejecting OpenCLISpec', async () => {
+    const path = await directory();
+    const input = join(path, 'opencli-dev.yaml');
+    await writeFile(
+      input,
+      [
+        'opencli: 0.1.0',
+        'info:',
+        '  title: Acme tools',
+        '  binaryName: acme',
+        '  version: 2.0.0',
+        'commands:',
+        '  - name: account',
+        '    description: Manage accounts',
+        '    commands:',
+        '      - name: show',
+        '        operationId: account_show',
+        '        description: Show an account',
+        '',
+      ].join('\n'),
+    );
+    const stdout = vi.spyOn(process.stdout, 'write').mockReturnValue(true);
+    await runCli(['validate', input]);
+    expect(stdout).toHaveBeenCalledWith('Valid OpenCLI document\n');
+    await runCli(['markdown', input]);
+    expect(stdout).toHaveBeenCalledWith(expect.stringContaining('acme account show'));
+
+    const unsupported = join(path, 'openclispec.json');
+    await writeFile(unsupported, JSON.stringify({ opencli: '1.0.0', commands: { acme: {} } }));
+    await expect(runCli(['validate', unsupported])).rejects.toThrow('nrranjithnr OpenCLISpec 1.0.0 is not supported');
   });
 
   it('generates its own OpenCLI document through docgen', async () => {
@@ -115,6 +148,55 @@ describe('CLI', () => {
     const stdout = vi.spyOn(process.stdout, 'write').mockReturnValue(true);
     await runCli(['generate', source, '--adapter', 'commander']);
     expect(stdout).toHaveBeenCalledWith(expect.stringContaining('A demo'));
+  });
+
+  it('converts explicitly to opencli-dev while retaining the bcdxn default', async () => {
+    const path = await directory();
+    const input = join(path, 'source.json');
+    const source = {
+      opencliVersion: '1.0.0-alpha.14',
+      info: { title: 'Tool', binary: 'tool', version: '1' },
+      commands: { 'tool run': { summary: 'Run', args: [{ name: 'TARGET', type: 'string', required: true }] } },
+    };
+    await writeFile(input, JSON.stringify(source));
+    const stdout = vi.spyOn(process.stdout, 'write').mockReturnValue(true);
+    await runCli(['convert', input]);
+    expect(stdout).toHaveBeenLastCalledWith(JSON.stringify(source, null, 2) + '\n');
+    const target = join(path, 'nested', 'converted.yaml');
+    await runCli(['convert', input, '--to', 'opencli-dev', '--format', 'yaml', '-o', target]);
+    const converted = await readFile(target, 'utf8');
+    expect(converted).toContain('opencli: 0.1.0');
+    expect(converted).toContain('operationId:');
+    await runCli(['validate', target]);
+    await expect(runCli(['convert', target, '--to', 'missing'])).rejects.toThrow();
+    await expect(runCli(['convert', target, '--format', 'markdown'])).rejects.toThrow();
+  });
+
+  it('keeps lossy diagnostics off stdout and leaves files untouched on failure', async () => {
+    const path = await directory();
+    const input = join(path, 'new.json');
+    const destination = join(path, 'existing.json');
+    await writeFile(
+      input,
+      JSON.stringify({
+        opencli: '0.1.0',
+        commands: [{ name: 'run', operationId: 'run', output: { formats: [{ format: 'text' }] } }],
+      }),
+    );
+    await writeFile(destination, 'keep me');
+    const stdout = vi.spyOn(process.stdout, 'write').mockReturnValue(true);
+    const stderr = vi.spyOn(process.stderr, 'write').mockReturnValue(true);
+    const metadata = ['--title', 'Tool', '--binary', 'tool', '--cli-version', '1'];
+    await expect(runCli(['convert', input, ...metadata, '-o', destination])).rejects.toThrow();
+    expect(await readFile(destination, 'utf8')).toBe('keep me');
+    expect(stdout).not.toHaveBeenCalled();
+    await runCli(['convert', input, ...metadata, '--allow-lossy']);
+    const emitted = JSON.parse(String(stdout.mock.calls.at(-1)![0]));
+    expect(emitted.opencliVersion).toBe('1.0.0-alpha.14');
+    expect(emitted.info).toMatchObject({ title: 'Tool', binary: 'tool', version: '1' });
+    expect(stderr).toHaveBeenCalledWith(expect.stringContaining('Conversion loss'));
+    expect(stderr).toHaveBeenCalledWith(expect.stringContaining('output'));
+    await expect(runCli(['convert', input, '--allow-lossy'])).rejects.toThrow();
   });
 
   it('writes directly to stdout when no output path is set', async () => {

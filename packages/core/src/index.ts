@@ -1,3 +1,9 @@
+export * from './convert.js';
+import { heading, code, table, fenced } from './render-utils.js';
+import { renderDevDocument } from './opencli-dev-render.js';
+import { validateOpenCliDev } from './opencli-dev.js';
+import type { OpenCliDevDocument } from './opencli-dev-types.js';
+export * from './opencli-dev.js';
 import { createHash } from 'node:crypto';
 export * from './discovery.js';
 export * from './merge.js';
@@ -41,7 +47,7 @@ export function validate(document: unknown): { valid: boolean; errors: string[] 
 }
 
 /** Parse JSON or YAML and reject documents that do not match the specification. */
-export function parse(input: string, options: { format?: 'json' | 'yaml' } = {}): OpenCliDocument {
+function decode(input: string, options: { format?: 'json' | 'yaml' }): unknown {
   const looksLikeJson = /^\s*[{[]/.test(input);
   const format = options.format ?? (looksLikeJson ? 'json' : 'yaml');
   let document: unknown;
@@ -62,19 +68,57 @@ export function parse(input: string, options: { format?: 'json' | 'yaml' } = {})
       });
     }
   }
+  return document;
+}
+
+/** Either supported document dialect; adapters continue to return OpenCliDocument. */
+export type SupportedOpenCliDocument = OpenCliDocument | OpenCliDevDocument;
+export type OpenCliDialect = 'bcdxn' | 'opencli-dev';
+/** Preferred dialect for generated and converted documents. */
+export const DEFAULT_OPENCLI_DIALECT: OpenCliDialect = 'bcdxn';
+/** Identify a supported dialect by its marker and version, then validate its structure separately. */
+export function detectDialect(document: unknown): OpenCliDialect {
+  if (!document || typeof document !== 'object' || Array.isArray(document))
+    throw new Error('Expected an OpenCLI object');
+  const value = document as Record<string, unknown>;
+  if ('opencliVersion' in value && 'opencli' in value) throw new Error('Conflicting OpenCLI dialect markers');
+  if ('opencliVersion' in value) {
+    if (value.opencliVersion === OPENCLI_VERSION) return 'bcdxn';
+    throw new Error('Unsupported bcdxn OpenCLI version');
+  }
+  if (value.opencli === '0.1.0') return 'opencli-dev';
+  if (
+    value.opencli === '1.0.0' &&
+    value.commands &&
+    typeof value.commands === 'object' &&
+    !Array.isArray(value.commands)
+  )
+    throw new Error('nrranjithnr OpenCLISpec 1.0.0 is not supported');
+  throw new Error('Unknown or unsupported OpenCLI dialect/version');
+}
+/** Validate either supported dialect without changing the document or fetching resources. */
+export function validateDocument(document: unknown): { valid: boolean; errors: string[] } {
+  try {
+    return detectDialect(document) === 'bcdxn' ? validate(document) : validateOpenCliDev(document);
+  } catch (error) {
+    return { valid: false, errors: [String(error)] };
+  }
+}
+/** Parse either supported dialect from JSON or YAML, preserving its original fields. */
+export function parseDocument(input: string, options: { format?: 'json' | 'yaml' } = {}): SupportedOpenCliDocument {
+  const document = decode(input, options);
+  const result = validateDocument(document);
+  if (!result.valid) throw new Error(`Invalid OpenCLI document: ${result.errors.join('; ')}`);
+  return document as SupportedOpenCliDocument;
+}
+/** Backward-compatible bcdxn-only parser. Use parseDocument for automatic dialect detection. */
+export function parse(input: string, options: { format?: 'json' | 'yaml' } = {}): OpenCliDocument {
+  const document = decode(input, options);
   const result = validate(document);
   if (!result.valid) throw new Error(`Invalid OpenCLI document: ${result.errors.join('; ')}`);
   return document as OpenCliDocument;
 }
 
-const heading = (level: number, text: string) => `${'#'.repeat(level)} ${text}\n\n`;
-const escapeCell = (value: unknown) => String(value).replace(/\|/g, '\\|').replace(/\r?\n/g, ' ');
-function code(value: string): string {
-  const longest = Math.max(0, ...Array.from(value.matchAll(/`+/g), (match) => match[0].length));
-  const delim = '`'.repeat(longest + 1);
-  const padded = value.startsWith('`') || value.endsWith('`') ? ` ${value} ` : value;
-  return `${delim}${padded}${delim}`;
-}
 const values = (choices: ChoiceObject[]) =>
   choices
     .map((choice) => (choice.description ? `${choice.value} (${choice.description})` : String(choice.value)))
@@ -110,15 +154,6 @@ const details = (item: {
     );
   return parts.filter(Boolean).join('; ');
 };
-function table(headers: string[], rows: unknown[][]): string {
-  if (!rows.length) return '';
-  return `| ${headers.join(' | ')} |\n| ${headers.map(() => '---').join(' | ')} |\n${rows.map((row) => `| ${row.map(escapeCell).join(' | ')} |`).join('\n')}\n\n`;
-}
-function fenced(content: string, language = 'sh'): string {
-  const longest = Math.max(0, ...Array.from(content.matchAll(/`+/g), (match) => match[0].length));
-  const fence = '`'.repeat(Math.max(3, longest + 1));
-  return `${fence}${language}\n${content}\n${fence}\n\n`;
-}
 function renderCommand(name: string, command: CommandItemObject): string {
   let out = heading(2, name);
   if (command.summary) out += `${command.summary}\n\n`;
@@ -213,14 +248,18 @@ function renderDocumentHeader(document: OpenCliDocument): string {
   return out;
 }
 
-function assertDocument(document: unknown): asserts document is OpenCliDocument {
-  const result = validate(document);
+function assertDocument(document: unknown): asserts document is SupportedOpenCliDocument {
+  const result = validateDocument(document);
   if (!result.valid) throw new Error(`Invalid OpenCLI document: ${result.errors.join('; ')}`);
 }
 
 /** Render a complete Markdown reference, preserving spec-authored Markdown prose. */
-export function renderMarkdown(document: OpenCliDocument): string {
+export function renderMarkdown(document: SupportedOpenCliDocument): string {
   assertDocument(document);
+  if ('opencli' in document) {
+    const view = renderDevDocument(document);
+    return (view.header + view.commands.map((command) => command.content).join('')).trimEnd() + '\n';
+  }
   let out = renderDocumentHeader(document);
   for (const [name, command] of Object.entries(document.commands ?? {}).toSorted(([a], [b]) => a.localeCompare(b))) {
     if (!command.hidden) out += renderCommand(name, command);
@@ -257,7 +296,10 @@ function commandRoute(name: string, binary: string): string {
 }
 
 /** Produce a landing page and one page per visible command with safe, stable routes. */
-export function generatePages(document: OpenCliDocument, options: { basePath?: string } = {}): GeneratedPage[] {
+export function generatePages(
+  document: SupportedOpenCliDocument,
+  options: { basePath?: string } = {},
+): GeneratedPage[] {
   assertDocument(document);
   const rawBase = (options.basePath ?? '').replace(/\\/g, '/');
   const segments = rawBase.split('/').filter(Boolean);
@@ -265,12 +307,22 @@ export function generatePages(document: OpenCliDocument, options: { basePath?: s
     throw new Error('Invalid basePath segment');
   const prefix = segments.length ? '/' + segments.map((segment) => encodeURIComponent(segment)).join('/') : '';
   const pages: GeneratedPage[] = [];
-  const names = Object.keys(document.commands ?? {})
-    .filter((name) => !document.commands?.[name]?.hidden)
-    .toSorted((a, b) => a.localeCompare(b));
-  const routes = new Map(names.map((name) => [name, commandRoute(name, document.info.binary)]));
+  const view =
+    'opencli' in document
+      ? renderDevDocument(document)
+      : {
+          title: document.info.title,
+          binary: document.info.binary,
+          header: renderDocumentHeader(document),
+          commands: Object.entries(document.commands ?? {})
+            .filter(([, command]) => !command.hidden)
+            .toSorted(([a], [b]) => a.localeCompare(b))
+            .map(([name, command]) => ({ name, content: renderCommand(name, command) })),
+        };
+  const names = view.commands.map((command) => command.name);
+  const routes = new Map(names.map((name) => [name, commandRoute(name, view.binary)]));
   if (new Set(routes.values()).size !== routes.size) throw new Error('Generated command routes collide');
-  let landing = renderDocumentHeader(document);
+  let landing = view.header;
   if (names.length)
     landing +=
       heading(2, 'Commands') +
@@ -278,14 +330,14 @@ export function generatePages(document: OpenCliDocument, options: { basePath?: s
         .map((name) => `- [${name.replace(/[[\]\\]/g, '\\$&')}](${`${prefix}/commands/${routes.get(name)}`})`)
         .join('\n') +
       '\n\n';
-  pages.push({ id: 'index', title: document.info.title, path: prefix || '/', content: landing.trimEnd() + '\n' });
-  for (const name of names) {
+  pages.push({ id: 'index', title: view.title, path: prefix || '/', content: landing.trimEnd() + '\n' });
+  for (const { name, content } of view.commands) {
     const route = routes.get(name)!;
     pages.push({
       id: `command-${route}`,
       title: name,
       path: `${prefix}/commands/${route}`,
-      content: renderCommand(name, document.commands![name]!).trimEnd() + '\n',
+      content: content.trimEnd() + '\n',
     });
   }
   return pages;
