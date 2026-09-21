@@ -2,6 +2,7 @@
   "name": "@clidoc/demo-oclif",
   "version": "0.0.0",
   "private": true,
+  "homepage": "https://clidoc.dev",
   "type": "module",
   "scripts": {
     "build": "tsc",

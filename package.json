@@ -2,6 +2,7 @@
   "name": "clidoc",
   "private": true,
   "description": "JavaScript and TypeScript tooling for the OpenCLI specification",
+  "homepage": "https://clidoc.dev",
   "license": "MIT",
   "author": "Ben Houston <ben@ben3d.ca> (https://ben3d.ca)",
   "repository": {

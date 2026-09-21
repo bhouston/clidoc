@@ -1,6 +1,7 @@
 {
   "name": "@clidoc/website",
   "private": true,
+  "homepage": "https://clidoc.dev",
   "scripts": {
     "build": "docusaurus build",
     "dev": "docusaurus start --port 4000",
