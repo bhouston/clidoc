@@ -7,6 +7,8 @@ sidebar_position: 5
 
 OpenCLI is not one shared standard. At least three independent projects use the name for formats that describe command-line interfaces. Their version numbers are unrelated: a `1.0.0` from one project is not a newer release of another project's `0.1.0`.
 
+**clidoc has not created a new specification.** It provides tooling and interoperability for existing specifications, mindful of the proliferation of standards illustrated in [XKCD 927: Standards](https://xkcd.com/927/).
+
 clidoc uses the GitHub owner and specification version whenever the distinction matters. **bcdxn OpenCLI 1.0.0-alpha.14 is clidoc's preferred format and the default for all generated output.**
 
 | Specification                                  | Distinctive strengths                                                                                                           | Tradeoffs                                                                                                        | clidoc status                                   |
