@@ -70,7 +70,15 @@ its own; for a hand-built sidebar array, call `writeDocusaurus()` directly
 from `sidebars.js` instead of using the plugin.
 
 `writeDocusaurus(document, {outputDir, basePath})` offers direct generation
-for build scripts. Regeneration removes files listed in `.clidoc-generated.json`.
+for build scripts. Generated files have readable names based on the executable and
+command, such as `mycli.md` for the landing page and `mycli-validate.md` for a
+command page. Names that contain unsafe characters, exceed the length limit, or
+would otherwise collide retain a readable prefix and add a deterministic digest.
+Page IDs and routes are defined separately in front matter and do not change with
+the filenames.
+
+Regeneration removes files listed in `.clidoc-generated.json`. Generation stops
+instead of overwriting a matching filename that is not owned by that manifest.
 On the first run after upgrading from OpenCLI, it also removes old generated
 pages listed in `.opencli-generated.json` and deletes that legacy manifest.
 Other documents in the directory are preserved. Landing-page links to command
@@ -78,7 +86,7 @@ pages point at the generated filenames directly, so routes resolve correctly
 regardless of the docs plugin's `routeBasePath`.
 
 Add `docs/generated-cli/` to `.gitignore` if generated pages should stay out of
-version control. Generated command pages use stable `clidoc-*.md` filenames.
+version control.
 
 ## License
 

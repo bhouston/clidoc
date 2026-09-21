@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { generatePages, parse, type OpenCliDocument } from '@clidoc/core';
 
@@ -13,16 +13,63 @@ export interface DocusaurusOptions {
 
 const manifestName = '.clidoc-generated.json';
 const legacyManifestName = '.opencli-generated.json';
-function filename(id: string): string {
-  return `clidoc-${createHash('sha256').update(id).digest('hex').slice(0, 20)}.md`;
+const legacyFilename = /^(?:clidoc|opencli)-[a-f0-9]{20}\.md$/;
+
+function filenamePart(value: string): string {
+  if (/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value) && value.length <= 48) return value;
+  const readable =
+    value
+      .toLowerCase()
+      .normalize('NFKD')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 32) || 'page';
+  return `${readable}-${createHash('sha256').update(value).digest('hex').slice(0, 16)}`;
 }
-async function previousFiles(outputDir: string, name: string, prefix: string): Promise<string[]> {
+
+function filename(binary: string, id: string, title: string): string {
+  const prefix = filenamePart(binary);
+  if (id === 'index') return `${prefix}.md`;
+  const command = title.startsWith(`${binary} `) ? title.slice(binary.length + 1) : title;
+  const words = command.trim().split(/\s+/);
+  const syntax = words.findIndex((word) => /^(?:<|\[|\{|--)/.test(word));
+  const staticWords = syntax === -1 ? words : words.slice(0, syntax);
+  const staticCommand = staticWords.length ? staticWords.join('-') : command;
+  return `${prefix}-${filenamePart(staticCommand)}.md`;
+}
+
+function filenames(binary: string, pages: ReturnType<typeof generatePages>): string[] {
+  const candidates = pages.map((page) => filename(binary, page.id, page.title));
+  const counts = new Map<string, number>();
+  for (const candidate of candidates) counts.set(candidate, (counts.get(candidate) ?? 0) + 1);
+  return candidates.map((candidate, position) => {
+    if (counts.get(candidate) === 1) return candidate;
+    const stem = candidate.slice(0, -'.md'.length);
+    const digest = createHash('sha256').update(pages[position]!.id).digest('hex').slice(0, 16);
+    return `${stem}--${digest}.md`;
+  });
+}
+
+async function previousFiles(outputDir: string, name: string): Promise<string[]> {
   try {
     const value: unknown = JSON.parse(await readFile(join(outputDir, name), 'utf8'));
-    if (!Array.isArray(value)) throw new Error('Invalid generated file manifest');
-    return value.filter(
-      (entry): entry is string => typeof entry === 'string' && new RegExp(`^${prefix}-[a-f0-9]{20}\\.md$`).test(entry),
-    );
+    // Array manifests were written by older releases. Only accept their opaque generated
+    // names so a malformed old manifest cannot claim an unrelated Markdown document.
+    if (Array.isArray(value))
+      return value.filter((entry): entry is string => typeof entry === 'string' && legacyFilename.test(entry));
+    if (
+      typeof value !== 'object' ||
+      value === null ||
+      !('version' in value) ||
+      value.version !== 1 ||
+      !('files' in value) ||
+      !Array.isArray(value.files) ||
+      !value.files.every(
+        (entry) => typeof entry === 'string' && /^[a-z0-9][a-z0-9-]*\.md$/.test(entry) && entry.length <= 120,
+      )
+    )
+      throw new Error('Invalid generated file manifest');
+    return value.files;
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === 'ENOENT') return [];
     throw error;
@@ -33,10 +80,14 @@ async function previousFiles(outputDir: string, name: string, prefix: string): P
 export async function writeDocusaurus(document: OpenCliDocument, options: { outputDir: string; basePath?: string }) {
   const pages = generatePages(document, { basePath: options.basePath });
   await mkdir(options.outputDir, { recursive: true });
-  const previous = await previousFiles(options.outputDir, manifestName, 'clidoc');
-  const legacy = await previousFiles(options.outputDir, legacyManifestName, 'opencli');
-  const current = pages.map((page) => filename(page.id));
+  const previous = await previousFiles(options.outputDir, manifestName);
+  const legacy = await previousFiles(options.outputDir, legacyManifestName);
+  const existing = await readdir(options.outputDir);
+  const current = filenames(document.info.binary, pages);
   if (new Set(current).size !== current.length) throw new Error('Generated Docusaurus filenames collide');
+  const owned = new Set([...previous, ...legacy]);
+  const unownedCollision = current.find((name) => !owned.has(name) && existing.includes(name));
+  if (unownedCollision) throw new Error(`Refusing to overwrite unowned file: ${unownedCollision}`);
   // Map each page's route to the generated filename holding it, so the landing page can link by
   // file instead of by route: Docusaurus then resolves the URL itself regardless of routeBasePath.
   const filenameByPath = new Map(pages.map((page, position) => [page.path, current[position]!]));
@@ -65,7 +116,10 @@ export async function writeDocusaurus(document: OpenCliDocument, options: { outp
   }
   for (const name of [...previous, ...legacy])
     if (!current.includes(name)) await rm(join(options.outputDir, name), { force: true });
-  await writeFile(join(options.outputDir, manifestName), JSON.stringify(current, null, 2) + '\n');
+  await writeFile(
+    join(options.outputDir, manifestName),
+    JSON.stringify({ version: 1, files: current }, null, 2) + '\n',
+  );
   await rm(join(options.outputDir, legacyManifestName), { force: true });
   return pages.map((page) => ({ type: 'doc' as const, id: page.id, label: page.title }));
 }

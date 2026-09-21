@@ -125,6 +125,85 @@ describe('rendering', () => {
     expect(rendered).not.toContain('acme hidden');
     expect(rendered).not.toContain('secret');
   });
+  it('renders a conventional usage synopsis from command and global metadata', () => {
+    const usage: OpenCliDocument = {
+      ...doc,
+      global: {
+        flags: [
+          { name: 'verbose', type: 'boolean' },
+          { name: 'config', type: 'string', hint: '<path>', required: true },
+          { name: 'internal', type: 'boolean', hidden: true },
+        ],
+      },
+      commands: {
+        'deploy service <legacy-argument> [flags]': {
+          args: [{ name: 'target', required: true }, { name: 'environment' }, { name: 'files', variadic: true }],
+          flags: [
+            { name: 'verbose', type: 'boolean', required: true },
+            { name: 'force', type: 'boolean' },
+            { name: 'output', type: 'string', hint: 'format' },
+            { name: 'token', type: 'string', required: true },
+            { name: 'label', type: 'string', variadic: true },
+          ],
+        },
+      },
+    };
+    const expected =
+      '```sh\nacme deploy service <target> [<environment>] [<files>...] --verbose --config <path> [--force] [--output <format>] --token <token> [--label <label>]...\n```';
+    expect(renderMarkdown(usage)).toContain('### Usage\n\n' + expected);
+    expect(generatePages(usage)[1]?.content).toContain(expected);
+    expect(renderMarkdown(usage)).not.toContain('--internal');
+  });
+  it('shows repeatable required inputs at least once in usage', () => {
+    const usage: OpenCliDocument = {
+      ...doc,
+      global: undefined,
+      commands: {
+        'acme collect': {
+          args: [{ name: 'item', variadic: true, minItems: 1 }],
+          flags: [{ name: 'tag', type: 'string', variadic: true, minItems: 1 }],
+        },
+      },
+    };
+    const markdown = renderMarkdown(usage);
+    expect(markdown).toContain('acme collect <item>... --tag <tag> [--tag <tag>]...');
+    expect(markdown).toContain('| `item` | string | Yes | Variadic (min 1) |');
+  });
+  it('places the option delimiter before passthrough arguments', () => {
+    const usage: OpenCliDocument = {
+      ...doc,
+      global: { flags: [{ name: 'verbose', type: 'boolean' }] },
+      commands: {
+        'acme exec [flags] -- <arguments>': {
+          args: [
+            { name: 'script', required: true },
+            { name: 'arguments', variadic: true, passthrough: true },
+          ],
+          flags: [{ name: 'shell', type: 'string' }],
+        },
+      },
+    };
+    expect(renderMarkdown(usage)).toContain('acme exec [--verbose] [--shell <shell>] <script> [-- <arguments>...]');
+  });
+  it('preserves operands embedded in a command key when structured arguments are absent', () => {
+    const usage: OpenCliDocument = {
+      ...doc,
+      global: undefined,
+      commands: { 'send <file> [flags]': { flags: [{ name: 'verbose', type: 'boolean' }] } },
+    };
+    expect(renderMarkdown(usage)).toContain('acme send <file> [--verbose]');
+  });
+  it('does not restore a legacy flags placeholder when all structured flags are hidden', () => {
+    const usage: OpenCliDocument = {
+      ...doc,
+      global: { flags: [{ name: 'internal', type: 'boolean', hidden: true }] },
+      commands: { 'send <file> [flags]': {} },
+    };
+    const markdown = renderMarkdown(usage);
+    expect(markdown).toContain('```sh\nacme send <file>\n```');
+    expect(markdown).not.toContain('```sh\nacme send <file> [flags]');
+    expect(markdown).not.toContain('--internal');
+  });
   it('generates deterministic paths and navigation, stripping the binary prefix', () => {
     const pages = generatePages(doc, { basePath: '/docs/cli/' });
     expect(pages.map((page) => page.path)).toEqual(['/docs/cli', '/docs/cli/commands/run']);

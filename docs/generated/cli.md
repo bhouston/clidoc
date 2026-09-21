@@ -15,6 +15,12 @@ Binary: `clidoc` · Version: `0.1.0`
 
 Generate a standalone shell completion script
 
+### Usage
+
+```sh
+clidoc completion <shell> [--help] [--version] [--input <input>] [--binary <binary>] [--output <output>]
+```
+
 | Argument | Type | Required | Description |
 | --- | --- | --- | --- |
 | `shell` | string | Yes | Target shell; Choices: bash, zsh, fish |
@@ -29,6 +35,12 @@ Generate a standalone shell completion script
 
 Write clidoc’s own OpenCLI document
 
+### Usage
+
+```sh
+clidoc docgen [--help] [--version] [--format <format>] [--output <output>]
+```
+
 | Flag | Type | Required | Description |
 | --- | --- | --- | --- |
 | `--format` | string | No | Output format; Choices: json, yaml, markdown; Default: `json` |
@@ -37,6 +49,12 @@ Write clidoc’s own OpenCLI document
 ## clidoc generate
 
 Import a trusted framework definition module and generate OpenCLI JSON
+
+### Usage
+
+```sh
+clidoc generate <module> [--help] [--version] --adapter <adapter> [--output <output>]
+```
 
 | Argument | Type | Required | Description |
 | --- | --- | --- | --- |
@@ -51,6 +69,12 @@ Import a trusted framework definition module and generate OpenCLI JSON
 
 Render an OpenCLI document as Markdown
 
+### Usage
+
+```sh
+clidoc markdown <input> [--help] [--version] [--output <output>]
+```
+
 | Argument | Type | Required | Description |
 | --- | --- | --- | --- |
 | `input` | string | Yes | OpenCLI JSON or YAML filename |
@@ -62,6 +86,12 @@ Render an OpenCLI document as Markdown
 ## clidoc mcp
 
 Export MCP tools or serve a trusted CLI over MCP stdio
+
+### Usage
+
+```sh
+clidoc mcp <input> [--help] [--version] [--output <output>] [--serve] [--executable <executable>] [--cwd <cwd>] [--timeout-ms <timeout-ms>] [--max-output-bytes <max-output-bytes>]
+```
 
 | Argument | Type | Required | Description |
 | --- | --- | --- | --- |
@@ -79,6 +109,12 @@ Export MCP tools or serve a trusted CLI over MCP stdio
 ## clidoc validate
 
 Validate an OpenCLI JSON or YAML document
+
+### Usage
+
+```sh
+clidoc validate <input> [--help] [--version]
+```
 
 | Argument | Type | Required | Description |
 | --- | --- | --- | --- |
