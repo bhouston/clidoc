@@ -1,6 +1,6 @@
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname, join, relative, resolve, sep } from 'node:path';
-import { generatePages, type OpenCliDocument } from '@clidoc/core';
+import { generatePages, type SupportedOpenCliDocument } from '@clidoc/core';
 
 export interface VitePressOptions {
   /** Site source root. Generated pages live below basePath. */
@@ -67,7 +67,7 @@ async function previousFiles(outputDir: string, name: string): Promise<string[]>
 }
 
 /** Use in an async VitePress config and assign the result to themeConfig.sidebar. */
-export async function writeVitePress(document: OpenCliDocument, options: VitePressOptions) {
+export async function writeVitePress(document: SupportedOpenCliDocument, options: VitePressOptions) {
   const pages = generatePages(document, { basePath: options.basePath });
   const outputDir = resolve(options.outputDir);
   await mkdir(outputDir, { recursive: true });

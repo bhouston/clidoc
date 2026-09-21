@@ -3,7 +3,8 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { infoFromPackageJson, writeOpenCliDocument } from './docgen.js';
-import { OPENCLI_VERSION, parse } from './index.js';
+import { OPENCLI_VERSION, parse, parseDocument } from './index.js';
+import type { OpenCliDevDocument } from './opencli-dev-types.js';
 import type { OpenCliDocument } from './types.js';
 
 describe('infoFromPackageJson', () => {
@@ -65,6 +66,11 @@ describe('writeOpenCliDocument', () => {
     info: { title: 'Acme CLI', binary: 'acme', version: '1.0.0' },
     commands: { 'acme greet': { summary: 'Greet a person' } },
   };
+  const devDocument: OpenCliDevDocument = {
+    opencli: '0.1.0',
+    info: { title: 'Acme CLI', binaryName: 'acme', version: '2.0.0' },
+    commands: [{ name: 'account', commands: [{ name: 'show', operationId: 'account_show' }] }],
+  };
 
   beforeEach(async () => {
     dir = await mkdtemp(join(tmpdir(), 'clidoc-docgen-'));
@@ -95,6 +101,15 @@ describe('writeOpenCliDocument', () => {
     expect(content).toContain('opencliVersion:');
     expect(content).not.toMatch(/^\{/);
     expect(parse(content)).toEqual(document);
+  });
+
+  it.each(['json', 'yaml'] as const)('preserves an opencli-dev document when writing %s', async (format) => {
+    const output = join(dir, `opencli-dev.${format}`);
+    await writeOpenCliDocument(devDocument, output, format);
+    const content = await readFile(output, 'utf8');
+    expect(parseDocument(content, { format })).toEqual(devDocument);
+    expect(content).toContain(format === 'json' ? '"opencli": "0.1.0"' : 'opencli: 0.1.0');
+    expect(content).not.toContain('opencliVersion');
   });
 
   it('writes to stdout when output is omitted', async () => {
