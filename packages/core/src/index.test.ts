@@ -295,6 +295,24 @@ describe('optional document sections', () => {
 });
 
 describe('minimal optional branches', () => {
+  it('renders a positive variadic minimum as required', () => {
+    const repeatable: OpenCliDocument = {
+      opencliVersion: OPENCLI_VERSION,
+      info: { title: 'Demo', binary: 'demo', version: '1' },
+      commands: {
+        demo: {
+          flags: [
+            { name: 'items', type: 'string', variadic: true, minItems: 1 },
+            { name: 'extras', type: 'string', variadic: true, minItems: 0 },
+          ],
+        },
+      },
+    };
+    const rendered = renderMarkdown(repeatable);
+    expect(rendered).toContain('| `--items` | string | Yes | Variadic (min 1) |');
+    expect(rendered).toContain('| `--extras` | string | No | Variadic (min 0) |');
+  });
+
   it('renders minimal documents and optional fallbacks', () => {
     const minimal: OpenCliDocument = {
       opencliVersion: OPENCLI_VERSION,

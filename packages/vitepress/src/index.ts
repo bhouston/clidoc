@@ -16,15 +16,24 @@ export interface VitePressOptions {
  */
 function escapeAngleBrackets(content: string): string {
   const lines = content.split('\n');
-  let inFence = false;
+  let fenceCharacter = '';
+  let fenceLength = 0;
   return lines
     .map((line) => {
-      const fence = /^\s*(`{3,}|~{3,})/.exec(line);
-      if (fence) {
-        inFence = !inFence;
+      if (fenceLength) {
+        const closing = /^ {0,3}(`{3,}|~{3,})[ \t]*$/.exec(line);
+        if (closing?.[1]?.[0] === fenceCharacter && closing[1].length >= fenceLength) {
+          fenceCharacter = '';
+          fenceLength = 0;
+        }
         return line;
       }
-      if (inFence) return line;
+      const opening = /^ {0,3}(`{3,}|~{3,})(.*)$/.exec(line);
+      if (opening?.[1] && (opening[1][0] === '~' || !opening[2]?.includes('`'))) {
+        fenceCharacter = opening[1][0]!;
+        fenceLength = opening[1].length;
+        return line;
+      }
       // Split on inline code spans (backtick runs) and only escape outside them.
       return line
         .split(/(`+.*?`+)/)

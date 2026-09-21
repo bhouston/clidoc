@@ -116,6 +116,50 @@ it('keeps angle brackets literal inside inline code spans', async () => {
   expect(landing).toContain('`<profile>`');
 });
 
+it('keeps shorter and mismatched delimiters inside a generated example fence', async () => {
+  const outputDir = await site();
+  const doc: OpenCliDocument = {
+    ...document,
+    commands: {
+      send: {
+        summary: 'Before <prose>',
+        examples: [{ content: 'echo <code>\n```\n~~~\n```` trailing <code>\necho <more-code>' }],
+        description: 'Description <prose>',
+      },
+    },
+  };
+  await writeVitePress(doc, { outputDir, basePath: '/cli' });
+  const [name] = await readdir(join(outputDir, 'cli', 'commands'));
+  const page = await readFile(join(outputDir, 'cli', 'commands', name!), 'utf8');
+  expect(page).toContain('Before &lt;prose&gt;');
+  expect(page).toContain('Description &lt;prose&gt;');
+  expect(page).toContain('`````sh\necho <code>\n```\n~~~\n```` trailing <code>\necho <more-code>\n`````');
+});
+
+it.each(['`', '~'])('closes %s fences only on matching, sufficiently long delimiter lines', async (character) => {
+  const outputDir = await site();
+  const other = character === '`' ? '~' : '`';
+  const description = [
+    `${character.repeat(4)}lang`,
+    'inside <code>',
+    `${character.repeat(3)}`,
+    'after short <code>',
+    `${other.repeat(4)}`,
+    'after other <code>',
+    `${character.repeat(4)} trailing`,
+    'after invalid close <code>',
+    `   ${character.repeat(5)}  `,
+    'following <prose>',
+  ].join('\n');
+  await writeVitePress({ ...document, info: { ...document.info, description } }, { outputDir });
+  const page = await readFile(join(outputDir, 'index.md'), 'utf8');
+  expect(page).toContain('inside <code>');
+  expect(page).toContain('after short <code>');
+  expect(page).toContain('after other <code>');
+  expect(page).toContain('after invalid close <code>');
+  expect(page).toContain('following &lt;prose&gt;');
+});
+
 it('migrates the old manifest while keeping current and handwritten pages', async () => {
   const outputDir = await site();
   await writeFile(join(outputDir, 'stale.md'), '# Old generated page\n');
