@@ -17,6 +17,8 @@ clidoc validate cli.json
 clidoc markdown cli.json --output reference.md
 ```
 
+`validate` and `markdown` automatically detect bcdxn OpenCLI 1.0.0-alpha.14 or opencli-dev OpenCLI 0.1.0 from the document marker. The `generate`, `docgen`, and `__opencli` commands continue to produce bcdxn OpenCLI, clidoc's preferred and default format. See the [specification comparison](/docs/specifications) for the exact support boundary.
+
 `mycli __opencli` prints the same JSON to stdout for tool discovery. If you have
 a trusted JavaScript module exporting command definitions and `info` metadata,
 `clidoc generate ./definition.mjs --adapter yargs --output cli.json` is an

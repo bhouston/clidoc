@@ -51,6 +51,38 @@ describe('CLI', () => {
     expect(await readFile(destination, 'utf8')).toContain('clidoc generate');
   });
 
+  it('validates and renders an opencli-dev document while rejecting OpenCLISpec', async () => {
+    const path = await directory();
+    const input = join(path, 'opencli-dev.yaml');
+    await writeFile(
+      input,
+      [
+        'opencli: 0.1.0',
+        'info:',
+        '  title: Acme tools',
+        '  binaryName: acme',
+        '  version: 2.0.0',
+        'commands:',
+        '  - name: account',
+        '    description: Manage accounts',
+        '    commands:',
+        '      - name: show',
+        '        operationId: account_show',
+        '        description: Show an account',
+        '',
+      ].join('\n'),
+    );
+    const stdout = vi.spyOn(process.stdout, 'write').mockReturnValue(true);
+    await runCli(['validate', input]);
+    expect(stdout).toHaveBeenCalledWith('Valid OpenCLI document\n');
+    await runCli(['markdown', input]);
+    expect(stdout).toHaveBeenCalledWith(expect.stringContaining('acme account show'));
+
+    const unsupported = join(path, 'openclispec.json');
+    await writeFile(unsupported, JSON.stringify({ opencli: '1.0.0', commands: { acme: {} } }));
+    await expect(runCli(['validate', unsupported])).rejects.toThrow('nrranjithnr OpenCLISpec 1.0.0 is not supported');
+  });
+
   it('generates its own OpenCLI document through docgen', async () => {
     const path = await directory();
     const destination = join(path, 'clidoc.json');

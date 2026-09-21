@@ -2,7 +2,7 @@ import { mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, expect, it } from 'vitest';
-import { OPENCLI_VERSION, type OpenCliDocument } from '@clidoc/core';
+import { OPENCLI_VERSION, type OpenCliDevDocument, type OpenCliDocument } from '@clidoc/core';
 import clidocPlugin, { writeDocusaurus } from './index.js';
 
 const directories: string[] = [];
@@ -18,6 +18,17 @@ const document: OpenCliDocument = {
   opencliVersion: OPENCLI_VERSION,
   info: { title: 'Sample CLI', binary: 'sample', version: '1.0' },
   commands: { 'send <file>': { summary: 'Send a file' } },
+};
+const devDocument: OpenCliDevDocument = {
+  opencli: '0.1.0',
+  info: { title: 'Acme tools', binaryName: 'acme', version: '2.0.0' },
+  commands: [
+    {
+      name: 'account',
+      description: 'Manage accounts',
+      commands: [{ name: 'show', operationId: 'account_show', description: 'Show an account' }],
+    },
+  ],
 };
 
 it('writes CommonMark pages with stable sidebar entries, then removes only stale generated pages', async () => {
@@ -54,6 +65,31 @@ it('loads a file relative to siteDir and writes generated docs before content lo
   await expect(clidocPlugin({ siteDir }, { input: 'missing.json', outputDir: 'generated' })).rejects.toThrow();
   await clidocPlugin({ siteDir }, { input: document, outputDir: 'generated' });
   expect((await readdir(join(siteDir, 'generated'))).filter((name) => name.startsWith('clidoc-'))).toHaveLength(2);
+});
+
+it('loads opencli-dev YAML and links its nested command pages by generated filename', async () => {
+  const siteDir = await site();
+  await writeFile(
+    join(siteDir, 'opencli-dev.yaml'),
+    'opencli: 0.1.0\ninfo:\n  title: Acme tools\n  binaryName: acme\n  version: 2.0.0\ncommands:\n  - name: account\n    description: Manage accounts\n    commands:\n      - name: show\n        operationId: account_show\n        description: Show an account\n',
+  );
+  await clidocPlugin({ siteDir }, { input: 'opencli-dev.yaml', outputDir: 'generated', basePath: '/cli' });
+  const outputDir = join(siteDir, 'generated');
+  const files = (await readdir(outputDir)).filter((name) => name.startsWith('clidoc-'));
+  expect(files).toHaveLength(3);
+  const pages = await Promise.all(
+    files.map(async (name) => ({ name, text: await readFile(join(outputDir, name), 'utf8') })),
+  );
+  const landing = pages.find(({ text }) => text.includes('id: "index"'))!;
+  const nested = pages.find(({ text }) => text.includes('Show an account'))!;
+  expect(landing.text).toContain(`](./${nested.name})`);
+  expect(nested.text).toContain('acme account show');
+});
+
+it('writes an in-memory opencli-dev document', async () => {
+  const outputDir = await site();
+  const sidebar = await writeDocusaurus(devDocument, { outputDir });
+  expect(sidebar.map(({ label }) => label)).toEqual(['Acme tools', 'acme account', 'acme account show']);
 });
 
 it('writes every colliding command to a distinct generated file and slug', async () => {

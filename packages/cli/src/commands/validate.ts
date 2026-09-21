@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises';
-import { parse } from '@clidoc/core';
+import { parseDocument } from '@clidoc/core';
 import { defineCommand } from 'yargs-file-commands';
 
 export const command = defineCommand({
@@ -12,7 +12,7 @@ export const command = defineCommand({
       describe: 'OpenCLI document filename',
     }),
   handler: async ({ input }) => {
-    parse(await readFile(input, 'utf8'));
+    parseDocument(await readFile(input, 'utf8'));
     process.stdout.write('Valid OpenCLI document\n');
   },
 });

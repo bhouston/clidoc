@@ -7,9 +7,10 @@
 [![Documentation](https://img.shields.io/badge/docs-clidoc.ben3d.ca-blue)](https://clidoc.ben3d.ca)
 
 Turn CLI definitions into a portable OpenCLI document, then publish Markdown
-wherever your documentation lives.
+wherever your documentation lives. clidoc prefers and generates
+[bcdxn OpenCLI 1.0.0-alpha.14](https://github.com/bcdxn/opencli), while its
+consumers also accept [opencli-dev OpenCLI 0.1.0](https://github.com/opencli-dev/opencli).
 
-This TypeScript monorepo adopts the [OpenCLI specification](https://github.com/bcdxn/opencli).
 It provides adapters for Yargs, Commander, and oclif, a command-line tool, and
 Docusaurus and VitePress consumers. The clidoc tool documents itself from its
 own `yargs-file-commands` definitions.
@@ -213,7 +214,8 @@ generates for itself:
 
 ## Compatibility and scope
 
-The contract is **OpenCLI `1.0.0-alpha.14`**, pinned to upstream commit
+The preferred contract and default generated output is **bcdxn OpenCLI
+`1.0.0-alpha.14`**, pinned to upstream commit
 `683d0ca92fc37ccc2626e64db0a8c32f3c4063c0` in [`upstream/opencli`](upstream/opencli).
 The core package bundles that schema, so installed packages validate offline
 without the submodule. Tests compare the bundled schema and upstream fixtures when
@@ -239,6 +241,26 @@ identical behavior to every semantic check in the Go CLI.
 This first implementation focuses on the CLI-to-Markdown pipeline. OpenAPI and
 TypeDoc ingestion, a standalone embeddable React viewer, additional site platforms,
 and an integrated preview server remain extensions to that pipeline.
+
+## OpenCLI specifications
+
+Three independent projects use the OpenCLI name. clidoc identifies them by GitHub
+owner and version because their version numbers and document structures are not
+part of one release line:
+
+- **bcdxn OpenCLI 1.0.0-alpha.14** is preferred. Adapters, `generate`, `docgen`,
+  and `__opencli` produce this format by default, and all clidoc consumers accept it.
+- **opencli-dev OpenCLI 0.1.0** can be detected, validated, and rendered by
+  `@clidoc/core`, `clidoc validate`, `clidoc markdown`, and the site integrations.
+  The adapters do not generate it.
+- **nrranjithnr OpenCLISpec 1.0.0** is recognized but unsupported because the
+  inspected schema contains concrete defects and important cases need additional
+  semantic validation or clarification.
+
+See the [website comparison](packages/website/docs/specifications/index.md) and
+the dedicated pages for benefits, limitations, and usage. Cross-specification
+conversion is not available yet. The opencli-dev research submodule uses SSH and
+requires GitHub SSH access to initialize; installed packages do not require it.
 
 ## Contributing and releasing
 
