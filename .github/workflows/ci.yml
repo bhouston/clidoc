@@ -92,7 +92,7 @@ jobs:
           file: packages/website/Dockerfile
           push: false
           build-args: |
-            SITE_URL=https://clidoc.ben3d.ca
+            SITE_URL=https://clidoc.dev
             BASE_URL=/
 
   policy:
