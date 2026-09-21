@@ -39,6 +39,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./mcp": {
+      "types": "./dist/mcp/index.d.ts",
+      "import": "./dist/mcp/index.js"
     }
   },
   "publishConfig": {
@@ -54,6 +58,8 @@
     "@clidoc/adapter-oclif": "workspace:^",
     "@clidoc/adapter-yargs": "workspace:^",
     "@clidoc/core": "workspace:^",
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "ajv": "^8.20.0",
     "yargs": "^18.1.0",
     "yargs-file-commands": "^2.0.1"
   },
