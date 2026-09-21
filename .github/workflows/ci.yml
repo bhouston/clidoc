@@ -32,6 +32,12 @@ jobs:
       - run: pnpm test:workflow
       - run: pnpm lint
       - run: pnpm tsc
+      - name: Install completion test shells (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y zsh fish
+      - name: Install completion test shells (macOS)
+        if: runner.os == 'macOS'
+        run: brew install fish
       - run: pnpm test:coverage
       - run: pnpm audit --audit-level=high
       - run: pnpm package:check

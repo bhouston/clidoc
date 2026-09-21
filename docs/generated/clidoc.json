@@ -106,6 +106,65 @@
           "summary": "Output file; defaults to stdout"
         }
       ]
+    },
+    "clidoc completion": {
+      "summary": "Generate a standalone shell completion script",
+      "args": [
+        {
+          "name": "shell",
+          "required": true,
+          "type": "string",
+          "summary": "Target shell",
+          "choices": [
+            {
+              "value": "bash"
+            },
+            {
+              "value": "zsh"
+            },
+            {
+              "value": "fish"
+            }
+          ]
+        }
+      ],
+      "flags": [
+        {
+          "name": "input",
+          "type": "string",
+          "aliases": [
+            "i"
+          ],
+          "summary": "OpenCLI JSON or YAML file; defaults to clidoc itself"
+        },
+        {
+          "name": "binary",
+          "type": "string",
+          "summary": "Executable name override for completion registration"
+        },
+        {
+          "name": "output",
+          "type": "string",
+          "aliases": [
+            "o"
+          ],
+          "summary": "Output file; defaults to stdout"
+        }
+      ]
     }
+  },
+  "global": {
+    "flags": [
+      {
+        "name": "help",
+        "type": "boolean",
+        "summary": "Show help"
+      },
+      {
+        "name": "version",
+        "type": "boolean",
+        "summary": "Show version number"
+      }
+    ]
   }
 }

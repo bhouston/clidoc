@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 export * from './discovery.js';
 export * from './merge.js';
 export * from './docgen.js';
+export * from './completion.js';
 import { Ajv2020 } from 'ajv/dist/2020.js';
 import * as formatsModule from 'ajv-formats';
 import { parse as parseYaml } from 'yaml';

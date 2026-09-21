@@ -43,6 +43,24 @@ calling process; it rejects on invalid input.
 See the [repository guide](../../README.md) and
 [generated command reference](../../docs/generated/cli.md).
 
+## Shell completion
+
+Generate standalone Bash, Zsh, and Fish scripts for clidoc or any validated OpenCLI
+JSON/YAML document:
+
+```sh
+clidoc completion bash                    # clidoc itself; script on stdout
+clidoc completion zsh -i mycli.json -o mycli.zsh
+clidoc completion fish -o ~/.config/fish/completions/clidoc.fish
+```
+
+For Bash, activate with `source <(clidoc completion bash)`. For Zsh, run
+`source <(clidoc completion zsh)` after `autoload -Uz compinit; compinit`.
+Use `--binary name` to register an alternative executable name. Generated scripts
+need neither Node nor clidoc at completion time. Regenerate them after CLI changes.
+See the [completion guide](https://clidoc.ben3d.ca/docs/guides/completion) for
+persistent installation, supported syntax, and limitations.
+
 ## License
 
 MIT. See [LICENSE](../../LICENSE).

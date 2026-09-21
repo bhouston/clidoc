@@ -20,6 +20,8 @@ This is the single workflow standard for human contributors, Claude, and Codex.
    in the body when useful. Do not manually edit the version or release notes.
 5. Run `pnpm lint`, `pnpm tsc`, `pnpm test --coverage`,
    `pnpm audit --audit-level=high`, and `pnpm package:check`.
+   Completion execution tests require Bash, Zsh, and Fish on PATH (`brew install fish`
+   on macOS; `sudo apt-get install zsh fish` on Ubuntu).
    Install with `pnpm install --frozen-lockfile` using the Node version in
    `.nvmrc`. Coverage must be at least 95% for statements, branches, functions,
    and lines. Run `pnpm docs:build` when changing generated CLI documentation or docs integrations.

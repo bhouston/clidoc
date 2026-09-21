@@ -22,3 +22,8 @@ a trusted JavaScript module exporting command definitions and `info` metadata,
 `clidoc generate ./definition.mjs --adapter yargs --output cli.json` is an
 optional way to create the file. The module and supported Yargs builders execute
 while loading metadata.
+
+Generate shell completions with `clidoc completion bash`, `clidoc completion zsh`,
+or `clidoc completion fish`. Add `--input cli.json` to target another CLI instead
+of clidoc itself. See [shell completion](./completion.md) for activation and
+persistent installation.

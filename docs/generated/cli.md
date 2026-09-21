@@ -4,6 +4,27 @@ Generate, validate, and publish CLI documentation through OpenCLI.
 
 Binary: `clidoc` · Version: `0.1.0`
 
+## Global flags
+
+| Flag | Type | Required | Description |
+| --- | --- | --- | --- |
+| `--help` | boolean | No | Show help |
+| `--version` | boolean | No | Show version number |
+
+## clidoc completion
+
+Generate a standalone shell completion script
+
+| Argument | Type | Required | Description |
+| --- | --- | --- | --- |
+| `shell` | string | Yes | Target shell; Choices: bash, zsh, fish |
+
+| Flag | Type | Required | Description |
+| --- | --- | --- | --- |
+| `--input` | string | No | OpenCLI JSON or YAML file; defaults to clidoc itself; Aliases: `i` |
+| `--binary` | string | No | Executable name override for completion registration |
+| `--output` | string | No | Output file; defaults to stdout; Aliases: `o` |
+
 ## clidoc docgen
 
 Write clidoc’s own OpenCLI document
