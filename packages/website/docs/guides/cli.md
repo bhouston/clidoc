@@ -22,3 +22,6 @@ a trusted JavaScript module exporting command definitions and `info` metadata,
 `clidoc generate ./definition.mjs --adapter yargs --output cli.json` is an
 optional way to create the file. The module and supported Yargs builders execute
 while loading metadata.
+
+Automate validation on pull requests with the
+[GitHub Actions guide](./github-action.md).
