@@ -69,7 +69,15 @@ function optionToOpenCli(positive: Option | undefined, negative: Option | undefi
   const defaultValue = negatedOnly
     ? pickDefault(negative?.defaultValue, true)
     : pickDefault(source.defaultValue, negative ? true : undefined);
-  if (defaultValue !== undefined) result.default = defaultValue;
+  if (negatedOnly) {
+    // Commander stores the positive property (`color`), while the documented invocation is
+    // `--no-color`. A default field on `no-color` would describe the opposite meaning.
+    const backingName = optionBaseName(option);
+    const note = `Sets ${backingName} to false; default ${backingName}: ${String(defaultValue)}.`;
+    result.summary = result.summary ? `${result.summary}${/[.!?]$/.test(result.summary) ? ' ' : '. '}${note}` : note;
+  } else if (defaultValue !== undefined) {
+    result.default = defaultValue;
+  }
   if (source.hidden) result.hidden = true;
   if (source.envVar) result.alternativeSources = [{ type: '$ENV', property: source.envVar }];
   return result;
