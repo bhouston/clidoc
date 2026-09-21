@@ -27,3 +27,6 @@ Generate shell completions with `clidoc completion bash`, `clidoc completion zsh
 or `clidoc completion fish`. Add `--input cli.json` to target another CLI instead
 of clidoc itself. See [shell completion](./completion.md) for activation and
 persistent installation.
+
+Automate validation on pull requests with the
+[GitHub Actions guide](./github-action.md).

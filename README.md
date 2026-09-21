@@ -46,6 +46,33 @@ The upstream OpenCLI submodule is optional. Already cloned? Run
 schema and validate upstream examples. Without the submodule, those tests skip
 with a warning and the remaining tests run normally.
 
+## Validate specifications in CI
+
+Use [clidoc-action](https://github.com/bhouston/clidoc-action) to reject invalid
+OpenCLI specifications in pull requests:
+
+```yaml
+- uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+- uses: bhouston/clidoc-action@61df600ccfb0fd9dbbe7093b7e392b06662fac85 # v1
+  with:
+    files: opencli.json
+    specification: bcdxn
+    format: json
+```
+
+The action accepts JSON/YAML, multiple files, explicit specification dialects,
+and pinned validator versions. Its default uses a locked source build until the
+clidoc npm packages are published. See the
+[official CI guide](https://clidoc.ben3d.ca/docs/guides/github-action) for a complete
+workflow and version selection. This repository runs the hosted action against
+its generated CLI specification on Linux and macOS.
+
+The standalone action is also available as the optional HTTPS submodule
+[`submodules/clidoc-action`](https://github.com/bhouston/clidoc-action).
+Initialize it with `git submodule update --init submodules/clidoc-action` to
+work on the action alongside the monorepo. Consuming the hosted action requires
+no submodule checkout.
+
 ## Generate from your CLI
 
 Add a human-facing `docgen` command to the CLI you document. It should use the
