@@ -15,6 +15,8 @@ vi.mock('yargs-file-commands', async (importOriginal) => ({
     (await import('./commands/markdown.js')).command,
     (await import('./commands/validate.js')).command,
     (await import('./commands/docgen.js')).command,
+    (await import('./commands/completion.js')).command,
+
     (await import('./commands/mcp.js')).command,
   ],
 }));
@@ -34,7 +36,7 @@ describe('CLI', () => {
   it('documents the exact command definitions as a valid contract', () => {
     const document = cliDocument();
     expect(validate(document)).toEqual({ valid: true, errors: [] });
-    expect(Object.keys(document.commands!)).toHaveLength(5);
+    expect(Object.keys(document.commands!)).toHaveLength(6);
     expect(JSON.stringify(document)).toContain('Framework adapter');
   });
 
@@ -50,6 +52,28 @@ describe('CLI', () => {
     const destination = join(path, 'nested', 'reference.md');
     await runCli(['markdown', input, '-o', destination]);
     expect(await readFile(destination, 'utf8')).toContain('clidoc generate');
+  });
+
+  it('generates self and JSON/YAML file completions and rejects invalid arguments', async () => {
+    const path = await directory();
+    const stdout = vi.spyOn(process.stdout, 'write').mockReturnValue(true);
+    await runCli(['completion', 'bash']);
+    expect(stdout).toHaveBeenCalledWith(expect.stringContaining('complete -o filenames -F'));
+    const input = join(path, 'cli.json');
+    await writeFile(input, JSON.stringify(cliDocument()));
+    const destination = join(path, 'nested', 'completion.zsh');
+    await runCli(['completion', 'zsh', '--input', input, '--binary', 'renamed', '-o', destination]);
+    expect(await readFile(destination, 'utf8')).toContain("'renamed'");
+    const yaml = join(path, 'cli.yaml');
+    await writeFile(yaml, 'opencliVersion: 1.0.0-alpha.14\ninfo: {title: Demo, binary: demo, version: "1"}\n');
+    await runCli(['completion', 'fish', '-i', yaml]);
+    expect(stdout).toHaveBeenCalledWith(expect.stringContaining("complete -c 'demo'"));
+    await expect(runCli(['completion', 'powershell'])).rejects.toThrow();
+    await expect(runCli(['completion'])).rejects.toThrow();
+    await expect(runCli(['completion', 'bash', '--binary', 'invalid name'])).rejects.toThrow('single executable');
+    await expect(runCli(['completion', 'bash', '-i', join(path, 'missing')])).rejects.toThrow('ENOENT');
+    await writeFile(input, '{}');
+    await expect(runCli(['completion', 'bash', '-i', input])).rejects.toThrow('Invalid OpenCLI');
   });
 
   it('generates its own OpenCLI document through docgen', async () => {
