@@ -58,7 +58,7 @@ For Bash, activate with `source <(clidoc completion bash)`. For Zsh, run
 `source <(clidoc completion zsh)` after `autoload -Uz compinit; compinit`.
 Use `--binary name` to register an alternative executable name. Generated scripts
 need neither Node nor clidoc at completion time. Regenerate them after CLI changes.
-See the [completion guide](https://clidoc.ben3d.ca/docs/guides/completion) for
+See the [completion guide](https://clidoc.dev/docs/guides/completion) for
 persistent installation, supported syntax, and limitations.
 
 ## MCP tools and stdio server
