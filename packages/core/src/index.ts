@@ -149,7 +149,12 @@ function renderFlags(flags: FlagItemObject[]): string {
     ['Flag', 'Type', 'Required', 'Description'],
     flags
       .filter((flag) => !flag.hidden)
-      .map((flag) => [code(`--${flag.name}`), flag.type, flag.required ? 'Yes' : 'No', details(flag)]),
+      .map((flag) => [
+        code(`--${flag.name}`),
+        flag.type,
+        flag.required || (flag.minItems ?? 0) > 0 ? 'Yes' : 'No',
+        details(flag),
+      ]),
   );
 }
 function renderExitCodes(codes: NonNullable<CommandItemObject['exitCodes']>): string {

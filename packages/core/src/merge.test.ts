@@ -61,8 +61,8 @@ describe('mergeDocument', () => {
     const doc = mergeDocument(generated, {
       commands: {
         'demo greet': {
-          flags: [{ name: 'language', type: 'string', alternativeSources: [{ type: '$ENV', property: 'LANG' }] }],
-          args: [{ name: 'name', type: 'string', summary: 'Person to greet' }],
+          flags: [{ name: 'language', alternativeSources: [{ type: '$ENV', property: 'LANG' }] }],
+          args: [{ name: 'name', summary: 'Person to greet' }],
         },
       },
     });
@@ -82,6 +82,18 @@ describe('mergeDocument', () => {
       { name: 'language', type: 'string', default: 'en' },
       { name: 'loud', type: 'boolean' },
     ]);
+  });
+
+  it('rejects an incomplete new flag after merging', () => {
+    expect(() =>
+      mergeDocument(generated, { commands: { 'demo greet': { flags: [{ name: 'missing-type' }] } } }),
+    ).toThrow(/Invalid OpenCLI document after merge/);
+  });
+
+  it('rejects an incomplete new nested metadata object after merging', () => {
+    expect(() => mergeDocument(generated, { info: { license: { spdxId: 'MIT' } } })).toThrow(
+      /Invalid OpenCLI document after merge/,
+    );
   });
 
   it('adds a command that does not exist in the base document as-is', () => {
