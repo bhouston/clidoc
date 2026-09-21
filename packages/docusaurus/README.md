@@ -4,7 +4,7 @@
 [![npm downloads](https://img.shields.io/npm/dw/%40clidoc%2Fdocusaurus)](https://www.npmjs.com/package/@clidoc/docusaurus)
 [![CI](https://github.com/bhouston/clidoc/actions/workflows/ci.yml/badge.svg)](https://github.com/bhouston/clidoc/actions/workflows/ci.yml)
 [![Coverage](https://codecov.io/gh/bhouston/clidoc/graph/badge.svg)](https://codecov.io/gh/bhouston/clidoc)
-[![Documentation](https://img.shields.io/badge/docs-clidoc.ben3d.ca-blue)](https://clidoc.ben3d.ca)
+[![Documentation](https://img.shields.io/badge/docs-clidoc.dev-blue)](https://clidoc.dev)
 
 Generate Docusaurus documentation and sidebar entries from an OpenCLI document.
 The output is ordinary Markdown with CommonMark front matter, so CLI descriptions

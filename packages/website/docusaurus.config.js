@@ -8,7 +8,7 @@ module.exports = {
   title: 'clidoc',
   tagline: 'One CLI contract. Useful documentation everywhere.',
   favicon: 'img/clidoc.svg',
-  url: process.env.SITE_URL ?? 'https://clidoc.ben3d.ca',
+  url: process.env.SITE_URL ?? 'https://clidoc.dev',
   baseUrl: process.env.BASE_URL ?? '/',
   organizationName: 'bhouston',
   projectName: 'clidoc',
