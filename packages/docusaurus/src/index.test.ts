@@ -56,6 +56,31 @@ it('loads a file relative to siteDir and writes generated docs before content lo
   expect((await readdir(join(siteDir, 'generated'))).filter((name) => name.startsWith('clidoc-'))).toHaveLength(2);
 });
 
+it('writes every colliding command to a distinct generated file and slug', async () => {
+  const outputDir = await site();
+  const collision: OpenCliDocument = {
+    ...document,
+    commands: {
+      'sample foo bar': { summary: 'unique space summary' },
+      'sample foo-bar': { summary: 'unique hyphen summary' },
+      'sample foo-bar-3dad685f': { summary: 'unique hash summary' },
+      [`sample ${'very-long-command-'.repeat(30)}!`]: { summary: 'unique length summary' },
+    },
+  };
+  const sidebar = await writeDocusaurus(collision, { outputDir });
+  expect(new Set(sidebar.map((entry) => entry.id)).size).toBe(5);
+  const files = (await readdir(outputDir)).filter((name) => name.startsWith('clidoc-'));
+  expect(files).toHaveLength(5);
+  const contents = await Promise.all(files.map((name) => readFile(join(outputDir, name), 'utf8')));
+  for (const summary of [
+    'unique space summary',
+    'unique hyphen summary',
+    'unique hash summary',
+    'unique length summary',
+  ])
+    expect(contents.filter((content) => content.includes(summary))).toHaveLength(1);
+});
+
 it('rejects an invalid manifest and ignores unowned entries', async () => {
   const outputDir = await site();
   await writeFile(join(outputDir, '.clidoc-generated.json'), '{}');

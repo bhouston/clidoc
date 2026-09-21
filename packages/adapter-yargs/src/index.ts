@@ -45,13 +45,19 @@ function mapValueType(type: YargsOption['type']): 'string' | 'number' | 'integer
   return 'string';
 }
 function toFlag(name: string, option: YargsOption): FlagItemObject {
+  if (option.demandOption && (option.array || option.type === 'array')) {
+    throw new TypeError(
+      `Yargs option '${name}' combines demandOption with an array: OpenCLI cannot require the flag while allowing zero values. Document this option separately or change its CLI behavior.`,
+    );
+  }
   const flag: FlagItemObject = { name, type: mapValueType(option.type) };
   const aliases = typeof option.alias === 'string' ? [option.alias] : option.alias;
   if (aliases?.length) flag.aliases = [...aliases];
   const summary = option.describe ?? option.description;
   if (summary) flag.summary = summary;
-  if (option.demandOption) flag.required = true;
-  if (option.array || option.type === 'array') flag.variadic = true;
+  if (option.array || option.type === 'array') {
+    flag.variadic = true;
+  } else if (option.demandOption) flag.required = true;
   if (option.choices?.length) flag.choices = option.choices.map((value) => ({ value }));
   if (option.default !== undefined) flag.default = option.default;
   if (option.hidden) flag.hidden = true;

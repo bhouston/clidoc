@@ -133,18 +133,24 @@ describe('rendering', () => {
     expect(pages[0]?.content).toContain('## Global flags');
     expect(generatePages(doc)).toEqual(generatePages(doc));
   });
-  it('appends a hash suffix only when two visible commands share a readable slug', () => {
+  it('keeps routes unique and stable when similar or hash-shaped commands are added', () => {
     const collision: OpenCliDocument = {
       ...doc,
-      commands: { 'acme index': { summary: 'lower' }, 'acme Index': { summary: 'upper' } },
+      commands: { 'acme foo bar': { summary: 'space' }, 'acme foo-bar': { summary: 'hyphen' } },
     };
-    const pages = generatePages(collision);
-    const routes = pages.slice(1).map((page) => page.path);
-    expect(new Set(routes).size).toBe(2);
-    expect(routes.every((path) => /^\/commands\/index-[a-f0-9]{8}$/.test(path))).toBe(true);
+    const before = generatePages(collision).slice(1);
+    const added = generatePages({
+      ...collision,
+      commands: { ...collision.commands, 'acme foo-bar-3dad685f': { summary: 'hash-shaped' } },
+    }).slice(1);
+    expect(new Set(added.map((page) => page.path)).size).toBe(3);
+    expect(new Set(added.map((page) => page.id)).size).toBe(3);
+    expect(added.filter((page) => page.title !== 'acme foo-bar-3dad685f')).toEqual(before);
+    expect(added.find((page) => page.title === 'acme foo-bar')?.path).toBe('/commands/foo-bar');
+    expect(added.find((page) => page.title === 'acme foo bar')?.path).toMatch(/^\/commands\/foo-bar~[a-f0-9]{64}$/);
     // A command route never collides with the landing page's own `/` route.
-    expect(pages[0]?.path).toBe('/');
-    expect(routes).not.toContain('/');
+    expect(generatePages(collision)[0]?.path).toBe('/');
+    expect(added.map((page) => page.path)).not.toContain('/');
   });
 });
 
@@ -282,13 +288,31 @@ describe('optional document sections', () => {
     const special: OpenCliDocument = { ...doc, commands: { '../foo': {}, '..\\foo': {}, '☃': {}, FOO: {} } };
     const pages = generatePages(special);
     expect(new Set(pages.map((page) => page.path)).size).toBe(pages.length);
-    expect(pages.slice(1).every((page) => /^\/commands\/[a-z0-9-]+$/.test(page.path))).toBe(true);
+    expect(pages.slice(1).every((page) => /^\/commands\/[a-z0-9-]+~[a-f0-9]{64}$/.test(page.path))).toBe(true);
     expect(() => generatePages(special, { basePath: '/docs/../out' })).toThrow(/basePath/);
     expect(() => generatePages(special, { basePath: '/docs/%2e%2e/out' })).toThrow(/basePath/);
   });
 });
 
 describe('minimal optional branches', () => {
+  it('renders a positive variadic minimum as required', () => {
+    const repeatable: OpenCliDocument = {
+      opencliVersion: OPENCLI_VERSION,
+      info: { title: 'Demo', binary: 'demo', version: '1' },
+      commands: {
+        demo: {
+          flags: [
+            { name: 'items', type: 'string', variadic: true, minItems: 1 },
+            { name: 'extras', type: 'string', variadic: true, minItems: 0 },
+          ],
+        },
+      },
+    };
+    const rendered = renderMarkdown(repeatable);
+    expect(rendered).toContain('| `--items` | string | Yes | Variadic (min 1) |');
+    expect(rendered).toContain('| `--extras` | string | No | Variadic (min 0) |');
+  });
+
   it('renders minimal documents and optional fallbacks', () => {
     const minimal: OpenCliDocument = {
       opencliVersion: OPENCLI_VERSION,
