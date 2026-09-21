@@ -16,6 +16,7 @@
   ],
   "ignorePatterns": [
     "upstream/**",
+    "submodules/**",
     "**/dist/**",
     "**/build/**",
     "**/.docusaurus/**",

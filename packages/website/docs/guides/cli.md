@@ -25,3 +25,6 @@ while loading metadata.
 
 To expose a documented CLI to an MCP client, use `clidoc mcp`. See the
 [MCP bridge guide](./mcp.md) for export, stdio serving, and client setup.
+
+Automate validation on pull requests with the
+[GitHub Actions guide](./github-action.md).

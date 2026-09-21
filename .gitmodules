@@ -1,3 +1,6 @@
 [submodule "upstream/opencli"]
 	path = upstream/opencli
 	url = https://github.com/bcdxn/opencli.git
+[submodule "submodules/clidoc-action"]
+	path = submodules/clidoc-action
+	url = https://github.com/bhouston/clidoc-action.git
