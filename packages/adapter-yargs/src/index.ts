@@ -83,20 +83,114 @@ interface CollectedBuilder {
   positionals: Record<string, Partial<ArgumentItemObject>>;
   children: YargsCommandModule[];
 }
+function requireName(name: unknown, method: string): string {
+  if (typeof name !== 'string')
+    throw new TypeError(`Unsupported Yargs .${method}() overload; use a string option name.`);
+  return name;
+}
+
 function collectBuilder(builder: unknown): CollectedBuilder {
   const options: Record<string, YargsOption> = {};
   const positionals: Record<string, Partial<ArgumentItemObject>> = {};
   const children: YargsCommandModule[] = [];
   if (builder === undefined) return { options, positionals, children };
   if (typeof builder !== 'function') return { options: builder as Record<string, YargsOption>, positionals, children };
+  let helpOption: string | undefined;
+  let versionOption: string | undefined;
+  const setOption = (name: string, value: Partial<YargsOption>) => {
+    options[name] = { ...options[name], ...value };
+    return supportedRecorder;
+  };
+  const setMany = (names: string | readonly string[], value: Partial<YargsOption>) => {
+    if (typeof names !== 'string' && (!Array.isArray(names) || !names.every((name) => typeof name === 'string')))
+      throw new TypeError('Unsupported Yargs option names; use a string or string array.');
+    for (const name of typeof names === 'string' ? [names] : names) setOption(name, value);
+    return supportedRecorder;
+  };
   const recorder = {
     option(name: string, value: YargsOption) {
-      options[name] = value;
-      return this;
+      options[name] = { ...options[name], ...value };
+      return supportedRecorder;
     },
     options(values: Record<string, YargsOption>) {
       Object.assign(options, values);
-      return this;
+      return supportedRecorder;
+    },
+    alias(name: string, value: string | readonly string[]) {
+      return setOption(requireName(name, 'alias'), { alias: value });
+    },
+    describe(name: string, value: string) {
+      return setOption(requireName(name, 'describe'), { describe: value });
+    },
+    default(name: string, value: YargsOption['default']) {
+      return setOption(requireName(name, 'default'), { default: value });
+    },
+    choices(name: string, value: NonNullable<YargsOption['choices']>) {
+      return setOption(requireName(name, 'choices'), { choices: value });
+    },
+    demandOption(name: string | readonly string[], value: boolean | string = true) {
+      return setMany(name, { demandOption: value !== false });
+    },
+    boolean(name: string | readonly string[]) {
+      return setMany(name, { type: 'boolean' });
+    },
+    string(name: string | readonly string[]) {
+      return setMany(name, { type: 'string' });
+    },
+    number(name: string | readonly string[]) {
+      return setMany(name, { type: 'number' });
+    },
+    array(name: string | readonly string[]) {
+      return setMany(name, { array: true });
+    },
+    count(name: string | readonly string[]) {
+      return setMany(name, { type: 'count' });
+    },
+    strict() {
+      return supportedRecorder;
+    },
+    strictOptions() {
+      return supportedRecorder;
+    },
+    strictCommands() {
+      return supportedRecorder;
+    },
+    help(name: string | false = 'help', description = 'Show help') {
+      if (helpOption) delete options[helpOption];
+      helpOption = name === false ? undefined : requireName(name, 'help');
+      if (helpOption) setOption(helpOption, { type: 'boolean', describe: description });
+      return supportedRecorder;
+    },
+    version(name?: string | false, description?: string, _version?: string) {
+      if (versionOption) delete options[versionOption];
+      versionOption = name === false ? undefined : arguments.length > 1 ? requireName(name, 'version') : 'version';
+      if (versionOption)
+        setOption(versionOption, {
+          type: 'boolean',
+          describe: arguments.length > 2 ? description : 'Show version number',
+        });
+      return supportedRecorder;
+    },
+    demandCommand() {
+      return supportedRecorder;
+    },
+    recommendCommands() {
+      return supportedRecorder;
+    },
+    parserConfiguration() {
+      return supportedRecorder;
+    },
+    exitProcess() {
+      return supportedRecorder;
+    },
+    showHelpOnFail() {
+      return supportedRecorder;
+    },
+    middleware(_callback: unknown) {
+      return supportedRecorder;
+    },
+    check(_callback: unknown) {
+      return supportedRecorder;
     },
     positional(name: string, value: YargsOption) {
       const arg: Partial<ArgumentItemObject> = {};
@@ -105,7 +199,7 @@ function collectBuilder(builder: unknown): CollectedBuilder {
       if (value.demandOption) arg.required = true;
       if (value.choices?.length) arg.choices = value.choices.map((choice) => ({ value: choice }));
       positionals[name] = arg;
-      return this;
+      return supportedRecorder;
     },
     command(
       command: string | readonly string[] | YargsCommandModule,
@@ -117,10 +211,21 @@ function collectBuilder(builder: unknown): CollectedBuilder {
           ? (command as YargsCommandModule)
           : { command, describe, builder: childBuilder },
       );
-      return this;
+      return supportedRecorder;
     },
   };
-  const result = builder(recorder);
+  const supportedRecorder = new Proxy(recorder, {
+    get(target, property, receiver) {
+      if (property === 'then') return undefined;
+      if (typeof property === 'string' && !(property in target)) {
+        throw new TypeError(
+          `Unsupported Yargs builder method .${property}(). Add metadata with .option() or extend the adapter.`,
+        );
+      }
+      return Reflect.get(target, property, receiver);
+    },
+  });
+  const result = builder(supportedRecorder);
   if (result && typeof result.then === 'function') throw new TypeError('Asynchronous Yargs builders are not supported');
   return { options, positionals, children };
 }
@@ -162,7 +267,7 @@ function addCommandModule(
   commands[key] = item;
 }
 
-/** Convert Yargs command-module metadata. Supports option maps and synchronous .option(), .options(), .positional(), and .command() builders. */
+/** Convert Yargs command-module metadata. Supports option maps and common synchronous Yargs builder chains; unsupported methods report an error. */
 export function fromYargs(modules: readonly YargsCommandModule[], info: InfoObject): OpenCliDocument {
   const commands: Record<string, CommandItemObject> = {};
   for (const module of modules) addCommandModule(module, info.binary, commands);
