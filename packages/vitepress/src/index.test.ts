@@ -2,7 +2,7 @@ import { mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, expect, it } from 'vitest';
-import { OPENCLI_VERSION, type OpenCliDocument } from '@clidoc/core';
+import { OPENCLI_VERSION, type OpenCliDevDocument, type OpenCliDocument } from '@clidoc/core';
 import { writeVitePress } from './index.js';
 
 const directories: string[] = [];
@@ -19,6 +19,31 @@ const document: OpenCliDocument = {
   info: { title: 'Sample CLI', binary: 'sample', version: '1.0', description: 'Literal {{ expression }}' },
   commands: { 'send <file>': { summary: 'Send a file' } },
 };
+const devDocument: OpenCliDevDocument = {
+  opencli: '0.1.0',
+  info: { title: 'Acme tools', binaryName: 'acme', version: '2.0.0' },
+  commands: [
+    {
+      name: 'account',
+      description: 'Manage accounts',
+      commands: [{ name: 'show', operationId: 'account_show', description: 'Show an account' }],
+    },
+  ],
+};
+
+it('writes linked pages for nested opencli-dev commands', async () => {
+  const outputDir = await site();
+  const sidebar = await writeVitePress(devDocument, { outputDir, basePath: '/cli' });
+  expect(sidebar.map(({ text }) => text)).toEqual(['Acme tools', 'acme account', 'acme account show']);
+  for (const entry of sidebar) {
+    const filename = join(outputDir, `${entry.link.replace(/^\//, '')}.md`);
+    expect(await readFile(filename, 'utf8')).toContain(entry.text);
+  }
+  const landing = await readFile(join(outputDir, 'cli.md'), 'utf8');
+  const nested = sidebar.find(({ text }) => text === 'acme account show')!;
+  expect(landing).toContain(`](${nested.link})`);
+  expect(await readFile(join(outputDir, `${nested.link.replace(/^\//, '')}.md`), 'utf8')).toContain('Show an account');
+});
 
 it('keeps Markdown renderable with literal Vue expressions and removes only owned stale files', async () => {
   const outputDir = await site();

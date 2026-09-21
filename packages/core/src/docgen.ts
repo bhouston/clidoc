@@ -1,7 +1,7 @@
 import { writeFile } from 'node:fs/promises';
 import { stringify as stringifyYaml } from 'yaml';
-import { renderMarkdown } from './index.js';
-import type { InfoObject, OpenCliDocument } from './types.js';
+import { renderMarkdown, type SupportedOpenCliDocument } from './index.js';
+import type { InfoObject } from './types.js';
 
 /** The minimal shape of `package.json` used to derive an {@link InfoObject}. */
 export type PackageJsonLike = {
@@ -43,7 +43,7 @@ export type DocumentFormat = 'json' | 'yaml' | 'markdown';
  * is omitted. Shared by every adapter's docgen command and by `handleOpenCliRequest`.
  */
 export async function writeOpenCliDocument(
-  document: OpenCliDocument,
+  document: SupportedOpenCliDocument,
   output?: string,
   format: DocumentFormat = 'json',
 ): Promise<void> {

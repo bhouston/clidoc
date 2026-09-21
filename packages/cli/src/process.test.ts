@@ -20,6 +20,7 @@ it('exposes all commands from the installed CLI entry point', async () => {
   expect(result).toHaveStdout(/generate/);
   expect(result).toHaveStdout(/markdown/);
   expect(result).toHaveStdout(/validate/);
+  expect(result).toHaveStdout(/convert/);
 });
 
 it('generates, validates, and renders a document through real subprocesses', async () => {
@@ -57,4 +58,31 @@ it('returns useful failures for malformed input and unknown commands', async () 
   const unknown = await cli.run(['unknown']);
   expect(unknown).toFail();
   expect(unknown).toHaveStderr(/Unknown/);
+});
+
+it('converts via the installed entry point with bcdxn as default and errors on stderr', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'clidoc-convert-'));
+  directories.push(directory);
+  const input = join(directory, 'dev.json');
+  const output = join(directory, 'bcdxn.json');
+  await writeFile(
+    input,
+    JSON.stringify({
+      opencli: '0.1.0',
+      info: { title: 'Tool', binaryName: 'tool', version: '1' },
+      commands: [{ name: 'run', operationId: 'run' }],
+    }),
+  );
+  const strict = await cli.run(['convert', input, '-o', output]);
+  expect(strict).toFail();
+  expect(strict).toHaveStderr(/operationId/);
+  await expect(readFile(output)).rejects.toThrow();
+  const converted = await cli.run(['convert', input, '--allow-lossy', '-o', output]);
+  expect(converted).toSucceed();
+  expect(converted).toHaveStderr(/Conversion loss/);
+  expect(JSON.parse(await readFile(output, 'utf8')).opencliVersion).toBe('1.0.0-alpha.14');
+  expect(await cli.run(['validate', output])).toSucceed();
+  const reverse = await cli.run(['convert', output, '--to', 'opencli-dev']);
+  expect(reverse).toSucceed();
+  expect(reverse).toHaveStdout(/"opencli": "0.1.0"/);
 });
