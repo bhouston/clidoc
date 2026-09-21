@@ -18,3 +18,6 @@ clidoc intentionally does not support this format yet. The inspected `1.0.0` sch
 Its repository provides a specification website, examples, and schema-validation CI. Generator, completion, and MCP features described in its overview were future plans in the inspected revision rather than shipped implementations. These limitations do not diminish the useful parts of its design; they mean clidoc cannot promise predictable validation, rendering, or conversion yet.
 
 Passing such a document to `clidoc validate` produces an explicit unsupported-specification error. Support can be reconsidered after the schema defects and semantic policies are resolved.
+
+`clidoc convert` also rejects this dialect. Conversion currently operates only
+between bcdxn OpenCLI 1.0.0-alpha.14 and opencli-dev OpenCLI 0.1.0.

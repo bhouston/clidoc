@@ -1,3 +1,4 @@
+export * from './convert.js';
 import { heading, code, table, fenced } from './render-utils.js';
 import { renderDevDocument } from './opencli-dev-render.js';
 import { validateOpenCliDev } from './opencli-dev.js';
@@ -73,6 +74,8 @@ function decode(input: string, options: { format?: 'json' | 'yaml' }): unknown {
 /** Either supported document dialect; adapters continue to return OpenCliDocument. */
 export type SupportedOpenCliDocument = OpenCliDocument | OpenCliDevDocument;
 export type OpenCliDialect = 'bcdxn' | 'opencli-dev';
+/** Preferred dialect for generated and converted documents. */
+export const DEFAULT_OPENCLI_DIALECT: OpenCliDialect = 'bcdxn';
 /** Identify a supported dialect by its marker and version, then validate its structure separately. */
 export function detectDialect(document: unknown): OpenCliDialect {
   if (!document || typeof document !== 'object' || Array.isArray(document))

@@ -193,6 +193,7 @@ function schemaReferenceErrors(document: OpenCliDevDocument): string[] {
     'unevaluatedItems',
     'contains',
     'propertyNames',
+    'contentSchema',
     'not',
     'if',
     'then',

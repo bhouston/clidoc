@@ -106,6 +106,76 @@
           "summary": "Output file; defaults to stdout"
         }
       ]
+    },
+    "clidoc convert": {
+      "summary": "Convert between supported OpenCLI dialects; defaults to the preferred bcdxn format",
+      "args": [
+        {
+          "name": "input",
+          "required": true,
+          "type": "string",
+          "summary": "OpenCLI JSON or YAML filename"
+        }
+      ],
+      "flags": [
+        {
+          "name": "to",
+          "type": "string",
+          "summary": "Target specification; bcdxn is the preferred default",
+          "choices": [
+            {
+              "value": "bcdxn"
+            },
+            {
+              "value": "opencli-dev"
+            }
+          ],
+          "default": "bcdxn"
+        },
+        {
+          "name": "format",
+          "type": "string",
+          "summary": "Output serialization format",
+          "choices": [
+            {
+              "value": "json"
+            },
+            {
+              "value": "yaml"
+            }
+          ],
+          "default": "json"
+        },
+        {
+          "name": "output",
+          "type": "string",
+          "aliases": [
+            "o"
+          ],
+          "summary": "Output file; defaults to stdout"
+        },
+        {
+          "name": "allow-lossy",
+          "type": "boolean",
+          "summary": "Allow reported metadata losses; unresolved semantics still fail",
+          "default": false
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "summary": "Override the target CLI title"
+        },
+        {
+          "name": "binary",
+          "type": "string",
+          "summary": "Override the target executable name"
+        },
+        {
+          "name": "cli-version",
+          "type": "string",
+          "summary": "Override the described CLI version (not the specification version)"
+        }
+      ]
     }
   }
 }

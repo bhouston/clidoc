@@ -26,6 +26,18 @@ if (detectDialect(document) === 'opencli-dev') {
 }
 ```
 
-Framework adapters and generation commands do not produce opencli-dev documents, and clidoc does not currently convert documents between specifications. bcdxn remains the default output format.
+Framework adapters and generation commands do not produce opencli-dev documents
+directly. Convert a generated bcdxn document explicitly when this format is needed:
+
+```sh
+clidoc convert opencli.json --to opencli-dev --format yaml --output opencli-dev.yaml
+```
+
+bcdxn remains the default conversion target. Conversion is strict unless
+`--allow-lossy` is provided, and diagnostics identify source features with no
+target equivalent.
+
+Generated operation identifiers are deterministic functions of the full bcdxn
+command paths. Renaming a source path therefore changes its generated identifier.
 
 Validation covers the 0.1.0 structure and the semantic rules needed for reliable rendering, including component resolution, command-reference cycle limits, operation identifier uniqueness, argument ordering, flag relationships, and output selectors. Embedded schemas retain local JSON Pointer references; external references and anchors are rejected. A hidden parent command hides its subtree, and command paths remain relative when the document omits executable metadata. Validation is designed for clidoc interoperability and does not claim behavioral parity with every upstream generator.

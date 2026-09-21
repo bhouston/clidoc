@@ -19,6 +19,15 @@ clidoc validate cli.json
 clidoc markdown cli.json --output reference.md
 ```
 
+It is also the default conversion target:
+
+```sh
+clidoc convert opencli-dev.yaml --allow-lossy --output opencli.json
+```
+
+`--allow-lossy` is required for ordinary opencli-dev leaf commands because their
+required operation identifiers have no bcdxn equivalent.
+
 In TypeScript, the established APIs remain available:
 
 ```ts

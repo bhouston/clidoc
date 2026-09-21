@@ -281,6 +281,11 @@ describe('semantic rules', () => {
       output: { formats: [{ format: 'json', schema: { items: { $ref: 'https://example.com/schema' } } }] },
     });
     expect(validateOpenCliDev(doc).errors.join()).toContain('unresolved local schema');
+    doc.components.schemas!.Data = {
+      contentMediaType: 'application/json',
+      contentSchema: { $ref: 'https://example.com/external.json' },
+    };
+    expect(validateOpenCliDev(doc).errors.join()).toContain('/contentSchema/$ref');
     doc.components.schemas!.Data = { $ref: '#/components/schemas/Missing' };
     expect(validateOpenCliDev(doc).errors.join()).toContain('Missing');
     doc.components.schemas!.Data = { $ref: '#/components/schemas/toString' };

@@ -30,8 +30,33 @@ const markdown = renderMarkdown(document);
 ```
 
 `renderMarkdown` and `generatePages` accept either supported document type.
-Adapters and generation APIs continue to return bcdxn documents. The package does
-not currently convert between specifications.
+Adapters and generation APIs continue to return bcdxn documents. Convert explicitly
+when another representation is needed:
+
+```ts
+import { convertDocument, parseDocument } from '@clidoc/core';
+
+const source = parseDocument(sourceText);
+const converted = convertDocument(source, { to: 'bcdxn', allowLossy: true });
+
+for (const diagnostic of converted.diagnostics) {
+  console.warn(`${diagnostic.path}: ${diagnostic.message}`);
+}
+```
+
+The target defaults to `bcdxn`. Conversion is strict by default and throws a
+`ConversionError` with structured diagnostics before returning a document when a
+mapping would lose information. Set `allowLossy: true` to accept reported losses.
+Hard semantic ambiguities still fail because discarding information cannot make
+the result dependable. If opencli-dev input omits metadata required by bcdxn,
+provide `info: { title, binary, version }`. Converting to the same dialect returns
+a deep clone that preserves the document; passing identity overrides for a
+same-dialect conversion is an error. When opencli-dev `info.binaryName` is absent,
+its `info.title` supplies the bcdxn binary name if it is valid.
+
+Conversion from bcdxn creates deterministic opencli-dev `operationId` values from
+full command paths. They remain stable while the paths do, but renaming a source
+command changes its generated identifier.
 
 `generatePages` returns a landing page and one page per visible command. Each page has `id`, `title`, `path`, and Markdown `content`. A command named `<binary> foo-bar` keeps the readable `/commands/foo-bar` route when its suffix is lowercase ASCII letters, digits, and single hyphens (up to 64 characters). Other names use a normalized readable prefix (up to 64 characters), a reserved `~`, and a SHA-256 digest of the full command name. Each route depends only on its command name, so adding unrelated commands does not change existing URLs. The generator rejects a digest collision before returning any pages. This replaces the previous collision-dependent hash suffixes, so URLs for names outside the readable form may change. Landing links use the generated base path. The bundled JSON Schema is also available at `@clidoc/core/schema`.
 

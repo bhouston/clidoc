@@ -1,5 +1,6 @@
 import { createRequire } from 'node:module';
 import { fromYargs } from '@clidoc/adapter-yargs';
+import { command as convert } from './commands/convert.js';
 import { command as docgen } from './commands/docgen.js';
 import { command as generate } from './commands/generate.js';
 import { command as markdown } from './commands/markdown.js';
@@ -13,7 +14,7 @@ export const info = {
   version: packageJson.version,
   summary: 'Generate, validate, and publish CLI documentation through OpenCLI.',
 };
-export const commands = [generate, markdown, validate, docgen];
+export const commands = [generate, markdown, validate, docgen, convert];
 /** Documentation and runtime share the exact same command definitions. */
 export function cliDocument() {
   return fromYargs(commands, info);
