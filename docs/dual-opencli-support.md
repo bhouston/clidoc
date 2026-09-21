@@ -3,6 +3,10 @@
 Status: research proposal for discussion; no runtime support implemented.
 Tracking: https://github.com/bhouston/clidoc/issues/89
 
+Follow-up: [analysis of a third dialect, nrranjithnr OpenCLI 1.0.0](third-opencli-analysis.md).
+That study extends the model requirements and supersedes the original two-marker
+detection rule with version-and-shape candidate detection.
+
 ## Recommendation
 
 Support both as independent, versioned dialects. Automatically detect input,
@@ -116,7 +120,10 @@ Suggested new types/API names (design sketches, not implemented APIs):
   schema-invalid output or silently invent semantics. Allow caller overrides
   for missing metadata, command paths, operation IDs, and naming conflicts.
 
-Detection checks `opencliVersion` versus `opencli`, never filename or `info.version`.
+Detection uses a dialect registry keyed by marker, supported version, and document
+shape, never filename or `info.version`. The third dialect also uses `opencli`, so
+that field alone cannot distinguish it from opencli-dev. See the
+[three-way detection rules](third-opencli-analysis.md#changes-to-the-support-plan).
 Reject conflicting markers; explain missing/unknown markers and unsupported
 versions. Optional explicit `--spec` can assert the expected dialect; it must not
 silently reinterpret a contradictory document. No network schema fetching is

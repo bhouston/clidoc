@@ -244,7 +244,8 @@ and an integrated preview server remain extensions to that pipeline.
 
 The separate [opencli-dev/opencli](https://github.com/opencli-dev/opencli) project is
 pinned for research in `upstream/opencli-dev`. See the
-[comparison and dual-spec support proposal](docs/dual-opencli-support.md).
+[comparison and dual-spec support proposal](docs/dual-opencli-support.md) and the
+[third-spec analysis of nrranjithnr OpenCLI](docs/third-opencli-analysis.md).
 Runtime support remains bcdxn OpenCLI `1.0.0-alpha.14`; the proposal describes
 planned compatibility, not an implemented feature. The new submodule uses SSH
 and requires GitHub SSH access to initialize.
