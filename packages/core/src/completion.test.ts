@@ -78,7 +78,9 @@ for (const shell of ['bash', 'zsh', 'fish'] as const) {
     it('registers a syntactically valid, deterministic standalone script', () => {
       const script = generateCompletion(document, { shell });
       expect(script).toBe(generateCompletion(document, { shell }));
-      execFileSync(shell, ['-n'], { input: script });
+      const path = join(directory, `syntax.${shell}`);
+      writeFileSync(path, script);
+      execFileSync(shell, ['-n', path]);
       expect(script).not.toContain('node ');
     });
     it('completes visible root commands and aliases', () => {
