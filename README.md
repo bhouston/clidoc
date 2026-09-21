@@ -240,6 +240,16 @@ This first implementation focuses on the CLI-to-Markdown pipeline. OpenAPI and
 TypeDoc ingestion, a standalone embeddable React viewer, additional site platforms,
 and an integrated preview server remain extensions to that pipeline.
 
+## Additional OpenCLI specification
+
+The separate [opencli-dev/opencli](https://github.com/opencli-dev/opencli) project is
+pinned for research in `upstream/opencli-dev`. See the
+[comparison and dual-spec support proposal](docs/dual-opencli-support.md) and the
+[third-spec analysis of nrranjithnr OpenCLI](docs/third-opencli-analysis.md).
+Runtime support remains bcdxn OpenCLI `1.0.0-alpha.14`; the proposal describes
+planned compatibility, not an implemented feature. The new submodule uses SSH
+and requires GitHub SSH access to initialize.
+
 ## Contributing and releasing
 
 Follow [CONTRIBUTING.md](CONTRIBUTING.md): issue first, issue-numbered branch,
