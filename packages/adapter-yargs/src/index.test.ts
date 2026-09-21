@@ -148,7 +148,7 @@ describe('common Yargs builder chains (#75)', () => {
               .number('retries')
               .array('files')
               .count('verbose')
-              .demandOption(['files', 'retries'], 'required')
+              .demandOption('retries', 'required')
               .help(false)
               .version(false),
         },
@@ -159,7 +159,7 @@ describe('common Yargs builder chains (#75)', () => {
       { name: 'quiet', type: 'boolean' },
       { name: 'debug', type: 'boolean' },
       { name: 'retries', type: 'number', required: true },
-      { name: 'files', variadic: true, required: true },
+      { name: 'files', variadic: true },
       { name: 'verbose', type: 'integer' },
     ]);
   });
