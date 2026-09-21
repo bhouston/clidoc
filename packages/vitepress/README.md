@@ -8,21 +8,44 @@
 
 Generate VitePress pages and sidebar entries from an OpenCLI document.
 
+Install the publisher, parser, and VitePress:
+
+```sh
+npm install -D @clidoc/vitepress @clidoc/core vitepress
+```
+
+Export an OpenCLI document from your CLI, for example with
+`mycli docgen --format yaml --output cli.ocs.yaml`.
+
+In `docs/.vitepress/config.mts`, with `cli.ocs.yaml` at the project root:
+
 ```ts
 import { defineConfig } from 'vitepress';
 import { parse } from '@clidoc/core';
 import { writeVitePress } from '@clidoc/vitepress';
 import { readFile } from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
 
-const document = parse(await readFile('cli.ocs.yaml', 'utf8'));
+const document = parse(await readFile(new URL('../../cli.ocs.yaml', import.meta.url), 'utf8'));
 const cliSidebar = await writeVitePress(document, {
-  outputDir: 'docs',
+  outputDir: fileURLToPath(new URL('..', import.meta.url)),
   basePath: '/cli',
 });
 export default defineConfig({
   themeConfig: { sidebar: [{ text: 'CLI', items: cliSidebar }] },
 });
 ```
+
+Keep handwritten pages in `docs/`. With `basePath: '/cli'`, add only the
+generated paths to `.gitignore`:
+
+```gitignore
+docs/cli.md
+docs/cli/commands/
+docs/.clidoc-generated.json
+```
+
+Run `npx vitepress dev docs` to preview the site.
 
 The output contains ordinary Markdown. VitePress's `v-pre` custom container
 keeps CLI-authored Vue expressions literal while still rendering headings,
@@ -37,8 +60,7 @@ entities, since `v-pre` stops Vue mustache interpolation but not its SFC
 parser's tag scanning; as a result, HTML written in a description renders as
 literal text rather than as markup on VitePress.
 
-Add `outputDir` to `.gitignore`; it holds hundreds of hashed generated
-Markdown files that are regenerated on every build.
+Generated command page filenames are stable, based on their command routes.
 
 ## License
 
