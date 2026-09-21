@@ -65,6 +65,7 @@ export async function writeVitePress(document: OpenCliDocument, options: VitePre
   const previous = await previousFiles(outputDir, manifestName);
   const legacy = await previousFiles(outputDir, legacyManifestName);
   const current = pages.map((page) => `${page.path.replace(/^\//, '') || 'index'}.md`);
+  if (new Set(current).size !== current.length) throw new Error('Generated VitePress filenames collide');
   for (const [index, page] of pages.entries()) {
     const filename = ownedPath(outputDir, current[index]!);
     await mkdir(dirname(filename), { recursive: true });

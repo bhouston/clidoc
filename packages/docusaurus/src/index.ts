@@ -36,6 +36,7 @@ export async function writeDocusaurus(document: OpenCliDocument, options: { outp
   const previous = await previousFiles(options.outputDir, manifestName, 'clidoc');
   const legacy = await previousFiles(options.outputDir, legacyManifestName, 'opencli');
   const current = pages.map((page) => filename(page.id));
+  if (new Set(current).size !== current.length) throw new Error('Generated Docusaurus filenames collide');
   // Map each page's route to the generated filename holding it, so the landing page can link by
   // file instead of by route: Docusaurus then resolves the URL itself regardless of routeBasePath.
   const filenameByPath = new Map(pages.map((page, position) => [page.path, current[position]!]));
