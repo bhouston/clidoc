@@ -63,7 +63,7 @@ OpenCLI specifications in pull requests:
 The action accepts JSON/YAML, multiple files, explicit specification dialects,
 and pinned validator versions. Its default uses a locked source build until the
 clidoc npm packages are published. See the
-[official CI guide](https://clidoc.ben3d.ca/docs/guides/github-action) for a complete
+[official CI guide](https://clidoc-l5su5qyryq-uc.a.run.app/docs/guides/github-action/) for a complete
 workflow and version selection. This repository runs the hosted action against
 its generated CLI specification on Linux and macOS.
 
