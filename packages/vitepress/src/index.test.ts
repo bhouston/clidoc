@@ -36,6 +36,43 @@ it('keeps Markdown renderable with literal Vue expressions and removes only owne
   expect(await readFile(join(outputDir, 'manual.md'), 'utf8')).toBe('# Keep me\n');
 });
 
+it('writes readable command paths with the shared conventional usage synopsis', async () => {
+  const outputDir = await site();
+  const doc: OpenCliDocument = {
+    ...document,
+    global: {
+      flags: [
+        { name: 'config', type: 'string', hint: '<path>', required: true },
+        { name: 'verbose', type: 'boolean' },
+      ],
+    },
+    commands: {
+      'sample deploy': {
+        args: [{ name: 'target', required: true }, { name: 'environment' }, { name: 'files', variadic: true }],
+        flags: [
+          { name: 'force', type: 'boolean' },
+          { name: 'output', type: 'string', hint: 'format' },
+          { name: 'label', type: 'string', variadic: true },
+        ],
+      },
+    },
+  };
+
+  const sidebar = await writeVitePress(doc, { outputDir, basePath: '/reference' });
+
+  expect(sidebar).toEqual([
+    { text: 'Sample CLI', link: '/reference' },
+    { text: 'sample deploy', link: '/reference/commands/deploy' },
+  ]);
+  expect(await readdir(join(outputDir, 'reference', 'commands'))).toEqual(['deploy.md']);
+  expect(await readFile(join(outputDir, 'reference.md'), 'utf8')).toContain(
+    '[sample deploy](/reference/commands/deploy)',
+  );
+  expect(await readFile(join(outputDir, 'reference', 'commands', 'deploy.md'), 'utf8')).toContain(
+    '```sh\nsample deploy <target> [<environment>] [<files>...] --config <path> [--verbose] [--force] [--output <format>] [--label <label>]...\n```',
+  );
+});
+
 it('rejects output traversal and supports a root landing page', async () => {
   const outputDir = await site();
   await expect(writeVitePress(document, { outputDir, basePath: '../escape' })).rejects.toThrow();
@@ -57,6 +94,8 @@ it('writes every colliding command to a distinct page', async () => {
   };
   const sidebar = await writeVitePress(collision, { outputDir });
   expect(new Set(sidebar.map((entry) => entry.link)).size).toBe(5);
+  expect(sidebar.find((entry) => entry.text === 'sample foo-bar')?.link).toBe('/commands/foo-bar');
+  expect(sidebar.find((entry) => entry.text === 'sample foo bar')?.link).toMatch(/^\/commands\/foo-bar~[a-f0-9]{64}$/);
   const files = await readdir(join(outputDir, 'commands'));
   expect(files).toHaveLength(4);
   const contents = await Promise.all(files.map((name) => readFile(join(outputDir, 'commands', name), 'utf8')));

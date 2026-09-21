@@ -78,7 +78,9 @@ describe.each(runners)('%s demo', (runner) => {
       const result = await cli.run(['docgen', '--format', 'markdown', '--output', destination]);
       expect(result).toSucceed();
       const discovered = await cli.run(['__opencli']);
-      expect(await readFile(destination, 'utf8')).toBe(renderMarkdown(discovered.json()));
+      const markdown = await readFile(destination, 'utf8');
+      expect(markdown).toBe(renderMarkdown(discovered.json()));
+      expect(markdown).toMatch(/### Usage\n\n```sh\ndemo greet <name>[^\n]*\[--language <language>\]/);
     } finally {
       await rm(directory, { recursive: true, force: true });
     }
