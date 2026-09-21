@@ -82,6 +82,16 @@ for (const shell of ['bash', 'zsh', 'fish'] as const) {
       writeFileSync(path, script);
       execFileSync(shell, ['-n', path]);
       expect(script).not.toContain('node ');
+      if (shell === 'bash') {
+        // Readline needs this registration option to quote spaces on Bash 3.2,
+        // where compopt is unavailable. Candidate-array tests alone miss that.
+        const registration = execFileSync(
+          shell,
+          ['--noprofile', '--norc', '-c', `source ${quote(path)}; complete -p demo`],
+          { encoding: 'utf8' },
+        );
+        expect(registration).toContain('-o filenames');
+      }
     });
     it('completes visible root commands and aliases', () => {
       expect(complete(shell, ['demo', ''])).toEqual(expect.arrayContaining(['deploy', 'd', 'admin', 'a', 'quote']));

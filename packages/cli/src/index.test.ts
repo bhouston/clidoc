@@ -56,7 +56,7 @@ describe('CLI', () => {
     const path = await directory();
     const stdout = vi.spyOn(process.stdout, 'write').mockReturnValue(true);
     await runCli(['completion', 'bash']);
-    expect(stdout).toHaveBeenCalledWith(expect.stringContaining('complete -F'));
+    expect(stdout).toHaveBeenCalledWith(expect.stringContaining('complete -o filenames -F'));
     const input = join(path, 'cli.json');
     await writeFile(input, JSON.stringify(cliDocument()));
     const destination = join(path, 'nested', 'completion.zsh');

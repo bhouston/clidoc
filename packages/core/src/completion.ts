@@ -187,7 +187,6 @@ ${name}() {
   done
   if [[ \${#candidates[@]} == 0 && "$cur" != -* ]]; then
     while IFS= read -r candidate; do COMPREPLY+=("$prefix$candidate"); done < <(compgen -f -- "$cur")
-    compopt -o filenames 2>/dev/null || :
   fi
   # Readline replaces only the value when '=' is a word break.
   if [[ -n "$prefix" && "$COMP_WORDBREAKS" == *'='* ]]; then
@@ -203,7 +202,7 @@ ${name}() {
   }
   return 0
 }
-${bash ? `complete -F ${name} -- '${binary}'` : `compdef ${name} '${binary}'`}
+${bash ? `complete -o filenames -F ${name} -- '${binary}'` : `compdef ${name} '${binary}'`}
 `;
 }
 
