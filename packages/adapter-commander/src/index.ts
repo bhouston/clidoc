@@ -55,6 +55,11 @@ function optionToOpenCli(positive: Option | undefined, negative: Option | undefi
   const isBoolean = negatedOnly || !!negative || option.isBoolean();
   const result: FlagItemObject = { name, type: isBoolean ? 'boolean' : 'string' };
   const source = positive ?? option;
+  if (source.mandatory && source.variadic && (source.optional || source.defaultValue !== undefined)) {
+    throw new TypeError(
+      `Commander option '${name}' is mandatory and variadic but can be omitted or supplied without values: OpenCLI cannot express this presence rule. Document this option separately or change its CLI behavior.`,
+    );
+  }
   if (source.short && source.short.replace(/^-+/, '') !== name) result.aliases = [source.short.replace(/^-+/, '')];
   if (source.description) result.summary = source.description;
   if (negative && positive) {

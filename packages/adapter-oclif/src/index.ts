@@ -61,6 +61,11 @@ export interface OclifManifest {
   topics?: Record<string, OclifManifestTopic>;
 }
 function flagToOpenCli(name: string, source: OclifManifestFlag): FlagItemObject {
+  if (source.required && source.multiple && source.default !== undefined) {
+    throw new TypeError(
+      `oclif flag '${name}' is required and multiple but has a default: OpenCLI cannot express when the flag may be omitted. Document this flag separately or change its CLI behavior.`,
+    );
+  }
   const flag: FlagItemObject = {
     name,
     type: source.type === 'boolean' ? 'boolean' : 'string',

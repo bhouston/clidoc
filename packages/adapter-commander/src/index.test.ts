@@ -51,6 +51,18 @@ describe('Commander metadata variants', () => {
     expect(validate(doc)).toEqual({ valid: true, errors: [] });
   });
 
+  it('reports mandatory variadic options that accept zero values', () => {
+    for (const option of [
+      new Option('--items [items...]').makeOptionMandatory(),
+      new Option('--items <items...>').makeOptionMandatory().default([]),
+    ]) {
+      const root = new Command('demo').addOption(option);
+      expect(() => fromCommander(root, info)).toThrow(
+        "Commander option 'items' is mandatory and variadic but can be omitted or supplied without values: OpenCLI cannot express this presence rule. Document this option separately or change its CLI behavior.",
+      );
+    }
+  });
+
   it('handles optional, variadic, boolean, default and choice values', () => {
     const root = new Command('demo');
     root.argument('[mode]', 'Mode');
