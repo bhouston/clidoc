@@ -73,6 +73,8 @@ const document = () =>
   });
 ```
 
+Use the full generated command key (`mycli greet`) to add metadata to the existing command.
+
 See the [`@clidoc/core` README](../core/README.md#adding-author-supplied-metadata) for the merge rules.
 
 ## License

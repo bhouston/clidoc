@@ -70,13 +70,15 @@ const document = () =>
   mergeDocument(fromCommander(program, info), {
     info: { license: { name: 'MIT', spdxId: 'MIT' } },
     commands: {
-      greet: {
+      'mycli greet': {
         examples: [{ title: 'Basic', content: 'mycli greet Ada' }],
         exitCodes: [{ code: 1, status: 'BAD_USER_INPUT_ERROR', summary: 'Missing name' }],
       },
     },
   });
 ```
+
+Use the full generated command key (`mycli greet`) to add metadata to the existing command.
 
 See the [`@clidoc/core` README](../core/README.md#adding-author-supplied-metadata) for the merge rules.
 
