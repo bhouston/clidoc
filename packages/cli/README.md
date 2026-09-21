@@ -43,6 +43,22 @@ calling process; it rejects on invalid input.
 See the [repository guide](../../README.md) and
 [generated command reference](../../docs/generated/cli.md).
 
+## MCP tools and stdio server
+
+```sh
+clidoc mcp cli.json --output tools.json
+clidoc mcp cli.json --serve --executable /absolute/path/to/mycli
+```
+
+Exporting does not execute the CLI. Serving requires an explicit trusted
+executable and validates every tool invocation. The bridge uses conventional
+long options and `--` before positional arguments; see the
+[MCP guide](../website/docs/guides/mcp.md) for the serialization contract,
+client configuration, limits, and supported spec features.
+
+Library users can import `compileMcpTools`, `createMcpServer`, and `serveMcp`
+from `@clidoc/cli/mcp`.
+
 ## License
 
 MIT. See [LICENSE](../../LICENSE).

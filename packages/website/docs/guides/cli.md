@@ -22,3 +22,6 @@ a trusted JavaScript module exporting command definitions and `info` metadata,
 `clidoc generate ./definition.mjs --adapter yargs --output cli.json` is an
 optional way to create the file. The module and supported Yargs builders execute
 while loading metadata.
+
+To expose a documented CLI to an MCP client, use `clidoc mcp`. See the
+[MCP bridge guide](./mcp.md) for export, stdio serving, and client setup.
