@@ -1,3 +1,6 @@
 [submodule "upstream/opencli"]
 	path = upstream/opencli
 	url = https://github.com/bcdxn/opencli.git
+[submodule "upstream/opencli-dev"]
+	path = upstream/opencli-dev
+	url = git@github.com:opencli-dev/opencli.git
