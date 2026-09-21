@@ -20,6 +20,10 @@ describe('published website', () => {
     expect(home.body.textContent).toContain('mycli docgen --output cli.json');
     expect(home.body.textContent).toContain('clidoc validate cli.json');
     expect(home.body.textContent).toContain('Markdown');
+    expect(home.querySelector('main > section:first-child pre')?.textContent).toContain('fromCommander(program, info)');
+    expect(home.querySelector('main > section:nth-child(2) pre')?.textContent).toContain(
+      "require('@clidoc/docusaurus')",
+    );
     const logos = [...home.querySelectorAll('img[src^="/img/integrations/"]')];
     expect(logos).toHaveLength(5);
     for (const logo of logos) {
