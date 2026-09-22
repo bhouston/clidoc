@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { Command, Option } from 'commander';
-import { createDocgenCommand, fromCommander } from '@clidoc/adapter-commander';
+import { createDocgenCommand, fromCommander } from '@clidoc/commander';
 import { handleOpenCliRequest, infoFromPackageJson } from '@clidoc/core';
 
 const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));

@@ -10,7 +10,7 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
-    "@clidoc/adapter-commander": "workspace:*",
+    "@clidoc/commander": "workspace:*",
     "@clidoc/core": "workspace:*",
     "commander": "^15.0.0"
   },

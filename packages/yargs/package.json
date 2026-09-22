@@ -1,7 +1,7 @@
 {
-  "name": "@clidoc/adapter-yargs",
+  "name": "@clidoc/yargs",
   "version": "0.1.0",
-  "description": "OpenCLI adapter for yargs",
+  "description": "Generate OpenCLI documents from Yargs command modules",
   "keywords": [
     "cli",
     "docs",
@@ -18,7 +18,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/bhouston/clidoc.git",
-    "directory": "packages/adapter-yargs"
+    "directory": "packages/yargs"
   },
   "files": [
     "dist/**/*.js",

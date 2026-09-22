@@ -17,7 +17,7 @@ function unscopedName(name: string): string {
 }
 
 /**
- * Derive an {@link InfoObject} from a parsed `package.json`, so adapters don't each need their
+ * Derive an {@link InfoObject} from a parsed `package.json`, so framework packages don't each need their
  * own `title`/`binary`/`version` bookkeeping. `overrides` wins over anything derived from `pkg`,
  * and is required for whatever `pkg` cannot express (e.g. a package that exposes several binaries).
  */
@@ -40,7 +40,7 @@ export type DocumentFormat = 'json' | 'yaml' | 'markdown';
 
 /**
  * Render `document` (JSON, YAML, or Markdown) and write it to `output`, or to stdout if `output`
- * is omitted. Shared by every adapter's docgen command and by `handleOpenCliRequest`.
+ * is omitted. Shared by every framework package's docgen command and by `handleOpenCliRequest`.
  */
 export async function writeOpenCliDocument(
   document: OpenCliDocument,

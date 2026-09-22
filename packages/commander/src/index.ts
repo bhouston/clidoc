@@ -134,7 +134,7 @@ export function fromCommander(root: Command, info: InfoObject): OpenCliDocument 
     // options is documented as an action that also has subcommands.
     if (command.commands.length && !item.args && !item.flags) item.kind = 'group';
     // Commander has no public getter for hidden state; `_hidden` has been a stable internal
-    // field since Commander 8 (this adapter targets Commander 15).
+    // field since Commander 8 (this package targets Commander 15).
     const hidden = (command as unknown as { _hidden?: boolean })._hidden;
     if (hidden) item.hidden = true;
     commands[path] = item;

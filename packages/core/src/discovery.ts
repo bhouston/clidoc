@@ -1,7 +1,7 @@
 import { writeOpenCliDocument } from './docgen.js';
 import type { OpenCliDocument } from './types.js';
 
-/** Hidden subcommand upstream OpenCLI adapters use for machine discovery. */
+/** Hidden subcommand upstream OpenCLI libraries use for machine discovery. */
 export const OPENCLI_DISCOVERY_COMMAND = '__opencli' as const;
 
 /** Sentinel returned by {@link parseOutArg} for argv this module doesn't recognize. */
@@ -9,7 +9,7 @@ const INVALID = Symbol('invalid');
 
 /**
  * Parse `-o <file>` / `--out <file>` / `--out=<file>` from the args following `__opencli`,
- * matching upstream OpenCLI's `ocobra` adapter flag. Returns `undefined` for no args (write to
+ * matching upstream OpenCLI's `ocobra` flag. Returns `undefined` for no args (write to
  * stdout), the file path for a recognized flag, or {@link INVALID} for anything else.
  */
 function parseOutArg(args: readonly string[]): string | undefined | typeof INVALID {

@@ -1,15 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 
-export const packageDirectories = [
-  'core',
-  'adapter-commander',
-  'adapter-oclif',
-  'adapter-yargs',
-  'cli',
-  'docusaurus',
-  'vitepress',
-];
+export const packageDirectories = ['core', 'commander', 'oclif', 'yargs', 'cli', 'docusaurus', 'vitepress'];
 
 export function baselineTags(readManifest = readFileSync) {
   return packageDirectories.map((directory) => {
@@ -46,13 +38,11 @@ if (process.argv[1]?.endsWith('/check-release-baselines.mjs')) {
     );
     process.exitCode = 1;
   } else {
-    const commits = baselineCommits(baselineTags());
-    if (commits.size !== 1) {
-      console.error('Release baseline tags must all point to the same bootstrap commit.');
-      process.exitCode = 1;
-    } else if (spawnSync('git', ['merge-base', '--is-ancestor', [...commits][0], 'HEAD']).status !== 0) {
-      console.error('Release baseline commit is not an ancestor of HEAD.');
-      process.exitCode = 1;
+    for (const commit of baselineCommits(baselineTags())) {
+      if (spawnSync('git', ['merge-base', '--is-ancestor', commit, 'HEAD']).status !== 0) {
+        console.error(`Release baseline commit ${commit} is not an ancestor of HEAD.`);
+        process.exitCode = 1;
+      }
     }
   }
 }

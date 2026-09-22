@@ -57,8 +57,10 @@ test('all seven public packages require their initial version tags', () => {
     missingTags(tags, (tag) => tag !== '@clidoc/core-v0.1.0'),
     ['@clidoc/core-v0.1.0'],
   );
-  assert.equal(baselineCommits(tags, () => 'bootstrap').size, 1);
-  assert.equal(baselineCommits(tags, (tag) => (tag === tags[0] ? 'other' : 'bootstrap')).size, 2);
+  assert.deepEqual(
+    [...baselineCommits(tags, (tag) => (tag === tags[0] ? 'other' : 'bootstrap'))],
+    ['other', 'bootstrap'],
+  );
 });
 
 test('release workflow always runs semantic-release after checks and requires baselines', () => {

@@ -10,8 +10,8 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
-    "@clidoc/adapter-oclif": "workspace:*",
     "@clidoc/core": "workspace:*",
+    "@clidoc/oclif": "workspace:*",
     "@oclif/core": "^5.0.0"
   },
   "engines": {

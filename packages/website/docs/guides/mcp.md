@@ -8,7 +8,7 @@ sidebar_position: 3
 `clidoc mcp` turns an OpenCLI document into Model Context Protocol tools. Export a
 catalog for inspection, or serve the tools over stdio for a local MCP client.
 The bridge supports the bcdxn OpenCLI `1.0.0-alpha.14` dialect used by clidoc's
-framework adapters. It does not implement nrranjithnr OpenCLISpec `1.0.0`.
+framework packages. It does not implement nrranjithnr OpenCLISpec `1.0.0`.
 
 ## Export and serve
 

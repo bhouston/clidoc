@@ -1,7 +1,7 @@
 {
-  "name": "@clidoc/adapter-oclif",
+  "name": "@clidoc/oclif",
   "version": "0.1.0",
-  "description": "OpenCLI adapter for oclif",
+  "description": "Generate OpenCLI documents from oclif manifests",
   "keywords": [
     "cli",
     "docs",
@@ -18,7 +18,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/bhouston/clidoc.git",
-    "directory": "packages/adapter-oclif"
+    "directory": "packages/oclif"
   },
   "files": [
     "dist/**/*.js",
