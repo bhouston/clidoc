@@ -1,6 +1,6 @@
 ---
 title: Publishing integrations
-sidebar_position: 4
+sidebar_position: 5
 ---
 
 # Publish from one CLI document

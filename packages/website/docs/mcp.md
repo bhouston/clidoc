@@ -1,6 +1,6 @@
 ---
 title: MCP bridge
-sidebar_position: 3
+sidebar_position: 7
 ---
 
 # Use a CLI through MCP

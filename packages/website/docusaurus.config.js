@@ -29,7 +29,7 @@ module.exports = {
       clidocPlugin,
       {
         input: '../../docs/generated/clidoc.json',
-        outputDir: path.join(siteDir, 'docs/cli/reference'),
+        outputDir: path.join(siteDir, 'docs/cli'),
         basePath: '/cli/reference',
       },
     ],

@@ -5,8 +5,8 @@ import styles from './index.module.css';
 
 const paths = [
   { title: 'Describe', body: 'Turn real command definitions into an OpenCLI document with a framework integration.', href: '/docs/frameworks/' },
-  { title: 'Check', body: 'Validate a JSON or YAML document against the OpenCLI specification.', href: '/docs/guides/core' },
-  { title: 'Publish', body: 'Generate command pages for Docusaurus, VitePress, or Markdown.', href: '/docs/guides/publishing' },
+  { title: 'Check', body: 'Validate a JSON or YAML document against the OpenCLI specification.', href: '/docs/api' },
+  { title: 'Publish', body: 'Generate command pages for Docusaurus, VitePress, or Markdown.', href: '/docs/publishing' },
 ];
 
 const frameworks = [
@@ -68,12 +68,12 @@ export default function Home() {
         <pre className={styles.snippet}><code>{commanderSnippet}</code></pre>
       </section>
       <section className={styles.support} aria-labelledby="publishing-title">
-        <div><h2 id="publishing-title">Publish where your docs live</h2><p>Publishing plugins generate command pages for Docusaurus and VitePress. You can also render Markdown for other documentation sites.</p><Link to="/docs/guides/publishing">Explore publishing plugins →</Link></div>
-        <IntegrationList items={publishers} href="/docs/guides/publishing" />
+        <div><h2 id="publishing-title">Publish where your docs live</h2><p>Publishing plugins generate command pages for Docusaurus and VitePress. You can also render Markdown for other documentation sites.</p><Link to="/docs/publishing">Explore publishing plugins →</Link></div>
+        <IntegrationList items={publishers} href="/docs/publishing" />
         <pre className={styles.snippet}><code>{docusaurusSnippet}</code></pre>
       </section>
       <section className={styles.example}>
-        <div><h2>Generate from your own CLI</h2><p>Give your CLI a docgen command with a framework integration, then validate its OpenCLI document with clidoc.</p><Link to="/docs/guides/cli">Read the CLI guide →</Link></div>
+        <div><h2>Generate from your own CLI</h2><p>Give your CLI a docgen command with a framework integration, then validate its OpenCLI document with clidoc.</p><Link to="/docs/cli">Read the CLI guide →</Link></div>
         <pre><code>{`$ npm install -g @clidoc/cli\n$ mycli docgen --output cli.json\n$ clidoc validate cli.json`}</code></pre>
       </section>
       <section className={styles.grid} aria-label="How clidoc works">
