@@ -61,9 +61,9 @@ test('all seven public packages require their initial version tags', () => {
   assert.equal(baselineCommits(tags, (tag) => (tag === tags[0] ? 'other' : 'bootstrap')).size, 2);
 });
 
-test('release workflow skips semantic-release until activation, including dry runs', () => {
+test('release workflow always runs semantic-release after checks and requires baselines', () => {
   const workflow = readFileSync('.github/workflows/release.yml', 'utf8');
-  assert.match(workflow, /release:\n\s+needs: checks\n\s+if: vars\.NPM_RELEASE_ENABLED == 'true'/);
+  assert.match(workflow, /release:\n\s+needs: checks\n\s+runs-on:/);
   assert.match(
     workflow,
     /name: Require published package baselines\n\s+run: node scripts\/check-release-baselines\.mjs/,
