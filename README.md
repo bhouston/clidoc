@@ -73,6 +73,36 @@ For example, `mycli __opencli > mycli.opencli.json` or
 [Yargs](packages/yargs), [Commander](packages/commander), and
 [oclif](packages/oclif) framework guides and runnable demos show this.
 
+## Example document
+
+Trimmed from [`docs/generated/clidoc.json`](docs/generated/clidoc.json), the document clidoc
+generates for itself:
+
+```json
+{
+  "opencliVersion": "1.0.0-alpha.14",
+  "info": {
+    "title": "clidoc",
+    "binary": "clidoc",
+    "version": "0.1.0",
+    "summary": "Generate, validate, and publish CLI documentation through OpenCLI."
+  },
+  "commands": {
+    "clidoc validate": {
+      "summary": "Validate an OpenCLI JSON or YAML document",
+      "args": [
+        {
+          "name": "input",
+          "required": true,
+          "type": "string",
+          "summary": "OpenCLI document filename"
+        }
+      ]
+    }
+  }
+}
+```
+
 ## Validate
 
 `clidoc validate cli.json` checks a JSON or YAML document against the bundled
@@ -201,36 +231,6 @@ They are committed, unlike each site's own `outputDir`, so the demo sites and
 website build straight from a checkout with no generation step; `pnpm docs:generate`
 refreshes them locally, and CI's `docs:build` regenerates them before building
 the sites.
-
-## Example document
-
-Trimmed from [`docs/generated/clidoc.json`](docs/generated/clidoc.json), the document clidoc
-generates for itself:
-
-```json
-{
-  "opencliVersion": "1.0.0-alpha.14",
-  "info": {
-    "title": "clidoc",
-    "binary": "clidoc",
-    "version": "0.1.0",
-    "summary": "Generate, validate, and publish CLI documentation through OpenCLI."
-  },
-  "commands": {
-    "clidoc validate": {
-      "summary": "Validate an OpenCLI JSON or YAML document",
-      "args": [
-        {
-          "name": "input",
-          "required": true,
-          "type": "string",
-          "summary": "OpenCLI document filename"
-        }
-      ]
-    }
-  }
-}
-```
 
 ## Compatibility
 
