@@ -5,7 +5,7 @@
   "scripts": {
     "build": "docusaurus build",
     "dev": "docusaurus start --port 4000",
-    "generate:api": "typedoc --options typedoc.json",
+    "generate:api": "typedoc --options typedoc.json && cp core-guide.md docs/api/index.md",
     "test:browser": "node scripts/run-browser-tests.mjs"
   },
   "dependencies": {

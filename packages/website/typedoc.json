@@ -5,6 +5,7 @@
   "plugin": ["typedoc-plugin-markdown"],
   "out": "docs/api",
   "readme": "none",
+  "entryFileName": "reference",
   "hidePageHeader": true,
   "hideBreadcrumbs": true,
   "sort": ["source-order"],

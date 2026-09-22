@@ -31,7 +31,7 @@ own `yargs-file-commands` definitions.
 Export MCP tool definitions with `clidoc mcp cli.json -o tools.json`, or serve a
 trusted local executable with
 `clidoc mcp cli.json --serve --executable /absolute/path/to/mycli`.
-See the [MCP guide](packages/website/docs/guides/mcp.md) for client configuration,
+See the [MCP guide](packages/website/docs/mcp.md) for client configuration,
 argument mapping, process limits, and the `@clidoc/cli/mcp` library API.
 
 ## Run from source
@@ -71,7 +71,7 @@ OpenCLI specifications in pull requests:
 The action accepts JSON/YAML, multiple files, explicit specification dialects,
 and pinned validator versions. Its default uses a locked source build until the
 clidoc npm packages are published. See the
-[official CI guide](https://clidoc.dev/docs/guides/github-action/) for a complete
+[official CI guide](https://clidoc.dev/docs/github-action/) for a complete
 workflow and version selection. This repository runs the hosted action against
 its generated CLI specification on Linux and macOS.
 

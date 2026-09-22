@@ -51,7 +51,7 @@ For Bash, activate with `source <(clidoc completion bash)`. For Zsh, run
 `source <(clidoc completion zsh)` after `autoload -Uz compinit; compinit`.
 Use `--binary name` to register an alternative executable name. Generated scripts
 need neither Node nor clidoc at completion time. Regenerate them after CLI changes.
-See the [completion guide](https://clidoc.dev/docs/guides/completion) for
+See the [completion guide](https://clidoc.dev/docs/completion) for
 persistent installation, supported syntax, and limitations.
 
 ## MCP tools and stdio server
@@ -64,7 +64,7 @@ clidoc mcp cli.json --serve --executable /absolute/path/to/mycli
 Exporting does not execute the CLI. Serving requires an explicit trusted
 executable and validates every tool invocation. The bridge uses conventional
 long options and `--` before positional arguments; see the
-[MCP guide](../website/docs/guides/mcp.md) for the serialization contract,
+[MCP guide](../website/docs/mcp.md) for the serialization contract,
 client configuration, limits, and supported spec features.
 
 Library users can import `compileMcpTools`, `createMcpServer`, and `serveMcp`
