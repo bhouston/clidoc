@@ -52,16 +52,7 @@ if (!(await handleOpenCliRequest(args, document))) {
 
 The [runnable oclif demo](../../demos/oclif/src/index.ts) builds the manifest inline to stay a single file and wires up `__opencli`; adjust the manifest and `package.json` paths for your project's layout. Consumers can then run `mycli __opencli > mycli.opencli.json` or `mycli __opencli --out mycli.opencli.json` for discovery.
 
-## Supported metadata
-
-- Command IDs, descriptions, aliases, visibility, flags, arguments, examples, and topics from the generated manifest.
-- Types, defaults, choices, required status, repeatable flags (`multiple` on flags and args).
-- Flag `env` → `alternativeSources`; flag `helpValue` → `hint`; flag `aliases`/`charAliases` merged with `char` into `aliases`.
-- Command `examples` (a string, or oclif's `{ command, description }` object) → `examples: [{ title?, content }]` (`description` → `title`, `command` → `content`).
-- Argument `default`, folded into the argument's summary as `Default: <value>.` (no dedicated OpenCLI field, matching `@clidoc/adapter-commander`).
-- Manifest `topics`, synthesised as `kind: 'group'` commands keyed by the topic path (e.g. `user` or `user admin`), without overwriting a real command of the same key.
-
-Not supported:
+## Limitations
 
 - Flag `deprecated` and `deprecateAliases` (read by oclif's own help output, no equivalent OpenCLI field).
 - Custom parsing, hooks, or command runtime behavior can't be inferred from the manifest.
