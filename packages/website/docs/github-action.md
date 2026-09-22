@@ -26,7 +26,7 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           persist-credentials: false
-      - uses: bhouston/clidoc-action@61df600ccfb0fd9dbbe7093b7e392b06662fac85 # v1
+      - uses: bhouston/clidoc-action@v1
         with:
           files: opencli.json
           specification: bcdxn
@@ -48,7 +48,7 @@ OpenCLI `0.1.0`; unknown or unsupported versions fail. It does not support
 nrranjithnr OpenCLISpec.
 
 ```yaml
-- uses: bhouston/clidoc-action@61df600ccfb0fd9dbbe7093b7e392b06662fac85 # v1
+- uses: bhouston/clidoc-action@v1
   with:
     working-directory: specifications
     files: |

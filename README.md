@@ -61,7 +61,7 @@ OpenCLI specifications in pull requests:
 
 ```yaml
 - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-- uses: bhouston/clidoc-action@61df600ccfb0fd9dbbe7093b7e392b06662fac85 # v1
+- uses: bhouston/clidoc-action@v1
   with:
     files: opencli.json
     specification: bcdxn
