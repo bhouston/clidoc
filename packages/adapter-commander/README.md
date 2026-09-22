@@ -8,15 +8,15 @@
 
 An [OpenCLI](https://github.com/bcdxn/opencli) spec generator for [Commander](https://github.com/tj/commander.js). clidoc is a JavaScript suite of tools for generating, transforming, and publishing OpenCLI specifications, with wide compatibility across the standard ecosystem tooling.
 
-## Add `docgen` and `__opencli` to your CLI
+## Add `docgen` to your CLI
 
-`createDocgenCommand` builds a ready-to-register `docgen` command: `-o`/`--output <file>` (defaults to stdout) and `--format <json|markdown>` (default `json`). `infoFromPackageJson` derives the document's title, binary name, and version from your `package.json`. For machine discovery, attach the hidden `__opencli` subcommand, matching [upstream OpenCLI's Go adapters](https://github.com/bcdxn/opencli): `handleOpenCliRequest` checks argv for `__opencli` before Commander parses arguments, prints one JSON document to stdout (or writes it to a file with upstream's own `-o`/`--out <file>` flag), and exits 0, so command handlers never run.
+`createDocgenCommand` builds a ready-to-register `docgen` command: `-o`/`--output <file>` (defaults to stdout) and `--format <json|markdown>` (default `json`). `infoFromPackageJson` derives the document's title, binary name, and version from your `package.json`.
 
 ```ts
 import { readFileSync } from 'node:fs';
 import { Command } from 'commander';
 import { createDocgenCommand, fromCommander } from '@clidoc/adapter-commander';
-import { handleOpenCliRequest, infoFromPackageJson } from '@clidoc/core';
+import { infoFromPackageJson } from '@clidoc/core';
 
 const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
 const info = infoFromPackageJson(pkg);
@@ -29,15 +29,28 @@ program
     console.log(`Hello, ${name}!`);
   });
 
+// generate an OpenCLI document from the same commands
 const document = () => fromCommander(program, info);
+// add a docgen command that returns the document on demand
 program.addCommand(createDocgenCommand(document));
+program.parse();
+```
+
+Run `mycli docgen --output cli.json` for JSON (the default), or `mycli docgen --format markdown --output reference.md` to render Markdown directly; omit `--output` to print to stdout. Install the validator with `npm install -g @clidoc/cli` and run `clidoc validate cli.json`. See the [Commander demo](../../demos/commander) for a runnable example.
+
+## Optional: `__opencli` for machine discovery
+
+For machine discovery, matching [upstream OpenCLI's Go adapters](https://github.com/bcdxn/opencli), attach the hidden `__opencli` subcommand instead of calling `program.parse()` directly: `handleOpenCliRequest` checks argv for `__opencli` before Commander parses arguments, prints one JSON document to stdout (or writes it to a file with upstream's own `-o`/`--out <file>` flag), and exits 0, so command handlers never run.
+
+```ts
+import { handleOpenCliRequest } from '@clidoc/core';
 
 if (!(await handleOpenCliRequest(process.argv.slice(2), document))) {
   program.parse();
 }
 ```
 
-Run `mycli docgen --output cli.json` for JSON (the default), or `mycli docgen --format markdown --output reference.md` to render Markdown directly; omit `--output` to print to stdout. Install the validator with `npm install -g @clidoc/cli` and run `clidoc validate cli.json`. Consumers can also run `mycli __opencli > mycli.opencli.json` or `mycli __opencli --out mycli.opencli.json` for discovery. See the [Commander demo](../../demos/commander) for a runnable example.
+Consumers can then run `mycli __opencli > mycli.opencli.json` or `mycli __opencli --out mycli.opencli.json` for discovery.
 
 ## Supported metadata
 
