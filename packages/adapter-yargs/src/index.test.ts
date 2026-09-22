@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createDocgenCommand, fromYargs } from './index.js';
 import { validate } from '@clidoc/core';
 import { defineCommand } from 'yargs-file-commands';
+import buildYargs from 'yargs';
 const info = { title: 'Demo', binary: 'demo', version: '1.0.0' };
 describe('fromYargs', () => {
   it('reports demanded array options whose presence requirement OpenCLI cannot express', () => {
@@ -81,6 +82,52 @@ describe('fromYargs', () => {
       args: [{ name: 'name', summary: 'Person', required: true }],
       flags: [{ name: 'count', type: 'number', default: 2 }],
     });
+  });
+});
+
+describe('fromYargs from a live Yargs instance', () => {
+  it('auto-discovers commands, aliases, and nested subcommands from a configured parser', () => {
+    const parser = buildYargs([])
+      .command(['config', 'cfg'], 'Manage configuration', (y: any) => y.command('set <key> <value>', 'Set a value'))
+      .command('greet <name>', 'Greet a person', { language: { type: 'string', default: 'en' } });
+    const doc = fromYargs(parser, info);
+    expect(doc.commands?.['demo config']).toMatchObject({
+      summary: 'Manage configuration',
+      aliases: ['cfg'],
+      kind: 'group',
+    });
+    expect(doc.commands?.['demo config set']).toMatchObject({
+      summary: 'Set a value',
+      args: [
+        { name: 'key', required: true },
+        { name: 'value', required: true },
+      ],
+    });
+    expect(doc.commands?.['demo greet']).toMatchObject({
+      summary: 'Greet a person',
+      args: [{ name: 'name', required: true }],
+      flags: [{ name: 'language', type: 'string', default: 'en' }],
+    });
+  });
+  it('produces the same document as passing the equivalent modules array', () => {
+    const greet = { command: 'greet <name>', describe: 'Greet a person', builder: {} };
+    const parser = buildYargs([]).command(greet);
+    expect(fromYargs(parser, info)).toEqual(fromYargs([greet], info));
+  });
+  it('throws a diagnostic when getInternalMethods() is missing', () => {
+    expect(() => fromYargs({}, info)).toThrow(
+      "fromYargs() could not read this Yargs instance's registered commands: getInternalMethods() is missing. Pass an explicit array of command modules instead.",
+    );
+  });
+  it('throws a diagnostic when getInternalMethods().getCommandInstance is missing', () => {
+    expect(() => fromYargs({ getInternalMethods: () => ({}) }, info)).toThrow(
+      /getInternalMethods\(\)\.getCommandInstance is missing/,
+    );
+  });
+  it('throws a diagnostic when getCommandInstance().getCommandHandlers is missing', () => {
+    expect(() => fromYargs({ getInternalMethods: () => ({ getCommandInstance: () => ({}) }) }, info)).toThrow(
+      /getCommandInstance\(\)\.getCommandHandlers is missing/,
+    );
   });
 });
 

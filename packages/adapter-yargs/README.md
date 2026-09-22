@@ -23,12 +23,12 @@ import { command as greet } from './commands/greet.js';
 const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
 const info = infoFromPackageJson(pkg);
 
-// generate an OpenCLI document from the same commands
-const document = () => fromYargs([greet, docgen], info);
-// add a docgen command that returns the document on demand
-const docgen = createDocgenCommand(document);
+const parser = yargs(hideBin(process.argv)).command(greet);
 
-yargs(hideBin(process.argv)).command(greet).command(docgen).demandCommand().parse();
+// generate an OpenCLI document from the same commands
+const document = () => fromYargs(parser, info);
+// add a docgen command that returns the document on demand
+parser.command(createDocgenCommand(document)).demandCommand().parse();
 ```
 
 Run `mycli docgen --output cli.json` for JSON (the default), or `mycli docgen --format markdown --output reference.md` to render Markdown directly; omit `--output` to print to stdout. Install the validator with `npm install -g @clidoc/cli` and run `clidoc validate cli.json`. See the [Yargs demo](../../demos/yargs) for a runnable example.
@@ -40,9 +40,8 @@ For machine discovery, matching [upstream OpenCLI's Go adapters](https://github.
 ```ts
 import { handleOpenCliRequest } from '@clidoc/core';
 
-const args = hideBin(process.argv);
-if (!(await handleOpenCliRequest(args, document))) {
-  yargs(args).command(greet).command(docgen).demandCommand().parse();
+if (!(await handleOpenCliRequest(hideBin(process.argv), document))) {
+  parser.parse();
 }
 ```
 
