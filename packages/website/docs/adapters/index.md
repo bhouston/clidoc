@@ -9,7 +9,7 @@ clidoc adapters convert framework definitions into an OpenCLI document. The resu
 
 First, add `mycli docgen --output cli.json` to write a document derived from the same framework definitions as your CLI. Each adapter exports a `createDocgenCommand` helper that builds this command for you, wired to `--output`/`--format`, so you only need to register it. Install the validator with `npm install -g @clidoc/cli`, then run `clidoc validate cli.json` and `clidoc markdown cli.json --output reference.md`.
 
-For consistent discovery by documentation tools, add the hidden `mycli __opencli` subcommand to your CLI. Check for exactly that argument before normal argument parsing, print only one UTF-8 JSON OpenCLI document followed by a newline to stdout, and exit with status 0. Do not run handlers. Report errors on stderr and exit nonzero. For example, `mycli __opencli > mycli.opencli.json` captures the document for validation and rendering.
+For consistent discovery by documentation tools, you can optionally add the hidden `mycli __opencli` subcommand to your CLI too. Check for exactly that argument before normal argument parsing, print only one UTF-8 JSON OpenCLI document followed by a newline to stdout, and exit with status 0. Do not run handlers. Report errors on stderr and exit nonzero. For example, `mycli __opencli > mycli.opencli.json` captures the document for validation and rendering. See each adapter's README for the `handleOpenCliRequest` snippet that wires this up.
 
 | Framework | Package                     | Entry point                                                                                |
 | --------- | --------------------------- | ------------------------------------------------------------------------------------------ |
@@ -17,7 +17,7 @@ For consistent discovery by documentation tools, add the hidden `mycli __opencli
 | oclif     | `@clidoc/adapter-oclif`     | [`fromOclif`](https://github.com/bhouston/clidoc/tree/main/packages/adapter-oclif)         |
 | yargs     | `@clidoc/adapter-yargs`     | [`fromYargs`](https://github.com/bhouston/clidoc/tree/main/packages/adapter-yargs)         |
 
-Each snippet below registers `docgen`, answers `__opencli`, and reads the title, binary name, and version from your `package.json`. Read each adapter's README for its supported command features and how to add examples and exit codes with `mergeDocument`.
+Each snippet below registers `docgen` and reads the title, binary name, and version from your `package.json`. Read each adapter's README for its supported command features, how to add examples and exit codes with `mergeDocument`, and how to add `__opencli`.
 
 ## Commander
 
@@ -25,7 +25,7 @@ Each snippet below registers `docgen`, answers `__opencli`, and reads the title,
 import { readFileSync } from 'node:fs';
 import { Command } from 'commander';
 import { createDocgenCommand, fromCommander } from '@clidoc/adapter-commander';
-import { handleOpenCliRequest, infoFromPackageJson } from '@clidoc/core';
+import { infoFromPackageJson } from '@clidoc/core';
 
 const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
 const info = infoFromPackageJson(pkg);
@@ -38,17 +38,16 @@ program
     console.log(`Hello, ${name}!`);
   });
 
+// generate an OpenCLI document from the same commands
 const document = () => fromCommander(program, info);
+// add a docgen command that returns the document on demand
 program.addCommand(createDocgenCommand(document));
-
-if (!(await handleOpenCliRequest(process.argv.slice(2), document))) {
-  program.parse();
-}
+program.parse();
 ```
 
 ## oclif
 
-`createDocgenCommand` lives at `@clidoc/adapter-oclif/docgen` so that importing `fromOclif` never requires `@oclif/core`. Generate `manifest.json` with `oclif manifest` as part of your build.
+`createDocgenCommand` lives at `@clidoc/adapter-oclif/docgen` so that importing `fromOclif` never requires `@oclif/core`. Generate `manifest.json` with `oclif manifest` as part of your build. `docgen` is exported as an ordinary command, so `src/index.ts` needs no changes.
 
 ```ts
 // src/commands/docgen.ts
@@ -62,24 +61,6 @@ export default createDocgenCommand(() => ({
 }));
 ```
 
-```ts
-// src/index.ts
-import { readFileSync } from 'node:fs';
-import { run } from '@oclif/core';
-import { fromOclif } from '@clidoc/adapter-oclif';
-import { handleOpenCliRequest, infoFromPackageJson } from '@clidoc/core';
-
-const document = () => {
-  const manifest = JSON.parse(readFileSync(new URL('../manifest.json', import.meta.url), 'utf8'));
-  const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
-  return fromOclif(manifest, infoFromPackageJson(pkg));
-};
-const args = process.argv.slice(2);
-if (!(await handleOpenCliRequest(args, document))) {
-  await run(args);
-}
-```
-
 ## yargs
 
 Pass the same command modules you register with yargs.
@@ -89,17 +70,16 @@ import { readFileSync } from 'node:fs';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { createDocgenCommand, fromYargs } from '@clidoc/adapter-yargs';
-import { handleOpenCliRequest, infoFromPackageJson } from '@clidoc/core';
+import { infoFromPackageJson } from '@clidoc/core';
 import { command as greet } from './commands/greet.js';
 
 const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
 const info = infoFromPackageJson(pkg);
 
+// generate an OpenCLI document from the same commands
 const document = () => fromYargs([greet, docgen], info);
+// add a docgen command that returns the document on demand
 const docgen = createDocgenCommand(document);
 
-const args = hideBin(process.argv);
-if (!(await handleOpenCliRequest(args, document))) {
-  yargs(args).command(greet).command(docgen).demandCommand().parse();
-}
+yargs(hideBin(process.argv)).command(greet).command(docgen).demandCommand().parse();
 ```
