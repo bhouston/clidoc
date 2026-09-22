@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { mergeDocument } from './merge.js';
 import type { OpenCliDocument } from './types.js';
 
-/** Stand-in for what an adapter's `fromX()` (e.g. `fromYargs`) would generate. */
+/** Stand-in for what a framework package's `fromX()` (e.g. `fromYargs`) would generate. */
 const generated: OpenCliDocument = {
   opencliVersion: '1.0.0-alpha.14',
   info: { title: 'Demo', binary: 'demo', version: '1.0.0' },

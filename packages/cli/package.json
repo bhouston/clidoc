@@ -54,10 +54,8 @@
     "tsc": "tsc --noEmit"
   },
   "dependencies": {
-    "@clidoc/adapter-commander": "workspace:^",
-    "@clidoc/adapter-oclif": "workspace:^",
-    "@clidoc/adapter-yargs": "workspace:^",
     "@clidoc/core": "workspace:^",
+    "@clidoc/yargs": "workspace:^",
     "@modelcontextprotocol/sdk": "^1.30.0",
     "ajv": "^8.20.0",
     "yargs": "^18.1.0",

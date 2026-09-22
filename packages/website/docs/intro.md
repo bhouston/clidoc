@@ -11,9 +11,9 @@ clidoc turns a command-line interface into a portable description that can be va
 
 ## Pick a starting point
 
-- [Use the CLI](/docs/guides/cli) to validate a CLI-generated document or render Markdown.
-- [Use the core library](/docs/guides/core) to parse, validate, and render an OpenCLI document in TypeScript.
-- [Connect a CLI framework](/docs/adapters) to derive documentation from command definitions.
-- [Publish documentation](/docs/guides/publishing) with the Docusaurus or VitePress integration.
+- [Use the CLI](/docs/cli) to validate a CLI-generated document or render Markdown.
+- [Use the core library](/docs/api) to parse, validate, and render an OpenCLI document in TypeScript.
+- [Connect a CLI framework](/docs/frameworks) to derive documentation from command definitions.
+- [Publish documentation](/docs/publishing) with the Docusaurus or VitePress integration.
 
-The [CLI reference](/docs/cli/reference) is generated from the CLI's own command definitions. The [core API reference](/docs/api) is generated from its TSDoc comments.
+The [CLI reference](/docs/cli/reference) is generated from the CLI's own command definitions. The [core API reference](/docs/api/reference) is generated from its TSDoc comments.

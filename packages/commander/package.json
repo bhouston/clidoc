@@ -1,7 +1,7 @@
 {
-  "name": "@clidoc/adapter-commander",
+  "name": "@clidoc/commander",
   "version": "0.1.0",
-  "description": "OpenCLI adapter for commander",
+  "description": "Generate OpenCLI documents from Commander command trees",
   "keywords": [
     "cli",
     "commander",
@@ -18,7 +18,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/bhouston/clidoc.git",
-    "directory": "packages/adapter-commander"
+    "directory": "packages/commander"
   },
   "files": [
     "dist/**/*.js",

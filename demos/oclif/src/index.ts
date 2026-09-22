@@ -1,8 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { Args, Command, Flags } from '@oclif/core';
-import { fromOclif } from '@clidoc/adapter-oclif';
-import type { OclifManifestCommand } from '@clidoc/adapter-oclif';
-import { createDocgenCommand } from '@clidoc/adapter-oclif/docgen';
+import { fromOclif } from '@clidoc/oclif';
+import type { OclifManifestCommand } from '@clidoc/oclif';
+import { createDocgenCommand } from '@clidoc/oclif/docgen';
 import { handleOpenCliRequest, infoFromPackageJson } from '@clidoc/core';
 
 const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));

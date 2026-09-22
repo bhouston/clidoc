@@ -1,11 +1,11 @@
 ---
 title: Publishing integrations
-sidebar_position: 4
+sidebar_position: 5
 ---
 
 # Publish from one CLI document
 
-The publishing integrations turn an OpenCLI document, for example one written by a [framework adapter](/docs/adapters), into pages and sidebar entries for your documentation site.
+The publishing integrations turn an OpenCLI document, for example one written by a [framework adapter](/docs/frameworks), into pages and sidebar entries for your documentation site.
 
 - [Docusaurus](#docusaurus)
 - [VitePress](#vitepress)
@@ -83,4 +83,4 @@ npm install -g @clidoc/cli
 
 [GitHub](https://github.com/bhouston/clidoc/tree/main/packages/cli) · [npm](https://www.npmjs.com/package/@clidoc/cli)
 
-`clidoc markdown cli.json --output reference.md` and the Commander, oclif, and yargs `docgen --format markdown` commands use the same renderer, so their command sections include the same usage syntax. They produce a single Markdown document rather than website routes. See the [CLI guide](/docs/guides/cli) for the remaining commands.
+`clidoc markdown cli.json --output reference.md` and the Commander, oclif, and yargs `docgen --format markdown` commands use the same renderer, so their command sections include the same usage syntax. They produce a single Markdown document rather than website routes. See the [CLI guide](/docs/cli) for the remaining commands.

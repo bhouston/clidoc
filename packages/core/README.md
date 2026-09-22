@@ -23,7 +23,7 @@ const pages = generatePages(document, { basePath: '/cli' });
 
 ## Adding author-supplied metadata
 
-Adapters generate a document from what your CLI's argument parser already knows, so things like
+The framework packages generate a document from what your CLI's argument parser already knows, so things like
 `examples`, `exitCodes`, `info.license`/`contact`, `install`, and `global` config are usually
 missing. Add them with `mergeDocument`, then re-validate:
 
@@ -57,7 +57,7 @@ validates an OpenCLI document and returns a standalone completion script. It
 supports nested commands, aliases, global/local flags, option and positional
 choices, and hidden entries, with no runtime dependency on Node or the target CLI.
 The optional `binary` overrides only the registered executable name. See the
-[completion guide](https://clidoc.dev/docs/guides/completion) for activation,
+[completion guide](https://clidoc.dev/docs/completion) for activation,
 supported syntax, and limitations.
 
 ## License

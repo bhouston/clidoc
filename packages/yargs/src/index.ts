@@ -219,7 +219,7 @@ function collectBuilder(builder: unknown): CollectedBuilder {
       if (property === 'then') return undefined;
       if (typeof property === 'string' && !(property in target)) {
         throw new TypeError(
-          `Unsupported Yargs builder method .${property}(). Add metadata with .option() or extend the adapter.`,
+          `Unsupported Yargs builder method .${property}(). Add metadata with .option() or extend fromYargs.`,
         );
       }
       return Reflect.get(target, property, receiver);

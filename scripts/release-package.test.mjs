@@ -9,21 +9,17 @@ test('resolves dependency ranges against versions actually published', () => {
   const manifest = {
     name: '@clidoc/cli',
     version: '0.1.0',
-    dependencies: { '@clidoc/core': 'workspace:^', '@clidoc/adapter-yargs': 'workspace:*', chalk: '^5.0.0' },
-    peerDependencies: { '@clidoc/adapter-oclif': 'workspace:~' },
+    dependencies: { '@clidoc/core': 'workspace:^', '@clidoc/yargs': 'workspace:*', chalk: '^5.0.0' },
+    peerDependencies: { '@clidoc/oclif': 'workspace:~' },
   };
-  assert.deepEqual(internalDependencies(manifest), ['@clidoc/core', '@clidoc/adapter-yargs', '@clidoc/adapter-oclif']);
+  assert.deepEqual(internalDependencies(manifest), ['@clidoc/core', '@clidoc/yargs', '@clidoc/oclif']);
   assert.deepEqual(
-    resolveManifest(
-      manifest,
-      { '@clidoc/core': '1.2.3', '@clidoc/adapter-yargs': '2.0.0', '@clidoc/adapter-oclif': '1.4.0' },
-      '3.0.0',
-    ),
+    resolveManifest(manifest, { '@clidoc/core': '1.2.3', '@clidoc/yargs': '2.0.0', '@clidoc/oclif': '1.4.0' }, '3.0.0'),
     {
       ...manifest,
       version: '3.0.0',
-      dependencies: { '@clidoc/core': '^1.2.3', '@clidoc/adapter-yargs': '2.0.0', chalk: '^5.0.0' },
-      peerDependencies: { '@clidoc/adapter-oclif': '~1.4.0' },
+      dependencies: { '@clidoc/core': '^1.2.3', '@clidoc/yargs': '2.0.0', chalk: '^5.0.0' },
+      peerDependencies: { '@clidoc/oclif': '~1.4.0' },
     },
   );
   assert.throws(() => resolveManifest(manifest, {}, '3.0.0'), /No published version/);
@@ -70,8 +66,8 @@ test('records versions from earlier packages in one release run', () => {
   try {
     const path = join(temp, 'versions.json');
     writeVersion(path, '@clidoc/core', '2.0.0');
-    writeVersion(path, '@clidoc/adapter-yargs', '1.3.0');
-    assert.deepEqual(readVersions(path), { '@clidoc/core': '2.0.0', '@clidoc/adapter-yargs': '1.3.0' });
+    writeVersion(path, '@clidoc/yargs', '1.3.0');
+    assert.deepEqual(readVersions(path), { '@clidoc/core': '2.0.0', '@clidoc/yargs': '1.3.0' });
   } finally {
     rmSync(temp, { recursive: true, force: true });
   }

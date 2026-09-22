@@ -1,6 +1,6 @@
 ---
-title: Validate specifications in GitHub Actions
-sidebar_position: 3
+title: GitHub Action
+sidebar_position: 8
 ---
 
 # Validate OpenCLI specifications in CI

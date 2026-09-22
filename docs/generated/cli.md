@@ -46,25 +46,6 @@ clidoc docgen [--help] [--version] [--format <format>] [--output <output>]
 | `--format` | string | No | Output format; Choices: json, yaml, markdown; Default: `json` |
 | `--output` | string | No | Output file; defaults to stdout; Aliases: `o` |
 
-## clidoc generate
-
-Import a trusted framework definition module and generate OpenCLI JSON
-
-### Usage
-
-```sh
-clidoc generate <module> [--help] [--version] --adapter <adapter> [--output <output>]
-```
-
-| Argument | Type | Required | Description |
-| --- | --- | --- | --- |
-| `module` | string | Yes | Trusted JS module exporting default metadata and info |
-
-| Flag | Type | Required | Description |
-| --- | --- | --- | --- |
-| `--adapter` | string | Yes | Framework adapter; Choices: yargs, commander, oclif |
-| `--output` | string | No | Output JSON file; defaults to stdout; Aliases: `o` |
-
 ## clidoc markdown
 
 Render an OpenCLI document as Markdown

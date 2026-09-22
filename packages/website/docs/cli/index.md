@@ -1,4 +1,5 @@
 ---
+id: guide
 title: CLI guide
 sidebar_position: 2
 ---
@@ -17,19 +18,17 @@ clidoc validate cli.json
 clidoc markdown cli.json --output reference.md
 ```
 
-`mycli __opencli` prints the same JSON to stdout for tool discovery. If you have
-a trusted JavaScript module exporting command definitions and `info` metadata,
-`clidoc generate ./definition.mjs --adapter yargs --output cli.json` is an
-optional way to create the file. The module and supported Yargs builders execute
-while loading metadata.
+`mycli __opencli` prints the same JSON to stdout for tool discovery. To build
+the document in code, use the framework packages' `fromYargs`, `fromCommander`,
+or `fromOclif` functions; see the [framework guides](/docs/frameworks/).
 
 Generate shell completions with `clidoc completion bash`, `clidoc completion zsh`,
 or `clidoc completion fish`. Add `--input cli.json` to target another CLI instead
-of clidoc itself. See [shell completion](./completion.md) for activation and
+of clidoc itself. See [shell completion](../completion.md) for activation and
 persistent installation.
 
 To expose a documented CLI to an MCP client, use `clidoc mcp`. See the
-[MCP bridge guide](./mcp.md) for export, stdio serving, and client setup.
+[MCP bridge guide](../mcp.md) for export, stdio serving, and client setup.
 
 Automate validation on pull requests with the
-[GitHub Actions guide](./github-action.md).
+[GitHub Actions guide](../github-action.md).

@@ -20,20 +20,13 @@ clidoc markdown cli.json --output reference.md
 ```
 
 `mycli __opencli` is the hidden, machine-facing discovery subcommand, matching
-upstream OpenCLI's Go adapters, including its `-o`/`--out <file>` flag
+upstream OpenCLI's Go libraries, including its `-o`/`--out <file>` flag
 (`mycli __opencli --out cli.json`); omitted, it writes to stdout like
-`clidoc docgen`/`clidoc generate`/`clidoc markdown` do when their own
+`clidoc docgen`/`clidoc markdown` do when their own
 `--output` is omitted. clidoc dogfoods this exact workflow on itself:
-`clidoc docgen` and `clidoc __opencli` both describe the `clidoc` binary. As a
-secondary option, trusted command definitions can be imported with
-`clidoc generate ./definition.mjs --adapter yargs --output cli.json`. Invalid
+`clidoc docgen` and `clidoc __opencli` both describe the `clidoc` binary. Invalid
 input or command usage exits with status 1. `--help` describes command
 arguments, and `--version` prints the installed package version.
-
-The generation module must export `info` (`title`, `binary`, `version`) and a
-default value: Yargs command modules, a Commander `Command`, or an oclif manifest.
-Only import trusted modules: their top-level code and supported Yargs builder
-callbacks execute during generation. Command handlers are never invoked.
 
 Commands are separate files registered through `yargs-file-commands`, matching
 the `hdrify` approach. `cliDocument()` derives this tool's OpenCLI document from
@@ -58,7 +51,7 @@ For Bash, activate with `source <(clidoc completion bash)`. For Zsh, run
 `source <(clidoc completion zsh)` after `autoload -Uz compinit; compinit`.
 Use `--binary name` to register an alternative executable name. Generated scripts
 need neither Node nor clidoc at completion time. Regenerate them after CLI changes.
-See the [completion guide](https://clidoc.dev/docs/guides/completion) for
+See the [completion guide](https://clidoc.dev/docs/completion) for
 persistent installation, supported syntax, and limitations.
 
 ## MCP tools and stdio server
@@ -71,7 +64,7 @@ clidoc mcp cli.json --serve --executable /absolute/path/to/mycli
 Exporting does not execute the CLI. Serving requires an explicit trusted
 executable and validates every tool invocation. The bridge uses conventional
 long options and `--` before positional arguments; see the
-[MCP guide](../website/docs/guides/mcp.md) for the serialization contract,
+[MCP guide](../website/docs/mcp.md) for the serialization contract,
 client configuration, limits, and supported spec features.
 
 Library users can import `compileMcpTools`, `createMcpServer`, and `serveMcp`

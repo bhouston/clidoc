@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import type { ArgumentsCamelCase } from 'yargs';
-import { createDocgenCommand, fromYargs } from '@clidoc/adapter-yargs';
+import { createDocgenCommand, fromYargs } from '@clidoc/yargs';
 import { handleOpenCliRequest, infoFromPackageJson } from '@clidoc/core';
 import type { OpenCliDocument } from '@clidoc/core';
 
