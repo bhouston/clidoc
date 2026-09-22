@@ -22,7 +22,7 @@ own `yargs-file-commands` definitions.
 | [`@clidoc/adapter-yargs`](packages/adapter-yargs)         | Yargs command modules, including supported `defineCommand` builders                  |
 | [`@clidoc/adapter-commander`](packages/adapter-commander) | Configured Commander command trees                                                   |
 | [`@clidoc/adapter-oclif`](packages/adapter-oclif)         | oclif manifest command metadata                                                      |
-| [`@clidoc/cli`](packages/cli)                             | `generate`, `validate`, `markdown`, `docgen`, and `mcp` commands, plus `__opencli`   |
+| [`@clidoc/cli`](packages/cli)                             | `validate`, `markdown`, `docgen`, `completion`, and `mcp` commands, plus `__opencli` |
 | [`@clidoc/docusaurus`](packages/docusaurus)               | Generated Markdown pages for the Docusaurus docs plugin                              |
 | [`@clidoc/vitepress`](packages/vitepress)                 | Generated Markdown and matching VitePress sidebar links                              |
 
@@ -115,18 +115,6 @@ For example, `mycli __opencli > mycli.opencli.json` or
 [Yargs](packages/adapter-yargs), [Commander](packages/adapter-commander), and
 [oclif](packages/adapter-oclif) adapter guides and runnable demos show this.
 
-As an optional path for trusted local modules, `clidoc generate` imports a
-module exporting framework definitions as `default` and CLI metadata as `info`:
-
-```sh
-clidoc generate ./definition.mjs --adapter yargs --output cli.json
-```
-
-For Commander, export a configured `Command`; for oclif, export its manifest
-object. Importing a definition module executes its top-level JavaScript, and
-supported Yargs builder callbacks run to collect metadata. Use trusted modules.
-Adapters do not parse user arguments or invoke command handlers.
-
 ## Use the pipeline as a library
 
 ```ts
@@ -211,26 +199,6 @@ generates for itself:
     "summary": "Generate, validate, and publish CLI documentation through OpenCLI."
   },
   "commands": {
-    "clidoc generate": {
-      "summary": "Import a trusted framework definition module and generate OpenCLI JSON",
-      "args": [
-        {
-          "name": "module",
-          "required": true,
-          "type": "string",
-          "summary": "Trusted JS module exporting default metadata and info"
-        }
-      ],
-      "flags": [
-        {
-          "name": "adapter",
-          "type": "string",
-          "summary": "Framework adapter",
-          "required": true,
-          "choices": [{ "value": "yargs" }, { "value": "commander" }, { "value": "oclif" }]
-        }
-      ]
-    },
     "clidoc validate": {
       "summary": "Validate an OpenCLI JSON or YAML document",
       "args": [

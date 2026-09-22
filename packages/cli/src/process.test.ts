@@ -17,33 +17,28 @@ afterEach(async () => {
 it('exposes all commands from the installed CLI entry point', async () => {
   const result = await cli.run(['--help']);
   expect(result).toSucceed();
-  expect(result).toHaveStdout(/generate/);
+  expect(result).toHaveStdout(/docgen/);
   expect(result).toHaveStdout(/markdown/);
   expect(result).toHaveStdout(/validate/);
 });
 
-it('generates, validates, and renders a document through real subprocesses', async () => {
+it('validates and renders a document through real subprocesses', async () => {
   const directory = await mkdtemp(join(tmpdir(), 'clidoc-process-'));
   directories.push(directory);
-  const source = join(directory, 'commands.mjs');
   const document = join(directory, 'cli.json');
   const markdown = join(directory, 'cli.md');
-  await writeFile(
-    source,
-    "export const info={title:'Example',binary:'example',version:'1.0.0'}; export default [{command:'greet <name>',describe:'Greet a person'}];",
-  );
 
-  expect(await cli.run(['generate', source, '--adapter', 'yargs', '--output', document])).toSucceed();
+  expect(await cli.run(['docgen', '--output', document])).toSucceed();
   const generated = JSON.parse(await readFile(document, 'utf8'));
-  expect(generated.info.binary).toBe('example');
-  expect(generated.commands['example greet'].summary).toBe('Greet a person');
+  expect(generated.info.binary).toBe('clidoc');
+  expect(generated.commands['clidoc validate'].summary).toBe('Validate an OpenCLI JSON or YAML document');
 
   const validated = await cli.run(['validate', document]);
   expect(validated).toSucceed();
   expect(validated).toHaveStdout(/Valid OpenCLI document/);
 
   expect(await cli.run(['markdown', document, '--output', markdown])).toSucceed();
-  expect(await readFile(markdown, 'utf8')).toContain('## example greet');
+  expect(await readFile(markdown, 'utf8')).toContain('## clidoc validate');
 });
 
 it('returns useful failures for malformed input and unknown commands', async () => {
