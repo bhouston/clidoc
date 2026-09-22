@@ -71,16 +71,10 @@ and `Website container build`. Repository rules
 must allow the Actions token to create package version tags.
 
 The `Release` workflow runs only through manual dispatch on `main`:
-`gh workflow run release.yml --ref main`. Publishing remains disabled until
-the repository Actions variable `NPM_RELEASE_ENABLED` is `true`. Keep it unset
-until all seven packages are bootstrapped publicly, their trusted publishers
-allow direct publishing, and the baseline tags exist. Then activate with
-`gh variable set NPM_RELEASE_ENABLED --body true`. Run
-`gh workflow run release.yml --ref main -f dry_run=true` to preview after
-activation. Before activation, dispatches run CI but skip the release job,
-including semantic-release: npm cannot verify OIDC for an unpublished package.
-After activation, dry runs require all seven baseline tags and exercise
-semantic-release without publishing or creating tags. Merging a PR does not publish.
+`gh workflow run release.yml --ref main`. Every dispatch runs CI, then the
+release job, which requires all seven baseline tags before semantic-release
+runs. Pass `-f dry_run=true` to exercise semantic-release without publishing or
+creating tags. Merging a PR does not publish.
 
 ## Version baseline
 

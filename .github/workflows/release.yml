@@ -25,17 +25,12 @@ jobs:
             echo "Release must be dispatched with --ref main, not ${{ github.ref }}." >&2
             exit 1
           fi
-      - name: Explain inactive release
-        if: ${{ vars.NPM_RELEASE_ENABLED != 'true' }}
-        run: |
-          echo "Release job is disabled. Complete npm bootstrap and trusted publisher setup, then set NPM_RELEASE_ENABLED=true." >> "$GITHUB_STEP_SUMMARY"
   checks:
     needs: guard
     uses: ./.github/workflows/ci.yml
     secrets: inherit
   release:
     needs: checks
-    if: vars.NPM_RELEASE_ENABLED == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: write
