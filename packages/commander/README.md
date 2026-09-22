@@ -1,7 +1,7 @@
-# @clidoc/adapter-commander
+# @clidoc/commander
 
-[![npm version](https://img.shields.io/npm/v/%40clidoc%2Fadapter-commander)](https://www.npmjs.com/package/@clidoc/adapter-commander)
-[![npm downloads](https://img.shields.io/npm/dw/%40clidoc%2Fadapter-commander)](https://www.npmjs.com/package/@clidoc/adapter-commander)
+[![npm version](https://img.shields.io/npm/v/%40clidoc%2Fcommander)](https://www.npmjs.com/package/@clidoc/commander)
+[![npm downloads](https://img.shields.io/npm/dw/%40clidoc%2Fcommander)](https://www.npmjs.com/package/@clidoc/commander)
 [![CI](https://github.com/bhouston/clidoc/actions/workflows/ci.yml/badge.svg)](https://github.com/bhouston/clidoc/actions/workflows/ci.yml)
 [![Coverage](https://codecov.io/gh/bhouston/clidoc/graph/badge.svg)](https://codecov.io/gh/bhouston/clidoc)
 [![Documentation](https://img.shields.io/badge/docs-clidoc.dev-blue)](https://clidoc.dev)
@@ -15,7 +15,7 @@ An [OpenCLI](https://github.com/bcdxn/opencli) spec generator for [Commander](ht
 ```ts
 import { readFileSync } from 'node:fs';
 import { Command } from 'commander';
-import { createDocgenCommand, fromCommander } from '@clidoc/adapter-commander';
+import { createDocgenCommand, fromCommander } from '@clidoc/commander';
 import { infoFromPackageJson } from '@clidoc/core';
 
 const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
@@ -40,7 +40,7 @@ Run `mycli docgen --output cli.json` for JSON (the default), or `mycli docgen --
 
 ## Optional: `__opencli` for machine discovery
 
-For machine discovery, matching [upstream OpenCLI's Go adapters](https://github.com/bcdxn/opencli), attach the hidden `__opencli` subcommand instead of calling `program.parse()` directly: `handleOpenCliRequest` checks argv for `__opencli` before Commander parses arguments, prints one JSON document to stdout (or writes it to a file with upstream's own `-o`/`--out <file>` flag), and exits 0, so command handlers never run.
+For machine discovery, matching [upstream OpenCLI's Go libraries](https://github.com/bcdxn/opencli), attach the hidden `__opencli` subcommand instead of calling `program.parse()` directly: `handleOpenCliRequest` checks argv for `__opencli` before Commander parses arguments, prints one JSON document to stdout (or writes it to a file with upstream's own `-o`/`--out <file>` flag), and exits 0, so command handlers never run.
 
 ```ts
 import { handleOpenCliRequest } from '@clidoc/core';
@@ -56,19 +56,19 @@ Consumers can then run `mycli __opencli > mycli.opencli.json` or `mycli __opencl
 
 - Custom parsers, hooks, and action behavior can't be inferred from the command tree.
 - A required-value variadic option (`--items <items...>` + `makeOptionMandatory()`, no default) emits `variadic: true, minItems: 1` as the closest approximation — OpenCLI has no way to mark a variadic flag `required` (schema gap, [tracked upstream](https://github.com/bcdxn/opencli/issues/20)).
-- A mandatory optional-value variadic option (`--items [items...]`) can't be represented at all (a present-but-empty flag and an absent flag both need to be distinguishable from "must have values"), so the adapter throws a diagnostic naming the option.
+- A mandatory optional-value variadic option (`--items [items...]`) can't be represented at all (a present-but-empty flag and an absent flag both need to be distinguishable from "must have values"), so `fromCommander` throws a diagnostic naming the option.
 
 ## Advanced: using `fromCommander` directly
 
 `createDocgenCommand` is a thin convenience layer over `fromCommander`, which does the actual conversion and remains fully supported for callers who want to build their own `docgen` command, run the conversion at a different time, or skip `package.json` entirely:
 
 ```ts
-import { fromCommander } from '@clidoc/adapter-commander';
+import { fromCommander } from '@clidoc/commander';
 
 const document = fromCommander(program, { title: 'My CLI', binary: 'mycli', version: '1.0.0' });
 ```
 
-`fromCommander` converts a configured Commander `Command` tree into an OpenCLI `1.0.0-alpha.14` document. Configure the tree once and pass its root command with the CLI title, executable name, and version. The adapter traverses commands and reads their metadata without parsing arguments or running actions.
+`fromCommander` converts a configured Commander `Command` tree into an OpenCLI `1.0.0-alpha.14` document. Configure the tree once and pass its root command with the CLI title, executable name, and version. `fromCommander` traverses commands and reads their metadata without parsing arguments or running actions.
 
 ## Adding examples and exit codes
 

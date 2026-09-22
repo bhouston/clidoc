@@ -1,7 +1,7 @@
-# @clidoc/adapter-yargs
+# @clidoc/yargs
 
-[![npm version](https://img.shields.io/npm/v/%40clidoc%2Fadapter-yargs)](https://www.npmjs.com/package/@clidoc/adapter-yargs)
-[![npm downloads](https://img.shields.io/npm/dw/%40clidoc%2Fadapter-yargs)](https://www.npmjs.com/package/@clidoc/adapter-yargs)
+[![npm version](https://img.shields.io/npm/v/%40clidoc%2Fyargs)](https://www.npmjs.com/package/@clidoc/yargs)
+[![npm downloads](https://img.shields.io/npm/dw/%40clidoc%2Fyargs)](https://www.npmjs.com/package/@clidoc/yargs)
 [![CI](https://github.com/bhouston/clidoc/actions/workflows/ci.yml/badge.svg)](https://github.com/bhouston/clidoc/actions/workflows/ci.yml)
 [![Coverage](https://codecov.io/gh/bhouston/clidoc/graph/badge.svg)](https://codecov.io/gh/bhouston/clidoc)
 [![Documentation](https://img.shields.io/badge/docs-clidoc.dev-blue)](https://clidoc.dev)
@@ -16,7 +16,7 @@ An [OpenCLI](https://github.com/bcdxn/opencli) spec generator for [Yargs](https:
 import { readFileSync } from 'node:fs';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import { createDocgenCommand, fromYargs } from '@clidoc/adapter-yargs';
+import { createDocgenCommand, fromYargs } from '@clidoc/yargs';
 import { infoFromPackageJson } from '@clidoc/core';
 import { command as greet } from './commands/greet.js';
 
@@ -37,7 +37,7 @@ Run `mycli docgen --output cli.json` for JSON (the default), or `mycli docgen --
 
 ## Optional: `__opencli` for machine discovery
 
-For machine discovery, matching [upstream OpenCLI's Go adapters](https://github.com/bcdxn/opencli), check argv for the hidden `__opencli` subcommand before Yargs parses arguments instead of calling `.parse()` directly: `handleOpenCliRequest` prints one JSON document to stdout (or writes it to a file with upstream's own `-o`/`--out <file>` flag), and exits 0, so command handlers never run.
+For machine discovery, matching [upstream OpenCLI's Go libraries](https://github.com/bcdxn/opencli), check argv for the hidden `__opencli` subcommand before Yargs parses arguments instead of calling `.parse()` directly: `handleOpenCliRequest` prints one JSON document to stdout (or writes it to a file with upstream's own `-o`/`--out <file>` flag), and exits 0, so command handlers never run.
 
 ```ts
 import { handleOpenCliRequest } from '@clidoc/core';
@@ -54,20 +54,20 @@ Consumers can then run `mycli __opencli > mycli.opencli.json` or `mycli __opencl
 - `.check()` and `.middleware()` callbacks are never invoked.
 - Asynchronous builders (builder callbacks run synchronously to collect metadata — use trusted modules).
 - Custom parsing, coercion, validation, and middleware behavior.
-- Unsupported builder methods report their name and suggest `.option()` or extending the adapter.
-- A required array option (`demandOption: true`) can't be expressed faithfully — OpenCLI has no way to mark a variadic flag `required` (schema gap, [tracked upstream](https://github.com/bcdxn/opencli/issues/20)), so the adapter throws a diagnostic naming the option instead of emitting an incorrect `minItems: 1`.
+- Unsupported builder methods report their name and suggest `.option()` or extending `fromYargs`.
+- A required array option (`demandOption: true`) can't be expressed faithfully — OpenCLI has no way to mark a variadic flag `required` (schema gap, [tracked upstream](https://github.com/bcdxn/opencli/issues/20)), so `fromYargs` throws a diagnostic naming the option instead of emitting an incorrect `minItems: 1`.
 
 ## Advanced: passing an explicit command-modules array
 
 `fromYargs` accepts an array of command modules in place of a live instance, for callers who want to build a document from modules that were never registered on a parser, run the conversion at a different time, or skip `package.json` entirely:
 
 ```ts
-import { fromYargs } from '@clidoc/adapter-yargs';
+import { fromYargs } from '@clidoc/yargs';
 
 const document = fromYargs([greet], { title: 'My CLI', binary: 'mycli', version: '1.0.0' });
 ```
 
-`fromYargs` converts Yargs command metadata into an OpenCLI `1.0.0-alpha.14` document, from either a live instance or an explicit array of the same modules that register your commands, plus the CLI title, executable name, and version. The adapter reads metadata only; it does not parse arguments or run handlers.
+`fromYargs` converts Yargs command metadata into an OpenCLI `1.0.0-alpha.14` document, from either a live instance or an explicit array of the same modules that register your commands, plus the CLI title, executable name, and version. `fromYargs` reads metadata only; it does not parse arguments or run handlers.
 
 ## Adding examples and exit codes
 

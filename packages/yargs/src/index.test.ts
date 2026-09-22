@@ -225,7 +225,7 @@ describe('common Yargs builder chains (#75)', () => {
   });
   it('reports unsupported metadata setters clearly', () => {
     expect(() => fromYargs([{ command: 'go', builder: (y: any) => y.nargs('files', 2) }], info)).toThrow(
-      'Unsupported Yargs builder method .nargs(). Add metadata with .option() or extend the adapter.',
+      'Unsupported Yargs builder method .nargs(). Add metadata with .option() or extend fromYargs.',
     );
   });
 });

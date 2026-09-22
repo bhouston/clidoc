@@ -1,5 +1,5 @@
 import { createRequire } from 'node:module';
-import { fromYargs } from '@clidoc/adapter-yargs';
+import { fromYargs } from '@clidoc/yargs';
 import { command as completion } from './commands/completion.js';
 import { command as docgen } from './commands/docgen.js';
 import { command as mcp } from './commands/mcp.js';

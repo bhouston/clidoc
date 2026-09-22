@@ -13,7 +13,7 @@ export interface CreateDocgenCommandOptions {
  * Build a ready-to-export oclif `docgen` command: `--output <file>` (defaults to stdout) and
  * `--format <json|yaml|markdown>` (default `json`), writing the document produced from
  * `getManifestAndInfo()` via `@clidoc/core`'s `writeOpenCliDocument`. Default-export the result
- * from `src/commands/docgen.ts`. Kept in its own entry point (`@clidoc/adapter-oclif/docgen`) so
+ * from `src/commands/docgen.ts`. Kept in its own entry point (`@clidoc/oclif/docgen`) so
  * importing `fromOclif` from the package root never requires `@oclif/core` to be installed.
  */
 export function createDocgenCommand(

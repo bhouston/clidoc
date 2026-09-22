@@ -20,7 +20,7 @@ clidoc markdown cli.json --output reference.md
 ```
 
 `mycli __opencli` is the hidden, machine-facing discovery subcommand, matching
-upstream OpenCLI's Go adapters, including its `-o`/`--out <file>` flag
+upstream OpenCLI's Go libraries, including its `-o`/`--out <file>` flag
 (`mycli __opencli --out cli.json`); omitted, it writes to stdout like
 `clidoc docgen`/`clidoc markdown` do when their own
 `--output` is omitted. clidoc dogfoods this exact workflow on itself:

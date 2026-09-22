@@ -23,7 +23,7 @@ const pages = generatePages(document, { basePath: '/cli' });
 
 ## Adding author-supplied metadata
 
-Adapters generate a document from what your CLI's argument parser already knows, so things like
+The framework packages generate a document from what your CLI's argument parser already knows, so things like
 `examples`, `exitCodes`, `info.license`/`contact`, `install`, and `global` config are usually
 missing. Add them with `mergeDocument`, then re-validate:
 

@@ -10,21 +10,21 @@ Turn CLI definitions into a portable OpenCLI document, then publish Markdown
 wherever your documentation lives.
 
 This TypeScript monorepo adopts the [OpenCLI specification](https://github.com/bcdxn/opencli).
-It provides adapters for Yargs, Commander, and oclif, a command-line tool, and
+It provides framework integrations for Yargs, Commander, and oclif, a command-line tool, and
 Docusaurus and VitePress consumers. The clidoc tool documents itself from its
 own `yargs-file-commands` definitions.
 
 ## Packages
 
-| Package                                                   | Purpose                                                                              |
-| --------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| [`@clidoc/core`](packages/core)                           | Types, offline JSON Schema validation, JSON/YAML parsing, Markdown, pages and routes |
-| [`@clidoc/adapter-yargs`](packages/adapter-yargs)         | Yargs command modules, including supported `defineCommand` builders                  |
-| [`@clidoc/adapter-commander`](packages/adapter-commander) | Configured Commander command trees                                                   |
-| [`@clidoc/adapter-oclif`](packages/adapter-oclif)         | oclif manifest command metadata                                                      |
-| [`@clidoc/cli`](packages/cli)                             | `validate`, `markdown`, `docgen`, `completion`, and `mcp` commands, plus `__opencli` |
-| [`@clidoc/docusaurus`](packages/docusaurus)               | Generated Markdown pages for the Docusaurus docs plugin                              |
-| [`@clidoc/vitepress`](packages/vitepress)                 | Generated Markdown and matching VitePress sidebar links                              |
+| Package                                     | Purpose                                                                              |
+| ------------------------------------------- | ------------------------------------------------------------------------------------ |
+| [`@clidoc/core`](packages/core)             | Types, offline JSON Schema validation, JSON/YAML parsing, Markdown, pages and routes |
+| [`@clidoc/yargs`](packages/yargs)           | Yargs command modules, including supported `defineCommand` builders                  |
+| [`@clidoc/commander`](packages/commander)   | Configured Commander command trees                                                   |
+| [`@clidoc/oclif`](packages/oclif)           | oclif manifest command metadata                                                      |
+| [`@clidoc/cli`](packages/cli)               | `validate`, `markdown`, `docgen`, `completion`, and `mcp` commands, plus `__opencli` |
+| [`@clidoc/docusaurus`](packages/docusaurus) | Generated Markdown pages for the Docusaurus docs plugin                              |
+| [`@clidoc/vitepress`](packages/vitepress)   | Generated Markdown and matching VitePress sidebar links                              |
 
 ## MCP support
 
@@ -95,7 +95,7 @@ clidoc validate cli.json
 ```
 
 For machine discovery, also attach the hidden `__opencli` subcommand, matching
-[upstream OpenCLI's Go adapters](https://github.com/bcdxn/opencli). With no
+[upstream OpenCLI's Go libraries](https://github.com/bcdxn/opencli). With no
 flags it writes one UTF-8 OpenCLI JSON document followed by a newline to
 stdout and exits with status 0; `-o`/`--out <file>` (upstream's own flag)
 writes it to a file instead. `@clidoc/core` exports an async
@@ -112,13 +112,13 @@ if (!(await handleOpenCliRequest(process.argv.slice(2), buildDocument))) {
 
 For example, `mycli __opencli > mycli.opencli.json` or
 `mycli __opencli --out mycli.opencli.json` both capture the document. The
-[Yargs](packages/adapter-yargs), [Commander](packages/adapter-commander), and
-[oclif](packages/adapter-oclif) adapter guides and runnable demos show this.
+[Yargs](packages/yargs), [Commander](packages/commander), and
+[oclif](packages/oclif) framework guides and runnable demos show this.
 
 ## Use the pipeline as a library
 
 ```ts
-import { fromCommander } from '@clidoc/adapter-commander';
+import { fromCommander } from '@clidoc/commander';
 import { renderMarkdown, validate } from '@clidoc/core';
 
 const document = fromCommander(program, {
@@ -231,9 +231,9 @@ instead, as shown above, because page titles, route slugs, and `commands[...]` l
 want that exact string. Both forms validate against the schema, and `clidoc validate`
 accepts upstream's decorated documents unchanged.
 
-Framework metadata cannot express every runtime behavior. The adapters document
+Framework metadata cannot express every runtime behavior. The framework packages document
 what their supported metadata exposes; they do not infer custom validation,
-coercion, middleware, or application behavior. See each adapter README for limits.
+coercion, middleware, or application behavior. See each framework package README for limits.
 Schema validation follows the upstream JSON Schema and is paired with the logical
 checks ported from upstream's `validate/validate.go` (argument ordering, variadic
 constraints, `$FILE` config references, duplicate flags), rather than claiming

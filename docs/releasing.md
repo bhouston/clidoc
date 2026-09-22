@@ -1,8 +1,8 @@
 # Release setup and operation
 
 This monorepo publishes packages from `packages/`: `@clidoc/core`,
-`@clidoc/adapter-yargs`, `@clidoc/adapter-commander`,
-`@clidoc/adapter-oclif`, `@clidoc/cli`, `@clidoc/docusaurus`, and
+`@clidoc/yargs`, `@clidoc/commander`,
+`@clidoc/oclif`, `@clidoc/cli`, `@clidoc/docusaurus`, and
 `@clidoc/vitepress`. The demos under `demos/` are private and never published.
 `pnpm release` runs `semantic-release -e semantic-release-monorepo` once per
 package in dependency order. Commits touching each package determine its version
@@ -48,9 +48,9 @@ dependency order with an npm account authorized for the `@clidoc` scope:
 
 ```sh
 npm publish ./publish/core --access public
-npm publish ./publish/adapter-commander --access public
-npm publish ./publish/adapter-oclif --access public
-npm publish ./publish/adapter-yargs --access public
+npm publish ./publish/commander --access public
+npm publish ./publish/oclif --access public
+npm publish ./publish/yargs --access public
 npm publish ./publish/cli --access public
 npm publish ./publish/docusaurus --access public
 npm publish ./publish/vitepress --access public
@@ -85,21 +85,23 @@ them. Use the full scoped package name in each tag (for example,
 commits after the bootstrap. Without baseline tags, semantic-release treats the
 project as unreleased and may compute a different first version.
 
-Create all seven tags at the exact main commit used for staging and publishing:
+Create each tag at the exact main commit used for staging and publishing that
+package. A baseline only has to be an ancestor of `main`; packages bootstrapped
+at different times carry tags on different commits.
 
 ```sh
 git tag '@clidoc/core-v0.1.0' <bootstrap-commit>
-git tag '@clidoc/adapter-commander-v0.1.0' <bootstrap-commit>
-git tag '@clidoc/adapter-oclif-v0.1.0' <bootstrap-commit>
-git tag '@clidoc/adapter-yargs-v0.1.0' <bootstrap-commit>
+git tag '@clidoc/commander-v0.1.0' <bootstrap-commit>
+git tag '@clidoc/oclif-v0.1.0' <bootstrap-commit>
+git tag '@clidoc/yargs-v0.1.0' <bootstrap-commit>
 git tag '@clidoc/cli-v0.1.0' <bootstrap-commit>
 git tag '@clidoc/docusaurus-v0.1.0' <bootstrap-commit>
 git tag '@clidoc/vitepress-v0.1.0' <bootstrap-commit>
 git push origin \
   '@clidoc/core-v0.1.0' \
-  '@clidoc/adapter-commander-v0.1.0' \
-  '@clidoc/adapter-oclif-v0.1.0' \
-  '@clidoc/adapter-yargs-v0.1.0' \
+  '@clidoc/commander-v0.1.0' \
+  '@clidoc/oclif-v0.1.0' \
+  '@clidoc/yargs-v0.1.0' \
   '@clidoc/cli-v0.1.0' \
   '@clidoc/docusaurus-v0.1.0' \
   '@clidoc/vitepress-v0.1.0'
@@ -107,6 +109,27 @@ git push origin \
 
 Never move a baseline tag after activation. Run
 `node scripts/check-release-baselines.mjs` to check the tags locally.
+
+### Renamed framework packages
+
+`@clidoc/adapter-yargs`, `@clidoc/adapter-commander`, and `@clidoc/adapter-oclif`
+were renamed to `@clidoc/yargs`, `@clidoc/commander`, and `@clidoc/oclif`. On npm
+these are new packages with no publish history, so before the next `Release`
+dispatch the maintainer must, from a clean `main` checkout:
+
+1. Run `pnpm install --frozen-lockfile` and `pnpm release:bootstrap:stage`, then
+   `npm publish ./publish/<name> --access public` for `commander`, `oclif`, and
+   `yargs` only; the other packages are already published.
+2. Configure the npm trusted publisher for each of the three new packages and
+   allow direct `npm publish`, as described above.
+3. Tag that commit `@clidoc/commander-v0.1.0`, `@clidoc/oclif-v0.1.0`, and
+   `@clidoc/yargs-v0.1.0` and push the tags.
+4. Optionally `npm deprecate` the three `@clidoc/adapter-*` packages, pointing at
+   their replacements. The old `@clidoc/adapter-*-v0.1.0` tags can stay; nothing
+   reads them.
+
+Until step 3 is done, `node scripts/check-release-baselines.mjs` reports the
+three missing tags and the `Release` workflow stops before publishing.
 
 ## GitHub Pages
 

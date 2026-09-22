@@ -1,7 +1,7 @@
-# @clidoc/adapter-oclif
+# @clidoc/oclif
 
-[![npm version](https://img.shields.io/npm/v/%40clidoc%2Fadapter-oclif)](https://www.npmjs.com/package/@clidoc/adapter-oclif)
-[![npm downloads](https://img.shields.io/npm/dw/%40clidoc%2Fadapter-oclif)](https://www.npmjs.com/package/@clidoc/adapter-oclif)
+[![npm version](https://img.shields.io/npm/v/%40clidoc%2Foclif)](https://www.npmjs.com/package/@clidoc/oclif)
+[![npm downloads](https://img.shields.io/npm/dw/%40clidoc%2Foclif)](https://www.npmjs.com/package/@clidoc/oclif)
 [![CI](https://github.com/bhouston/clidoc/actions/workflows/ci.yml/badge.svg)](https://github.com/bhouston/clidoc/actions/workflows/ci.yml)
 [![Coverage](https://codecov.io/gh/bhouston/clidoc/graph/badge.svg)](https://codecov.io/gh/bhouston/clidoc)
 [![Documentation](https://img.shields.io/badge/docs-clidoc.dev-blue)](https://clidoc.dev)
@@ -10,12 +10,12 @@ An [OpenCLI](https://github.com/bcdxn/opencli) spec generator for [oclif](https:
 
 ## Add `docgen` to your CLI
 
-`@clidoc/adapter-oclif/docgen`'s `createDocgenCommand` builds a ready-to-export oclif command: `-o`/`--output <file>` (defaults to stdout) and `--format <json|markdown>` (default `json`). It lives at its own entry point so importing `fromOclif` from the package root never requires `@oclif/core` to be installed. `infoFromPackageJson` derives the document's title, binary name, and version from your `package.json`.
+`@clidoc/oclif/docgen`'s `createDocgenCommand` builds a ready-to-export oclif command: `-o`/`--output <file>` (defaults to stdout) and `--format <json|markdown>` (default `json`). It lives at its own entry point so importing `fromOclif` from the package root never requires `@oclif/core` to be installed. `infoFromPackageJson` derives the document's title, binary name, and version from your `package.json`.
 
 ```ts
 // src/commands/docgen.ts
 import { readFileSync } from 'node:fs';
-import { createDocgenCommand } from '@clidoc/adapter-oclif/docgen';
+import { createDocgenCommand } from '@clidoc/oclif/docgen';
 import { infoFromPackageJson } from '@clidoc/core';
 
 export default createDocgenCommand(() => ({
@@ -30,13 +30,13 @@ Generate or refresh the oclif manifest (`manifest.json`) as part of your build â
 
 ## Optional: `__opencli` for machine discovery
 
-For machine discovery, matching [upstream OpenCLI's Go adapters](https://github.com/bcdxn/opencli), check argv for the hidden `__opencli` subcommand in your executable entry point before handing arguments to oclif: `handleOpenCliRequest` prints one JSON document to stdout (or writes it to a file with upstream's own `-o`/`--out <file>` flag), and exits 0, so command handlers never run.
+For machine discovery, matching [upstream OpenCLI's Go libraries](https://github.com/bcdxn/opencli), check argv for the hidden `__opencli` subcommand in your executable entry point before handing arguments to oclif: `handleOpenCliRequest` prints one JSON document to stdout (or writes it to a file with upstream's own `-o`/`--out <file>` flag), and exits 0, so command handlers never run.
 
 ```ts
 // src/index.ts
 import { readFileSync } from 'node:fs';
 import { run } from '@oclif/core';
-import { fromOclif } from '@clidoc/adapter-oclif';
+import { fromOclif } from '@clidoc/oclif';
 import { handleOpenCliRequest, infoFromPackageJson } from '@clidoc/core';
 
 const document = () => {
@@ -57,19 +57,19 @@ The [runnable oclif demo](../../demos/oclif/src/index.ts) builds the manifest in
 - Flag `deprecated` and `deprecateAliases` (read by oclif's own help output, no equivalent OpenCLI field).
 - Custom parsing, hooks, or command runtime behavior can't be inferred from the manifest.
 - A flag with both `required: true` and `multiple: true` and no default emits `variadic: true, minItems: 1` as the closest approximation â€” OpenCLI has no way to mark a variadic flag `required` (schema gap, [tracked upstream](https://github.com/bcdxn/opencli/issues/20)).
-- The same combination with a default can't be represented at all (the default can satisfy oclif's required check without the flag being present), so the adapter throws a diagnostic for that case.
+- The same combination with a default can't be represented at all (the default can satisfy oclif's required check without the flag being present), so `fromOclif` throws a diagnostic for that case.
 
 ## Advanced: using `fromOclif` directly
 
 `createDocgenCommand` is a thin convenience layer over `fromOclif`, which does the actual conversion and remains fully supported for callers who want to build their own `docgen` command, run the conversion at a different time, or skip `package.json` entirely:
 
 ```ts
-import { fromOclif } from '@clidoc/adapter-oclif';
+import { fromOclif } from '@clidoc/oclif';
 
 const document = fromOclif(manifest, { title: 'My CLI', binary: 'mycli', version: '1.0.0' });
 ```
 
-`fromOclif` converts the command metadata in oclif's generated `manifest.json` into an OpenCLI `1.0.0-alpha.14` document. Pass the manifest and the CLI title, executable name, and version. The adapter reads metadata only; it does not load commands, parse arguments, or run handlers.
+`fromOclif` converts the command metadata in oclif's generated `manifest.json` into an OpenCLI `1.0.0-alpha.14` document. Pass the manifest and the CLI title, executable name, and version. `fromOclif` reads metadata only; it does not load commands, parse arguments, or run handlers.
 
 ## Adding examples and exit codes
 

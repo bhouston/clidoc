@@ -18,8 +18,8 @@ clidoc markdown cli.json --output reference.md
 ```
 
 `mycli __opencli` prints the same JSON to stdout for tool discovery. To build
-the document in code, use the framework adapters' `fromYargs`, `fromCommander`,
-or `fromOclif` functions; see the [adapter guides](/docs/adapters/).
+the document in code, use the framework packages' `fromYargs`, `fromCommander`,
+or `fromOclif` functions; see the [framework guides](/docs/frameworks/).
 
 Generate shell completions with `clidoc completion bash`, `clidoc completion zsh`,
 or `clidoc completion fish`. Add `--input cli.json` to target another CLI instead

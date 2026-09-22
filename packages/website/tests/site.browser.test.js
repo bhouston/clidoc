@@ -29,7 +29,7 @@ describe('published website', () => {
     for (const logo of logos) {
       expect((await fetch(`http://127.0.0.1:4173${logo.getAttribute('src')}`)).ok).toBe(true);
     }
-    expect(home.querySelector('a[href="/docs/adapters/"]')).not.toBeNull();
+    expect(home.querySelector('a[href="/docs/frameworks/"]')).not.toBeNull();
     expect(home.querySelector('a[href="/docs/guides/publishing"]')).not.toBeNull();
     expect(home.body.textContent).toContain('Created with love ❤️ by');
     expect(home.querySelector('a[href="https://ben3d.ca"]')?.textContent).toBe('Ben Houston');
