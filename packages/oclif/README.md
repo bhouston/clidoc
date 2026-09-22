@@ -6,11 +6,15 @@
 [![Coverage](https://codecov.io/gh/bhouston/clidoc/graph/badge.svg)](https://codecov.io/gh/bhouston/clidoc)
 [![Documentation](https://img.shields.io/badge/docs-clidoc.dev-blue)](https://clidoc.dev)
 
-An [OpenCLI](https://github.com/bcdxn/opencli) spec generator for [oclif](https://oclif.io/). clidoc is a JavaScript suite of tools for generating, transforming, and publishing OpenCLI specifications, with wide compatibility across the standard ecosystem tooling.
+Generate an [OpenCLI](https://github.com/bcdxn/opencli) document from your [oclif](https://oclif.io/) CLI.
+
+```sh
+npm install @clidoc/oclif @clidoc/core
+```
 
 ## Add `docgen` to your CLI
 
-`@clidoc/oclif/docgen`'s `createDocgenCommand` builds a ready-to-export oclif command: `-o`/`--output <file>` (defaults to stdout) and `--format <json|markdown>` (default `json`). It lives at its own entry point so importing `fromOclif` from the package root never requires `@oclif/core` to be installed. `infoFromPackageJson` derives the document's title, binary name, and version from your `package.json`.
+Export `docgen` like any other oclif command. Generate `manifest.json` with `oclif manifest` in your build.
 
 ```ts
 // src/commands/docgen.ts
@@ -24,13 +28,17 @@ export default createDocgenCommand(() => ({
 }));
 ```
 
-`docgen` is now just another exported command, so your `src/index.ts` entry point needs no changes: `run(process.argv.slice(2))` handles it like any other command.
+Then generate the spec:
 
-Generate or refresh the oclif manifest (`manifest.json`) as part of your build — via `oclif manifest` or your own `oclif.config` build step — so `docgen` reflects the current commands. Run `mycli docgen --output cli.json` for JSON (the default), or `mycli docgen --format markdown --output reference.md` to render Markdown directly; omit `--output` to print to stdout. Install the validator with `npm install -g @clidoc/cli` and run `clidoc validate cli.json`.
+```sh
+mycli docgen --output cli.json
+```
+
+That's it. Add `--format markdown` for Markdown instead of JSON. The [oclif demo](../../demos/oclif) is a runnable example.
 
 ## Optional: `__opencli` for machine discovery
 
-For machine discovery, matching [upstream OpenCLI's Go libraries](https://github.com/bcdxn/opencli), check argv for the hidden `__opencli` subcommand in your executable entry point before handing arguments to oclif: `handleOpenCliRequest` prints one JSON document to stdout (or writes it to a file with upstream's own `-o`/`--out <file>` flag), and exits 0, so command handlers never run.
+Let other tools discover your CLI by answering the hidden `__opencli` subcommand before oclif runs:
 
 ```ts
 // src/index.ts
@@ -50,37 +58,18 @@ if (!(await handleOpenCliRequest(args, document))) {
 }
 ```
 
-The [runnable oclif demo](../../demos/oclif/src/index.ts) builds the manifest inline to stay a single file and wires up `__opencli`; adjust the manifest and `package.json` paths for your project's layout. Consumers can then run `mycli __opencli > mycli.opencli.json` or `mycli __opencli --out mycli.opencli.json` for discovery.
-
-## Limitations
-
-- Flag `deprecated` and `deprecateAliases` (read by oclif's own help output, no equivalent OpenCLI field).
-- Custom parsing, hooks, or command runtime behavior can't be inferred from the manifest.
-- A flag with both `required: true` and `multiple: true` and no default emits `variadic: true, minItems: 1` as the closest approximation — OpenCLI has no way to mark a variadic flag `required` (schema gap, [tracked upstream](https://github.com/bcdxn/opencli/issues/20)).
-- The same combination with a default can't be represented at all (the default can satisfy oclif's required check without the flag being present), so `fromOclif` throws a diagnostic for that case.
-
-## Advanced: using `fromOclif` directly
-
-`createDocgenCommand` is a thin convenience layer over `fromOclif`, which does the actual conversion and remains fully supported for callers who want to build their own `docgen` command, run the conversion at a different time, or skip `package.json` entirely:
-
-```ts
-import { fromOclif } from '@clidoc/oclif';
-
-const document = fromOclif(manifest, { title: 'My CLI', binary: 'mycli', version: '1.0.0' });
+```sh
+mycli __opencli > mycli.opencli.json
 ```
-
-`fromOclif` converts the command metadata in oclif's generated `manifest.json` into an OpenCLI `1.0.0-alpha.14` document. Pass the manifest and the CLI title, executable name, and version. `fromOclif` reads metadata only; it does not load commands, parse arguments, or run handlers.
 
 ## Adding examples and exit codes
 
-`fromOclif` only knows what the generated manifest exposes, so `examples`, `exitCodes`, and
-metadata like `info.license` never appear in the generated document. Add them with
-`@clidoc/core`'s `mergeDocument` before writing the document out in `docgen`:
+The manifest has no examples, exit codes, or license. Add them with `mergeDocument`:
 
 ```ts
 import { mergeDocument } from '@clidoc/core';
 
-const document = mergeDocument(fromOclif(manifest, { title: 'My CLI', binary: 'mycli', version: '1.0.0' }), {
+const document = mergeDocument(fromOclif(manifest, info), {
   info: { license: { name: 'MIT', spdxId: 'MIT' } },
   commands: {
     'mycli greet': {
@@ -91,9 +80,24 @@ const document = mergeDocument(fromOclif(manifest, { title: 'My CLI', binary: 'm
 });
 ```
 
-Use the full generated command key (`mycli greet`) to add metadata to the existing command.
+Use the full command key (`mycli greet`). See the [`@clidoc/core` README](../core/README.md#adding-author-supplied-metadata) for the merge rules.
 
-See the [`@clidoc/core` README](../core/README.md#adding-author-supplied-metadata) for the merge rules.
+## Using `fromOclif` directly
+
+```ts
+import { fromOclif } from '@clidoc/oclif';
+
+const document = fromOclif(manifest, { title: 'My CLI', binary: 'mycli', version: '1.0.0' });
+```
+
+It reads the manifest only; it never loads commands, parses arguments, or runs handlers. `createDocgenCommand` lives at `@clidoc/oclif/docgen` so that the package root has no `@oclif/core` dependency.
+
+## Limitations
+
+- Flag `deprecated` and `deprecateAliases` (read by oclif's own help output, no equivalent OpenCLI field).
+- Custom parsing, hooks, or command runtime behavior can't be inferred from the manifest.
+- A flag with both `required: true` and `multiple: true` and no default emits `variadic: true, minItems: 1` as the closest approximation — OpenCLI has no way to mark a variadic flag `required` (schema gap, [tracked upstream](https://github.com/bcdxn/opencli/issues/20)).
+- The same combination with a default can't be represented at all (the default can satisfy oclif's required check without the flag being present), so `fromOclif` throws a diagnostic for that case.
 
 ## License
 

@@ -6,11 +6,13 @@
 [![Coverage](https://codecov.io/gh/bhouston/clidoc/graph/badge.svg)](https://codecov.io/gh/bhouston/clidoc)
 [![Documentation](https://img.shields.io/badge/docs-clidoc.dev-blue)](https://clidoc.dev)
 
-An [OpenCLI](https://github.com/bcdxn/opencli) spec generator for [Yargs](https://yargs.js.org/). clidoc is a JavaScript suite of tools for generating, transforming, and publishing OpenCLI specifications, with wide compatibility across the standard ecosystem tooling.
+Generate an [OpenCLI](https://github.com/bcdxn/opencli) document from your [Yargs](https://yargs.js.org/) CLI.
+
+```sh
+npm install @clidoc/yargs @clidoc/core
+```
 
 ## Add `docgen` to your CLI
-
-`createDocgenCommand` builds a ready-to-register `docgen` command module: `-o`/`--output <file>` (defaults to stdout) and `--format <json|markdown>` (default `json`). `infoFromPackageJson` derives the document's title, binary name, and version from your `package.json`.
 
 ```ts
 import { readFileSync } from 'node:fs';
@@ -33,11 +35,17 @@ document = fromYargs(parser, info);
 parser.parse();
 ```
 
-Run `mycli docgen --output cli.json` for JSON (the default), or `mycli docgen --format markdown --output reference.md` to render Markdown directly; omit `--output` to print to stdout. Install the validator with `npm install -g @clidoc/cli` and run `clidoc validate cli.json`. See the [Yargs demo](../../demos/yargs) for a runnable example.
+Then generate the spec:
+
+```sh
+mycli docgen --output cli.json
+```
+
+That's it. Add `--format markdown` for Markdown instead of JSON. The [Yargs demo](../../demos/yargs) is a runnable example.
 
 ## Optional: `__opencli` for machine discovery
 
-For machine discovery, matching [upstream OpenCLI's Go libraries](https://github.com/bcdxn/opencli), check argv for the hidden `__opencli` subcommand before Yargs parses arguments instead of calling `.parse()` directly: `handleOpenCliRequest` prints one JSON document to stdout (or writes it to a file with upstream's own `-o`/`--out <file>` flag), and exits 0, so command handlers never run.
+Let other tools discover your CLI by answering the hidden `__opencli` subcommand before Yargs parses:
 
 ```ts
 import { handleOpenCliRequest } from '@clidoc/core';
@@ -47,33 +55,13 @@ if (!(await handleOpenCliRequest(hideBin(process.argv), () => document))) {
 }
 ```
 
-Consumers can then run `mycli __opencli > mycli.opencli.json` or `mycli __opencli --out mycli.opencli.json` for discovery.
-
-## Limitations
-
-- `.check()` and `.middleware()` callbacks are never invoked.
-- Asynchronous builders (builder callbacks run synchronously to collect metadata — use trusted modules).
-- Custom parsing, coercion, validation, and middleware behavior.
-- Unsupported builder methods report their name and suggest `.option()` or extending `fromYargs`.
-- A required array option (`demandOption: true`) can't be expressed faithfully — OpenCLI has no way to mark a variadic flag `required` (schema gap, [tracked upstream](https://github.com/bcdxn/opencli/issues/20)), so `fromYargs` throws a diagnostic naming the option instead of emitting an incorrect `minItems: 1`.
-
-## Advanced: passing an explicit command-modules array
-
-`fromYargs` accepts an array of command modules in place of a live instance, for callers who want to build a document from modules that were never registered on a parser, run the conversion at a different time, or skip `package.json` entirely:
-
-```ts
-import { fromYargs } from '@clidoc/yargs';
-
-const document = fromYargs([greet], { title: 'My CLI', binary: 'mycli', version: '1.0.0' });
+```sh
+mycli __opencli > mycli.opencli.json
 ```
-
-`fromYargs` converts Yargs command metadata into an OpenCLI `1.0.0-alpha.14` document, from either a live instance or an explicit array of the same modules that register your commands, plus the CLI title, executable name, and version. `fromYargs` reads metadata only; it does not parse arguments or run handlers.
 
 ## Adding examples and exit codes
 
-`fromYargs` only knows what Yargs' command metadata exposes, so `examples`, `exitCodes`, and
-metadata like `info.license` never appear in the generated document. Add them with `@clidoc/core`'s
-`mergeDocument`, replacing the plain `fromYargs(parser, info)` call above with:
+Yargs metadata has no examples, exit codes, or license. Add them with `mergeDocument`:
 
 ```ts
 import { mergeDocument } from '@clidoc/core';
@@ -89,9 +77,27 @@ document = mergeDocument(fromYargs(parser, info), {
 });
 ```
 
-Use the full generated command key (`mycli greet`) to add metadata to the existing command.
+Use the full command key (`mycli greet`). See the [`@clidoc/core` README](../core/README.md#adding-author-supplied-metadata) for the merge rules.
 
-See the [`@clidoc/core` README](../core/README.md#adding-author-supplied-metadata) for the merge rules.
+## Using `fromYargs` directly
+
+`fromYargs` also accepts an array of command modules and explicit info:
+
+```ts
+import { fromYargs } from '@clidoc/yargs';
+
+const document = fromYargs([greet], { title: 'My CLI', binary: 'mycli', version: '1.0.0' });
+```
+
+It reads metadata only; it never parses arguments or runs handlers.
+
+## Limitations
+
+- `.check()` and `.middleware()` callbacks are never invoked.
+- Asynchronous builders (builder callbacks run synchronously to collect metadata — use trusted modules).
+- Custom parsing, coercion, validation, and middleware behavior.
+- Unsupported builder methods report their name and suggest `.option()` or extending `fromYargs`.
+- A required array option (`demandOption: true`) can't be expressed faithfully — OpenCLI has no way to mark a variadic flag `required` (schema gap, [tracked upstream](https://github.com/bcdxn/opencli/issues/20)), so `fromYargs` throws a diagnostic naming the option instead of emitting an incorrect `minItems: 1`.
 
 ## License
 

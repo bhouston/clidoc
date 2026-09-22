@@ -16,70 +16,28 @@ own `yargs-file-commands` definitions.
 
 ## Packages
 
-| Package                                     | Purpose                                                                              |
-| ------------------------------------------- | ------------------------------------------------------------------------------------ |
-| [`@clidoc/core`](packages/core)             | Types, offline JSON Schema validation, JSON/YAML parsing, Markdown, pages and routes |
-| [`@clidoc/yargs`](packages/yargs)           | Yargs command modules, including supported `defineCommand` builders                  |
-| [`@clidoc/commander`](packages/commander)   | Configured Commander command trees                                                   |
-| [`@clidoc/oclif`](packages/oclif)           | oclif manifest command metadata                                                      |
-| [`@clidoc/cli`](packages/cli)               | `validate`, `markdown`, `docgen`, `completion`, and `mcp` commands, plus `__opencli` |
-| [`@clidoc/docusaurus`](packages/docusaurus) | Generated Markdown pages for the Docusaurus docs plugin                              |
-| [`@clidoc/vitepress`](packages/vitepress)   | Generated Markdown and matching VitePress sidebar links                              |
+### Main packages
 
-## MCP support
+| Package                         | Purpose                                                                              |
+| ------------------------------- | ------------------------------------------------------------------------------------ |
+| [`@clidoc/core`](packages/core) | Types, offline JSON Schema validation, JSON/YAML parsing, Markdown, pages and routes |
+| [`@clidoc/cli`](packages/cli)   | `validate`, `markdown`, `docgen`, `completion`, and `mcp` commands, plus `__opencli` |
 
-Export MCP tool definitions with `clidoc mcp cli.json -o tools.json`, or serve a
-trusted local executable with
-`clidoc mcp cli.json --serve --executable /absolute/path/to/mycli`.
-See the [MCP guide](packages/website/docs/mcp.md) for client configuration,
-argument mapping, process limits, and the `@clidoc/cli/mcp` library API.
+### CLI framework adapters
 
-## Run from source
+| Package                                   | Purpose                                                             |
+| ----------------------------------------- | ------------------------------------------------------------------- |
+| [`@clidoc/yargs`](packages/yargs)         | Yargs command modules, including supported `defineCommand` builders |
+| [`@clidoc/commander`](packages/commander) | Configured Commander command trees                                  |
+| [`@clidoc/oclif`](packages/oclif)         | oclif manifest command metadata                                     |
 
-For repository development, use the Node version in `.nvmrc` and pnpm specified in `package.json`.
+### Publishing adapters
 
-```sh
-git clone https://github.com/bhouston/clidoc.git
-cd clidoc
-pnpm install --frozen-lockfile
-pnpm build
-node packages/cli/dist/bin.js --help
-pnpm docs:generate
-node packages/cli/dist/bin.js validate docs/generated/clidoc.json
-node packages/cli/dist/bin.js markdown docs/generated/clidoc.json
-```
-
-The upstream OpenCLI submodule is optional. Already cloned? Run
-`git submodule update --init --recursive` to enable tests that compare the bundled
-schema and validate upstream examples. Without the submodule, those tests skip
-with a warning and the remaining tests run normally.
-
-## Validate specifications in CI
-
-Use [clidoc-action](https://github.com/bhouston/clidoc-action) to reject invalid
-OpenCLI specifications in pull requests:
-
-```yaml
-- uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-- uses: bhouston/clidoc-action@61df600ccfb0fd9dbbe7093b7e392b06662fac85 # v1
-  with:
-    files: opencli.json
-    specification: bcdxn
-    format: json
-```
-
-The action accepts JSON/YAML, multiple files, explicit specification dialects,
-and pinned validator versions. Its default uses a locked source build until the
-clidoc npm packages are published. See the
-[official CI guide](https://clidoc.dev/docs/github-action/) for a complete
-workflow and version selection. This repository runs the hosted action against
-its generated CLI specification on Linux and macOS.
-
-The standalone action is also available as the optional HTTPS submodule
-[`submodules/clidoc-action`](https://github.com/bhouston/clidoc-action).
-Initialize it with `git submodule update --init submodules/clidoc-action` to
-work on the action alongside the monorepo. Consuming the hosted action requires
-no submodule checkout.
+| Target                                      | Purpose                                                      |
+| ------------------------------------------- | ------------------------------------------------------------ |
+| [`@clidoc/docusaurus`](packages/docusaurus) | Generated Markdown pages for the Docusaurus docs plugin      |
+| [`@clidoc/vitepress`](packages/vitepress)   | Generated Markdown and matching VitePress sidebar links      |
+| [`clidoc markdown`](packages/cli)           | A single Markdown reference document for any other docs site |
 
 ## Generate from your CLI
 
@@ -114,6 +72,76 @@ For example, `mycli __opencli > mycli.opencli.json` or
 `mycli __opencli --out mycli.opencli.json` both capture the document. The
 [Yargs](packages/yargs), [Commander](packages/commander), and
 [oclif](packages/oclif) framework guides and runnable demos show this.
+
+## Example document
+
+Trimmed from [`docs/generated/clidoc.json`](docs/generated/clidoc.json), the document clidoc
+generates for itself:
+
+```json
+{
+  "opencliVersion": "1.0.0-alpha.14",
+  "info": {
+    "title": "clidoc",
+    "binary": "clidoc",
+    "version": "0.1.0",
+    "summary": "Generate, validate, and publish CLI documentation through OpenCLI."
+  },
+  "commands": {
+    "clidoc validate": {
+      "summary": "Validate an OpenCLI JSON or YAML document",
+      "args": [
+        {
+          "name": "input",
+          "required": true,
+          "type": "string",
+          "summary": "OpenCLI document filename"
+        }
+      ]
+    }
+  }
+}
+```
+
+## Validate
+
+`clidoc validate cli.json` checks a JSON or YAML document against the bundled
+OpenCLI schema and the upstream logical rules, offline. `@clidoc/core` exposes
+the same check as `validate(document)`.
+
+### GitHub Action
+
+Use [clidoc-action](https://github.com/bhouston/clidoc-action) to reject invalid
+OpenCLI specifications in pull requests:
+
+```yaml
+- uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+- uses: bhouston/clidoc-action@61df600ccfb0fd9dbbe7093b7e392b06662fac85 # v1
+  with:
+    files: opencli.json
+    specification: bcdxn
+    format: json
+```
+
+The action accepts JSON/YAML, multiple files, explicit specification dialects,
+and pinned validator versions. Its default uses a locked source build. See the
+[official CI guide](https://clidoc.dev/docs/github-action/) for a complete
+workflow and version selection. This repository runs the hosted action against
+its generated CLI specification on Linux and macOS.
+
+The standalone action is also available as the optional HTTPS submodule
+[`submodules/clidoc-action`](https://github.com/bhouston/clidoc-action).
+Initialize it with `git submodule update --init submodules/clidoc-action` to
+work on the action alongside the monorepo. Consuming the hosted action requires
+no submodule checkout.
+
+## MCP
+
+Export MCP tool definitions with `clidoc mcp cli.json -o tools.json`, or serve a
+trusted local executable with
+`clidoc mcp cli.json --serve --executable /absolute/path/to/mycli`.
+See the [MCP guide](packages/website/docs/mcp.md) for client configuration,
+argument mapping, process limits, and the `@clidoc/cli/mcp` library API.
 
 ## Use the pipeline as a library
 
@@ -153,6 +181,26 @@ titles, URL paths, and Markdown content. Both site consumers use that mapping.
 Use different base paths and dedicated generated directories for multiple CLIs.
 Hand-written guides stay as ordinary Markdown alongside generated reference pages.
 
+## Development
+
+For repository development, use the Node version in `.nvmrc` and pnpm specified in `package.json`.
+
+```sh
+git clone https://github.com/bhouston/clidoc.git
+cd clidoc
+pnpm install --frozen-lockfile
+pnpm build
+node packages/cli/dist/bin.js --help
+pnpm docs:generate
+node packages/cli/dist/bin.js validate docs/generated/clidoc.json
+node packages/cli/dist/bin.js markdown docs/generated/clidoc.json
+```
+
+The upstream OpenCLI submodule is optional. Already cloned? Run
+`git submodule update --init --recursive` to enable tests that compare the bundled
+schema and validate upstream examples. Without the submodule, those tests skip
+with a warning and the remaining tests run normally.
+
 ## Demos and dogfooding
 
 ```sh
@@ -184,64 +232,26 @@ website build straight from a checkout with no generation step; `pnpm docs:gener
 refreshes them locally, and CI's `docs:build` regenerates them before building
 the sites.
 
-## Example document
+## Compatibility
 
-Trimmed from [`docs/generated/clidoc.json`](docs/generated/clidoc.json), the document clidoc
-generates for itself:
-
-```json
-{
-  "opencliVersion": "1.0.0-alpha.14",
-  "info": {
-    "title": "clidoc",
-    "binary": "clidoc",
-    "version": "0.1.0",
-    "summary": "Generate, validate, and publish CLI documentation through OpenCLI."
-  },
-  "commands": {
-    "clidoc validate": {
-      "summary": "Validate an OpenCLI JSON or YAML document",
-      "args": [
-        {
-          "name": "input",
-          "required": true,
-          "type": "string",
-          "summary": "OpenCLI document filename"
-        }
-      ]
-    }
-  }
-}
-```
-
-## Compatibility and scope
-
-The contract is **OpenCLI `1.0.0-alpha.14`**, pinned to upstream commit
+clidoc implements **OpenCLI `1.0.0-alpha.14`**, pinned to upstream commit
 `683d0ca92fc37ccc2626e64db0a8c32f3c4063c0` in [`upstream/opencli`](upstream/opencli).
-The core package bundles that schema, so installed packages validate offline
-without the submodule. Tests compare the bundled schema and upstream fixtures when
-the submodule is checked out.
-The upstream Go project retains its own license; see
+The core package bundles the schema, so validation works offline. The upstream Go
+project keeps its own license; see
 [third-party attribution](packages/core/THIRD_PARTY_NOTICES.md).
 
-The OpenCLI schema only requires `commands` keys to be strings; it does not mandate a
-format. Upstream's Go generator decorates keys for display, e.g.
-`"petstore pet add <arguments> [flags]"`. clidoc emits the plain `binary sub command` path
-instead, as shown above, because page titles, route slugs, and `commands[...]` lookups all
-want that exact string. Both forms validate against the schema, and `clidoc validate`
-accepts upstream's decorated documents unchanged.
+Command keys are plain `binary sub command` paths, which page titles, routes, and
+`commands[...]` lookups rely on. Upstream decorates keys for display, such as
+`"petstore pet add <arguments> [flags]"`. Both forms validate, and `clidoc validate`
+accepts either.
 
-Framework metadata cannot express every runtime behavior. The framework packages document
-what their supported metadata exposes; they do not infer custom validation,
-coercion, middleware, or application behavior. See each framework package README for limits.
-Schema validation follows the upstream JSON Schema and is paired with the logical
-checks ported from upstream's `validate/validate.go` (argument ordering, variadic
-constraints, `$FILE` config references, duplicate flags), rather than claiming
-identical behavior to every semantic check in the Go CLI.
+Validation combines the upstream JSON Schema with the logical checks from upstream
+`validate/validate.go`: argument ordering, variadic constraints, `$FILE` config
+references, and duplicate flags.
 
-This first implementation focuses on the CLI-to-Markdown pipeline. OpenAPI and
-TypeDoc ingestion, a standalone embeddable React viewer, additional site platforms,
-and an integrated preview server remain extensions to that pipeline.
+Framework adapters expose what their metadata describes. They do not infer custom
+validation, coercion, middleware, or application behavior. Each adapter README lists
+its limitations.
 
 ## Contributing and releasing
 

@@ -106,12 +106,12 @@ names, not paths or multiword launchers. Ambiguous sibling aliases, multiword
 aliases, and control characters in completion names/choices are rejected.
 All supported metadata is emitted as quoted data, not executable shell fragments.
 
-This first version does not interpret combined short flags (`-abc`), attached
+Completion does not interpret combined short flags (`-abc`), attached
 short-option values (`-ovalue`), optional option values, framework-specific
 multi-value options, or passthrough argument semantics. Repeatable options are
 handled as repeated `--flag value` pairs. Command-local flags are not inherited;
 declare inherited flags in `global.flags`. Shell descriptions, dynamic choices,
-and PowerShell are future work. Choice order follows the schema; the shell may
+and PowerShell are not supported. Choice order follows the schema; the shell may
 sort displayed matches.
 
 ## Generate scripts in code

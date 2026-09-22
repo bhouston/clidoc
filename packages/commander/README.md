@@ -6,11 +6,13 @@
 [![Coverage](https://codecov.io/gh/bhouston/clidoc/graph/badge.svg)](https://codecov.io/gh/bhouston/clidoc)
 [![Documentation](https://img.shields.io/badge/docs-clidoc.dev-blue)](https://clidoc.dev)
 
-An [OpenCLI](https://github.com/bcdxn/opencli) spec generator for [Commander](https://github.com/tj/commander.js). clidoc is a JavaScript suite of tools for generating, transforming, and publishing OpenCLI specifications, with wide compatibility across the standard ecosystem tooling.
+Generate an [OpenCLI](https://github.com/bcdxn/opencli) document from your [Commander](https://github.com/tj/commander.js) CLI.
+
+```sh
+npm install @clidoc/commander @clidoc/core
+```
 
 ## Add `docgen` to your CLI
-
-`createDocgenCommand` builds a ready-to-register `docgen` command: `-o`/`--output <file>` (defaults to stdout) and `--format <json|markdown>` (default `json`). `infoFromPackageJson` derives the document's title, binary name, and version from your `package.json`.
 
 ```ts
 import { readFileSync } from 'node:fs';
@@ -36,11 +38,17 @@ program.addCommand(createDocgenCommand(document));
 program.parse();
 ```
 
-Run `mycli docgen --output cli.json` for JSON (the default), or `mycli docgen --format markdown --output reference.md` to render Markdown directly; omit `--output` to print to stdout. Install the validator with `npm install -g @clidoc/cli` and run `clidoc validate cli.json`. See the [Commander demo](../../demos/commander) for a runnable example.
+Then generate the spec:
+
+```sh
+mycli docgen --output cli.json
+```
+
+That's it. Add `--format markdown` for Markdown instead of JSON. The [Commander demo](../../demos/commander) is a runnable example.
 
 ## Optional: `__opencli` for machine discovery
 
-For machine discovery, matching [upstream OpenCLI's Go libraries](https://github.com/bcdxn/opencli), attach the hidden `__opencli` subcommand instead of calling `program.parse()` directly: `handleOpenCliRequest` checks argv for `__opencli` before Commander parses arguments, prints one JSON document to stdout (or writes it to a file with upstream's own `-o`/`--out <file>` flag), and exits 0, so command handlers never run.
+Let other tools discover your CLI by answering the hidden `__opencli` subcommand before Commander parses:
 
 ```ts
 import { handleOpenCliRequest } from '@clidoc/core';
@@ -50,31 +58,13 @@ if (!(await handleOpenCliRequest(process.argv.slice(2), document))) {
 }
 ```
 
-Consumers can then run `mycli __opencli > mycli.opencli.json` or `mycli __opencli --out mycli.opencli.json` for discovery.
-
-## Limitations
-
-- Custom parsers, hooks, and action behavior can't be inferred from the command tree.
-- A required-value variadic option (`--items <items...>` + `makeOptionMandatory()`, no default) emits `variadic: true, minItems: 1` as the closest approximation — OpenCLI has no way to mark a variadic flag `required` (schema gap, [tracked upstream](https://github.com/bcdxn/opencli/issues/20)).
-- A mandatory optional-value variadic option (`--items [items...]`) can't be represented at all (a present-but-empty flag and an absent flag both need to be distinguishable from "must have values"), so `fromCommander` throws a diagnostic naming the option.
-
-## Advanced: using `fromCommander` directly
-
-`createDocgenCommand` is a thin convenience layer over `fromCommander`, which does the actual conversion and remains fully supported for callers who want to build their own `docgen` command, run the conversion at a different time, or skip `package.json` entirely:
-
-```ts
-import { fromCommander } from '@clidoc/commander';
-
-const document = fromCommander(program, { title: 'My CLI', binary: 'mycli', version: '1.0.0' });
+```sh
+mycli __opencli > mycli.opencli.json
 ```
-
-`fromCommander` converts a configured Commander `Command` tree into an OpenCLI `1.0.0-alpha.14` document. Configure the tree once and pass its root command with the CLI title, executable name, and version. `fromCommander` traverses commands and reads their metadata without parsing arguments or running actions.
 
 ## Adding examples and exit codes
 
-`fromCommander` only knows what the Commander command tree exposes, so `examples`, `exitCodes`,
-and metadata like `info.license` never appear in the generated document. Add them with
-`@clidoc/core`'s `mergeDocument` before writing the document out in `docgen`:
+Commander metadata has no examples, exit codes, or license. Add them with `mergeDocument`:
 
 ```ts
 import { mergeDocument } from '@clidoc/core';
@@ -91,9 +81,23 @@ const document = () =>
   });
 ```
 
-Use the full generated command key (`mycli greet`) to add metadata to the existing command.
+Use the full command key (`mycli greet`). See the [`@clidoc/core` README](../core/README.md#adding-author-supplied-metadata) for the merge rules.
 
-See the [`@clidoc/core` README](../core/README.md#adding-author-supplied-metadata) for the merge rules.
+## Using `fromCommander` directly
+
+```ts
+import { fromCommander } from '@clidoc/commander';
+
+const document = fromCommander(program, { title: 'My CLI', binary: 'mycli', version: '1.0.0' });
+```
+
+It reads the command tree only; it never parses arguments or runs actions.
+
+## Limitations
+
+- Custom parsers, hooks, and action behavior can't be inferred from the command tree.
+- A required-value variadic option (`--items <items...>` + `makeOptionMandatory()`, no default) emits `variadic: true, minItems: 1` as the closest approximation — OpenCLI has no way to mark a variadic flag `required` (schema gap, [tracked upstream](https://github.com/bcdxn/opencli/issues/20)).
+- A mandatory optional-value variadic option (`--items [items...]`) can't be represented at all (a present-but-empty flag and an absent flag both need to be distinguishable from "must have values"), so `fromCommander` throws a diagnostic naming the option.
 
 ## License
 
