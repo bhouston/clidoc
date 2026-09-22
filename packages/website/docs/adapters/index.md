@@ -63,7 +63,7 @@ export default createDocgenCommand(() => ({
 
 ## yargs
 
-Pass the same command modules you register with yargs.
+`fromYargs` discovers the registered top-level commands straight from the configured `yargs(...)` instance.
 
 ```ts
 import { readFileSync } from 'node:fs';
@@ -76,10 +76,12 @@ import { command as greet } from './commands/greet.js';
 const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
 const info = infoFromPackageJson(pkg);
 
-// generate an OpenCLI document from the same commands
-const document = () => fromYargs([greet, docgen], info);
-// add a docgen command that returns the document on demand
-const docgen = createDocgenCommand(document);
+const parser = yargs(hideBin(process.argv)).command(greet);
 
-yargs(hideBin(process.argv)).command(greet).command(docgen).demandCommand().parse();
+let document;
+parser.command(createDocgenCommand(() => document)).demandCommand();
+// generate the document once every command, including docgen, is registered
+document = fromYargs(parser, info);
+
+parser.parse();
 ```

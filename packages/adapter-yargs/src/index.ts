@@ -267,8 +267,61 @@ function addCommandModule(
   commands[key] = item;
 }
 
-/** Convert Yargs command-module metadata. Supports option maps and common synchronous Yargs builder chains; unsupported methods report an error. */
-export function fromYargs(modules: readonly YargsCommandModule[], info: InfoObject): OpenCliDocument {
+interface YargsCommandHandler {
+  original: string;
+  description?: string | false;
+  builder?: unknown;
+}
+interface YargsCommandRegistry {
+  getCommandHandlers?: unknown;
+  aliasMap?: Record<string, string>;
+}
+interface YargsInternalMethods {
+  getCommandInstance?: unknown;
+}
+
+function unsupportedYargsInstance(reason: string): never {
+  throw new TypeError(
+    `fromYargs() could not read this Yargs instance's registered commands: ${reason}. Pass an explicit array of command modules instead.`,
+  );
+}
+
+/** Reads the commands already registered on a configured Yargs instance, via the same registry Yargs itself uses to run them. */
+function modulesFromYargsInstance(yargsInstance: object): YargsCommandModule[] {
+  const getInternalMethods = (yargsInstance as { getInternalMethods?: unknown }).getInternalMethods;
+  if (typeof getInternalMethods !== 'function') return unsupportedYargsInstance('getInternalMethods() is missing');
+  const internal = getInternalMethods.call(yargsInstance) as YargsInternalMethods;
+  if (typeof internal?.getCommandInstance !== 'function')
+    return unsupportedYargsInstance('getInternalMethods().getCommandInstance is missing');
+  const registry = internal.getCommandInstance.call(internal) as YargsCommandRegistry;
+  if (typeof registry?.getCommandHandlers !== 'function')
+    return unsupportedYargsInstance('getCommandInstance().getCommandHandlers is missing');
+  const handlers = registry.getCommandHandlers.call(registry) as Record<string, YargsCommandHandler>;
+  if (!handlers || typeof handlers !== 'object')
+    return unsupportedYargsInstance('getCommandHandlers() did not return command data');
+
+  const aliasesByCommand: Record<string, string[]> = {};
+  for (const [alias, command] of Object.entries(registry.aliasMap ?? {}))
+    (aliasesByCommand[command] ??= []).push(alias);
+
+  return Object.entries(handlers).map(([name, handler]) => ({
+    command: handler.original,
+    describe: handler.description,
+    aliases: aliasesByCommand[name],
+    builder: handler.builder,
+  }));
+}
+
+/**
+ * Convert Yargs command metadata. Supports option maps and common synchronous Yargs builder
+ * chains; unsupported methods report an error. Pass the configured `yargs(...)` instance itself
+ * (after registering commands, before `.parse()`) to auto-discover its top-level commands, or an
+ * explicit array of command modules to list them yourself.
+ */
+export function fromYargs(source: readonly YargsCommandModule[], info: InfoObject): OpenCliDocument;
+export function fromYargs(yargsInstance: object, info: InfoObject): OpenCliDocument;
+export function fromYargs(source: readonly YargsCommandModule[] | object, info: InfoObject): OpenCliDocument {
+  const modules = Array.isArray(source) ? source : modulesFromYargsInstance(source);
   const commands: Record<string, CommandItemObject> = {};
   for (const module of modules) addCommandModule(module, info.binary, commands);
   return { opencliVersion: OPENCLI_VERSION, info, commands };
@@ -279,6 +332,14 @@ export interface CreateDocgenCommandOptions {
   command?: string;
 }
 
+interface DocgenOption {
+  type: 'string';
+  alias?: string;
+  choices?: readonly string[];
+  default?: string;
+  description?: string;
+}
+
 /**
  * Build a ready-to-register `docgen` command module: `--output <file>` (defaults to stdout) and
  * `--format <json|yaml|markdown>` (default `json`), writing `getDocument()`'s result via
@@ -287,7 +348,12 @@ export interface CreateDocgenCommandOptions {
 export function createDocgenCommand(
   getDocument: () => OpenCliDocument,
   options: CreateDocgenCommandOptions = {},
-): YargsCommandModule & { handler: (argv: unknown) => Promise<void> } {
+): {
+  command: string;
+  describe: string;
+  builder: Record<string, DocgenOption>;
+  handler: (argv: unknown) => Promise<void>;
+} {
   return {
     command: options.command ?? 'docgen',
     describe: 'Write the OpenCLI document to a file, or stdout if --output is omitted',
