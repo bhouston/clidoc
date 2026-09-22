@@ -6,7 +6,11 @@
 [![Coverage](https://codecov.io/gh/bhouston/clidoc/graph/badge.svg)](https://codecov.io/gh/bhouston/clidoc)
 [![Documentation](https://img.shields.io/badge/docs-clidoc.dev-blue)](https://clidoc.dev)
 
-TypeScript types, offline JSON Schema validation, YAML/JSON parsing, and Markdown documentation generation for [OpenCLI 1.0.0-alpha.14](https://github.com/bcdxn/opencli). The published package bundles the exact schema pinned in `upstream/opencli/spec.schema.json`.
+Types, offline validation, JSON/YAML parsing, and Markdown generation for [OpenCLI 1.0.0-alpha.14](https://github.com/bcdxn/opencli) documents.
+
+```sh
+npm install @clidoc/core
+```
 
 ```ts
 import { parse, validate, renderMarkdown, generatePages } from '@clidoc/core';
@@ -17,15 +21,11 @@ const markdown = renderMarkdown(document);
 const pages = generatePages(document, { basePath: '/cli' });
 ```
 
-`generatePages` returns a landing page and one page per visible command. Each command page includes a generated usage synopsis: required values use `<value>`, optional elements use `[element]`, and repeatable elements use `...`. The synopsis includes visible command flags and inherited global flags. Each page has `id`, `title`, `path`, and Markdown `content`. A command named `<binary> foo-bar` keeps the readable `/commands/foo-bar` route when its suffix is lowercase ASCII letters, digits, and single hyphens (up to 64 characters). Other names use a normalized readable prefix (up to 64 characters), a reserved `~`, and a SHA-256 digest of the full command name. Each route depends only on its command name, so adding unrelated commands does not change existing URLs. The generator rejects a digest collision before returning any pages. This replaces the previous collision-dependent hash suffixes, so URLs for names outside the readable form may change. Landing links use the generated base path. The bundled JSON Schema is also available at `@clidoc/core/schema`.
-
-`validate` checks documents against the vendored JSON Schema and, once that passes, against the logical rules ported from upstream's `validate/validate.go`: positional arguments must not place a required argument after an optional one, `minItems`/`maxItems` are only valid on variadic arguments and flags (with `minItems <= maxItems`), `$FILE` alternative sources must have a matching file declared in `global.config`, flag names and aliases must be unique per command, variadic flags cannot be `required`, and group commands cannot declare `args` or `flags`. Errors use the same `instancePath message` shape as schema errors.
+`validate` checks the bundled JSON Schema plus upstream's logical rules, so it works offline. `generatePages` returns a landing page and one page per visible command, each with a stable `id`, `title`, `path`, and Markdown `content`. The schema itself is exported from `@clidoc/core/schema`. See the [API reference](https://clidoc.dev/docs/api/reference).
 
 ## Adding author-supplied metadata
 
-The framework packages generate a document from what your CLI's argument parser already knows, so things like
-`examples`, `exitCodes`, `info.license`/`contact`, `install`, and `global` config are usually
-missing. Add them with `mergeDocument`, then re-validate:
+Framework adapters only know what your argument parser knows. Add examples, exit codes, license, install methods, and config with `mergeDocument`:
 
 ```ts
 import { mergeDocument } from '@clidoc/core';
@@ -43,22 +43,17 @@ const documented = mergeDocument(document, {
 });
 ```
 
-Plain objects (`info`, `global`, each command) merge recursively. Arrays replace the base array,
-except `examples` and `exitCodes`, which append, and `flags`/`args`, which are merged item-by-item
-matched by `name` &mdash; so you can add `alternativeSources` or a `summary` to one generated flag
-without repeating the rest of it. Commands not present in the generated document are added as-is.
-`mergeDocument` throws an `Error` listing every problem if the merged result fails schema
-validation.
+Objects merge recursively. `examples` and `exitCodes` append, `flags` and `args` merge by `name`, and other arrays replace. New commands are added as-is. The result is validated and `mergeDocument` throws if it fails.
 
-## Shell completion generation
+## Shell completion
 
-`generateCompletion(document, { shell: 'bash' | 'zsh' | 'fish', binary?: string })`
-validates an OpenCLI document and returns a standalone completion script. It
-supports nested commands, aliases, global/local flags, option and positional
-choices, and hidden entries, with no runtime dependency on Node or the target CLI.
-The optional `binary` overrides only the registered executable name. See the
-[completion guide](https://clidoc.dev/docs/completion) for activation,
-supported syntax, and limitations.
+```ts
+import { generateCompletion } from '@clidoc/core';
+
+const script = generateCompletion(document, { shell: 'bash' }); // 'bash' | 'zsh' | 'fish'
+```
+
+The script needs neither Node nor the CLI at completion time. See the [completion guide](https://clidoc.dev/docs/completion).
 
 ## License
 
