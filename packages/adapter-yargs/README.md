@@ -50,9 +50,21 @@ Consumers can then run `mycli __opencli > mycli.opencli.json` or `mycli __opencl
 
 ## Supported metadata
 
-Standard Yargs command modules and `defineCommand` results from `yargs-file-commands` work. Command patterns provide names and positional arguments: the command name is every leading pattern token that is not a positional (`<...>` / `[...]`), so `'config set <key> <value>'` becomes `config set`, not just `config`. The special `$0` default-command token maps to the binary itself and contributes no word of its own. The adapter reads descriptions, aliases, declarative option maps, and synchronous builder calls to `.option()`, `.options()`, `.positional()`, and `.command()`. Chained `.alias()`, `.describe()`, `.default()`, `.choices()`, `.demandOption()`, `.boolean()`, `.string()`, `.number()`, `.array()`, and `.count()` calls contribute option metadata. Common parser configuration calls such as `.strict()`, `.help()`, `.version()`, and `.demandCommand()` are accepted; `.check()` and `.middleware()` callbacks are never invoked. Unsupported builder methods report their name and suggest using `.option()` or extending the adapter. Nested `.command()` calls inside a builder are recursed into and produce dotted-word keys (e.g. `demo config set`); a parent command that has no flags or args of its own and exists only to register children is marked `kind: 'group'`. It maps supported value types, defaults, choices, and required, hidden, and array/variadic flags; `count` options map to `integer`, and any other unrecognised option type falls back to `string`. Builder callbacks run to collect this metadata, so use trusted modules; asynchronous builders are unsupported. Custom parsing, coercion, validation, and middleware behavior cannot be inferred from command metadata.
+- Standard Yargs command modules and `defineCommand` results from `yargs-file-commands`.
+- Command name and positionals from the command pattern: every leading non-positional token is the name (`'config set <key> <value>'` → `config set`), and `$0` maps to the binary with no word of its own.
+- Descriptions, aliases, and declarative option maps from `.option()`, `.options()`, `.positional()`, and `.command()`.
+- Option metadata from chained `.alias()`, `.describe()`, `.default()`, `.choices()`, `.demandOption()`, `.boolean()`, `.string()`, `.number()`, `.array()`, and `.count()`.
+- Parser config calls `.strict()`, `.help()`, `.version()`, and `.demandCommand()` (accepted, not inspected further).
+- Value types, defaults, choices, and required/hidden/array flags; `count` maps to `integer`, unrecognised types fall back to `string`.
+- Nested `.command()` calls, recursed into dotted-word keys (e.g. `demo config set`); a parent with no flags/args of its own is marked `kind: 'group'`.
 
-For an array option with `demandOption: true`, the adapter throws a diagnostic naming the option. Yargs accepts a present array flag with zero values, but OpenCLI rejects `required: true` on variadic flags and `minItems: 1` would incorrectly require a value. Change the source definition or document that option separately before publishing.
+Not supported:
+
+- `.check()` and `.middleware()` callbacks are never invoked.
+- Asynchronous builders (builder callbacks run synchronously to collect metadata — use trusted modules).
+- Custom parsing, coercion, validation, and middleware behavior.
+- Unsupported builder methods report their name and suggest `.option()` or extending the adapter.
+- A required array option (`demandOption: true`) can't be expressed faithfully — OpenCLI has no way to mark a variadic flag `required` (schema gap, [tracked upstream](https://github.com/bcdxn/opencli/issues/20)), so the adapter throws a diagnostic naming the option instead of emitting an incorrect `minItems: 1`.
 
 ## Advanced: using `fromYargs` directly
 

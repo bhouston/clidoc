@@ -54,9 +54,18 @@ Consumers can then run `mycli __opencli > mycli.opencli.json` or `mycli __opencl
 
 ## Supported metadata
 
-The adapter traverses nested commands and reads descriptions, aliases, registered arguments, and options, including required and variadic status, choices, simple defaults, and hidden options and commands. `command.summary()` maps to `summary` and `command.description()` to `description` when both are set; a command with only a description keeps mapping it to `summary`. A `--foo`/`--no-foo` pair on the same command is merged into a single boolean flag named `foo`, with the negation noted in its summary; a standalone `--no-foo` keeps the invocable name `no-foo`, with its summary explaining that it sets `foo` to `false` and stating the default value of Commander's backing `foo` property. `Option.env()` maps to `alternativeSources` with type `$ENV`. A command with subcommands and no arguments or options of its own is marked `kind: 'group'`; the OpenCLI validator rejects groups that carry flags, so a parent with options stays an ordinary command. Argument defaults have no dedicated field in the OpenCLI spec, so they are appended to the argument's summary instead. Custom parsers, hooks, and action behavior cannot be inferred from the command tree.
+- Nested commands, descriptions, aliases, registered arguments and options — including required/variadic status, choices, simple defaults, and hidden options and commands.
+- `command.summary()` → `summary`, `command.description()` → `description` when both are set; description-only commands map to `summary`.
+- A `--foo`/`--no-foo` pair merges into one boolean flag `foo` (negation noted in its summary); a standalone `--no-foo` keeps the name `no-foo`, with its summary stating it sets `foo` to `false` and Commander's default.
+- `Option.env()` → `alternativeSources` with type `$ENV`.
+- A command with subcommands and no arguments/options of its own → `kind: 'group'` (a parent with options stays an ordinary command, since groups can't carry flags).
+- Argument defaults, folded into the argument's summary (no dedicated OpenCLI field).
 
-For a required-value variadic option (`--items <items...>`) marked with `makeOptionMandatory()` and without a default, the adapter emits `variadic: true` and `minItems: 1`. OpenCLI rejects `required: true` on variadic flags, so `minItems` expresses the required first value. A mandatory optional-value variadic option (`--items [items...]`) accepts a present flag with zero values; a default can allow omission. Neither presence rule can be represented faithfully, so the adapter throws a diagnostic naming the option and asking callers to document it separately or change the CLI behavior.
+Not supported:
+
+- Custom parsers, hooks, and action behavior can't be inferred from the command tree.
+- A required-value variadic option (`--items <items...>` + `makeOptionMandatory()`, no default) emits `variadic: true, minItems: 1` as the closest approximation — OpenCLI has no way to mark a variadic flag `required` (schema gap, [tracked upstream](https://github.com/bcdxn/opencli/issues/20)).
+- A mandatory optional-value variadic option (`--items [items...]`) can't be represented at all (a present-but-empty flag and an absent flag both need to be distinguishable from "must have values"), so the adapter throws a diagnostic naming the option.
 
 ## Advanced: using `fromCommander` directly
 
