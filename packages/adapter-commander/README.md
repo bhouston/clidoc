@@ -52,16 +52,7 @@ if (!(await handleOpenCliRequest(process.argv.slice(2), document))) {
 
 Consumers can then run `mycli __opencli > mycli.opencli.json` or `mycli __opencli --out mycli.opencli.json` for discovery.
 
-## Supported metadata
-
-- Nested commands, descriptions, aliases, registered arguments and options — including required/variadic status, choices, simple defaults, and hidden options and commands.
-- `command.summary()` → `summary`, `command.description()` → `description` when both are set; description-only commands map to `summary`.
-- A `--foo`/`--no-foo` pair merges into one boolean flag `foo` (negation noted in its summary); a standalone `--no-foo` keeps the name `no-foo`, with its summary stating it sets `foo` to `false` and Commander's default.
-- `Option.env()` → `alternativeSources` with type `$ENV`.
-- A command with subcommands and no arguments/options of its own → `kind: 'group'` (a parent with options stays an ordinary command, since groups can't carry flags).
-- Argument defaults, folded into the argument's summary (no dedicated OpenCLI field).
-
-Not supported:
+## Limitations
 
 - Custom parsers, hooks, and action behavior can't be inferred from the command tree.
 - A required-value variadic option (`--items <items...>` + `makeOptionMandatory()`, no default) emits `variadic: true, minItems: 1` as the closest approximation — OpenCLI has no way to mark a variadic flag `required` (schema gap, [tracked upstream](https://github.com/bcdxn/opencli/issues/20)).

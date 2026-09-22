@@ -49,18 +49,7 @@ if (!(await handleOpenCliRequest(hideBin(process.argv), () => document))) {
 
 Consumers can then run `mycli __opencli > mycli.opencli.json` or `mycli __opencli --out mycli.opencli.json` for discovery.
 
-## Supported metadata
-
-- Pass a configured `yargs(...)` instance (after registering commands, before `.parse()`) and it discovers the registered top-level commands, their aliases, and their builders itself.
-- Standard Yargs command modules and `defineCommand` results from `yargs-file-commands` — pass an explicit array instead if you'd rather list them yourself.
-- Command name and positionals from the command pattern: every leading non-positional token is the name (`'config set <key> <value>'` → `config set`), and `$0` maps to the binary with no word of its own.
-- Descriptions, aliases, and declarative option maps from `.option()`, `.options()`, `.positional()`, and `.command()`.
-- Option metadata from chained `.alias()`, `.describe()`, `.default()`, `.choices()`, `.demandOption()`, `.boolean()`, `.string()`, `.number()`, `.array()`, and `.count()`.
-- Parser config calls `.strict()`, `.help()`, `.version()`, and `.demandCommand()` (accepted, not inspected further).
-- Value types, defaults, choices, and required/hidden/array flags; `count` maps to `integer`, unrecognised types fall back to `string`.
-- Nested `.command()` calls, recursed into dotted-word keys (e.g. `demo config set`); a parent with no flags/args of its own is marked `kind: 'group'`.
-
-Not supported:
+## Limitations
 
 - `.check()` and `.middleware()` callbacks are never invoked.
 - Asynchronous builders (builder callbacks run synchronously to collect metadata — use trusted modules).
