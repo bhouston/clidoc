@@ -1,178 +1,72 @@
-# Release setup and operation
+# Releasing
 
-This monorepo publishes packages from `packages/`: `@clidoc/core`,
-`@clidoc/yargs`, `@clidoc/commander`,
-`@clidoc/oclif`, `@clidoc/cli`, `@clidoc/docusaurus`, and
-`@clidoc/vitepress`. The demos under `demos/` are private and never published.
-`pnpm release` runs `semantic-release -e semantic-release-monorepo` once per
-package in dependency order. Commits touching each package determine its version
-independently. Tags have the form `<package>-v<version>`. The release runner
-creates a temporary package staging directory for each publish. It copies the
-files included by `npm pack`, writes the computed release version, and resolves
-`workspace:` dependencies to concrete versions from packages already published
-in the same run or from npm. `@semantic-release/npm` publishes the staged
-package through npm trusted publishing. Source package versions remain unchanged.
-If a required dependency has never been published, release the dependency first.
-The `pnpm package:check` gate verifies that staging produces publishable manifests
-without `workspace:` ranges.
+Releases are manual and maintainer-only. Merging to `main` never publishes.
 
-## npm trusted publisher
-
-For each package, open Settings → Trusted publishing on npm, choose GitHub
-Actions, and enter:
-
-| Field                | Value         |
-| -------------------- | ------------- |
-| Organization or user | `bhouston`    |
-| Repository           | `clidoc`      |
-| Workflow filename    | `release.yml` |
-| Environment          | Leave blank   |
-
-For configurations created after September 3, 2026, npm initially permits
-`npm stage publish`. Explicitly allow direct `npm publish` for **each of the
-seven packages**, since this workflow publishes directly. Each package's
-`repository.url` matches `github.com/bhouston/clidoc`.
-
-The workflow runs on GitHub-hosted Ubuntu with `id-token: write` and the Node
-version from `.nvmrc`. It uses OIDC; do not configure a long-lived npm token.
-The built-in `GITHUB_TOKEN` creates tags and GitHub Releases. The first publish
-of a new package cannot use trusted publishing. Sign into npm with an account
-authorized for `@clidoc` and satisfying npm's 2FA requirement, or use an
-appropriate publishing token. Confirm that the scope allows public packages.
-From a clean
-checkout of `main`, run `pnpm install --frozen-lockfile` and
-`pnpm release:bootstrap:stage`. This builds all packages and creates
-`publish/<package>/` directories with concrete dependency versions. Review each
-`publish/<package>/package.json`, then publish from those staged directories in
-dependency order with an npm account authorized for the `@clidoc` scope:
+## Running a release
 
 ```sh
-npm publish ./publish/core --access public
-npm publish ./publish/commander --access public
-npm publish ./publish/oclif --access public
-npm publish ./publish/yargs --access public
-npm publish ./publish/cli --access public
-npm publish ./publish/docusaurus --access public
-npm publish ./publish/vitepress --access public
+gh workflow run release.yml --ref main            # publish
+gh workflow run release.yml --ref main -f dry_run=true   # validate only
 ```
 
-Each staged package starts at the source version `0.1.0`. Do not publish from
-`packages/`: those manifests still contain `workspace:` ranges. After each
-initial publish, configure its trusted publisher and allow direct publishing.
-The `publish/` output is a
-local artifact and should not be committed.
+The workflow re-runs CI, checks that every package has a baseline tag, builds,
+and runs `pnpm release`. That runs `semantic-release -e semantic-release-monorepo`
+once per package under `packages/` in dependency order. Each package is versioned
+from the commits that touch it and tagged `<package>-v<version>`, for example
+`@clidoc/core-v1.2.0`. Packages are staged with concrete versions in place of
+`workspace:` ranges and published to npm with trusted publishing (OIDC); no npm
+token is stored. Source `package.json` versions are never bumped. Demos are
+private and never published.
+
+## Bootstrapping a new or renamed package
+
+Trusted publishing cannot create a package, so the first version is published by
+hand. From a clean `main` checkout:
+
+1. `pnpm install --frozen-lockfile && pnpm release:bootstrap:stage`, then
+   `npm publish ./publish/<dir> --access public` for each new package, using an
+   npm account authorized for `@clidoc`. Do not publish from `packages/` and do
+   not commit `publish/`.
+2. On npm, open the package's Settings → Trusted publishing, choose GitHub
+   Actions, and enter user `bhouston`, repository `clidoc`, workflow
+   `release.yml`, environment blank. Also allow direct `npm publish`; new
+   configurations default to `npm stage publish` only.
+3. Tag the commit you staged from and push the tag:
+
+   ```sh
+   git tag '@clidoc/<name>-v0.1.0' <commit>
+   git push origin '@clidoc/<name>-v0.1.0'
+   ```
+
+`node scripts/check-release-baselines.mjs` lists any package still missing its
+tag; the Release workflow refuses to run until none are missing. Never move a
+baseline tag. Tags for retired package names can stay; nothing reads them.
 
 ## GitHub configuration
 
-Keep `main` as the integration branch. Enable merge commits and disable squash
-merges. Protect `main` with required PRs and the checks `Quality
-(macos-latest)`, `Quality (ubuntu-latest)`, `PR policy`, `Website browser smoke`,
-and `Website container build`. Repository rules
-must allow the Actions token to create package version tags.
-
-The `Release` workflow runs only through manual dispatch on `main`:
-`gh workflow run release.yml --ref main`. Every dispatch runs CI, then the
-release job, which requires all seven baseline tags before semantic-release
-runs. Pass `-f dry_run=true` to exercise semantic-release without publishing or
-creating tags. Merging a PR does not publish.
-
-## Version baseline
-
-Packages start at `0.1.0`. After the staged `0.1.0` bootstrap publish, create
-`<package>-v0.1.0` baseline tags on the exact commit used for staging and push
-them. Use the full scoped package name in each tag (for example,
-`@clidoc/core-v0.1.0`). These tags keep the first automated release based on
-commits after the bootstrap. Without baseline tags, semantic-release treats the
-project as unreleased and may compute a different first version.
-
-Create each tag at the exact main commit used for staging and publishing that
-package. A baseline only has to be an ancestor of `main`; packages bootstrapped
-at different times carry tags on different commits.
-
-```sh
-git tag '@clidoc/core-v0.1.0' <bootstrap-commit>
-git tag '@clidoc/commander-v0.1.0' <bootstrap-commit>
-git tag '@clidoc/oclif-v0.1.0' <bootstrap-commit>
-git tag '@clidoc/yargs-v0.1.0' <bootstrap-commit>
-git tag '@clidoc/cli-v0.1.0' <bootstrap-commit>
-git tag '@clidoc/docusaurus-v0.1.0' <bootstrap-commit>
-git tag '@clidoc/vitepress-v0.1.0' <bootstrap-commit>
-git push origin \
-  '@clidoc/core-v0.1.0' \
-  '@clidoc/commander-v0.1.0' \
-  '@clidoc/oclif-v0.1.0' \
-  '@clidoc/yargs-v0.1.0' \
-  '@clidoc/cli-v0.1.0' \
-  '@clidoc/docusaurus-v0.1.0' \
-  '@clidoc/vitepress-v0.1.0'
-```
-
-Never move a baseline tag after activation. Run
-`node scripts/check-release-baselines.mjs` to check the tags locally.
-
-### Renamed framework packages
-
-`@clidoc/adapter-yargs`, `@clidoc/adapter-commander`, and `@clidoc/adapter-oclif`
-were renamed to `@clidoc/yargs`, `@clidoc/commander`, and `@clidoc/oclif`. On npm
-these are new packages with no publish history, so before the next `Release`
-dispatch the maintainer must, from a clean `main` checkout:
-
-1. Run `pnpm install --frozen-lockfile` and `pnpm release:bootstrap:stage`, then
-   `npm publish ./publish/<name> --access public` for `commander`, `oclif`, and
-   `yargs` only; the other packages are already published.
-2. Configure the npm trusted publisher for each of the three new packages and
-   allow direct `npm publish`, as described above.
-3. Tag that commit `@clidoc/commander-v0.1.0`, `@clidoc/oclif-v0.1.0`, and
-   `@clidoc/yargs-v0.1.0` and push the tags.
-4. Optionally `npm deprecate` the three `@clidoc/adapter-*` packages, pointing at
-   their replacements. The old `@clidoc/adapter-*-v0.1.0` tags can stay; nothing
-   reads them.
-
-Until step 3 is done, `node scripts/check-release-baselines.mjs` reports the
-three missing tags and the `Release` workflow stops before publishing.
+`main` is protected: PRs required, merge commits only, and the checks
+`Quality (macos-latest)`, `Quality (ubuntu-latest)`, `PR policy`, and
+`Website browser smoke`. Repository rules must let the Actions token push
+`<package>-v*` tags.
 
 ## GitHub Pages
 
-The `pages.yml` workflow builds the clidoc website from `packages/website` on
-every push to `main` and deploys it to the `github-pages` environment using the
-built-in `GITHUB_TOKEN`; no deployment secret is needed. It can also be
-dispatched manually with `gh workflow run pages.yml --ref main`.
-
-One-time repository setup (Settings → Pages, or the equivalent API calls):
+`pages.yml` builds `packages/website` on every push to `main` and deploys with
+the built-in `GITHUB_TOKEN`. One-time setup:
 
 ```sh
 gh api repos/bhouston/clidoc/pages -X POST -f build_type=workflow
 gh api repos/bhouston/clidoc/pages -X PUT -f cname=clidoc.dev -F https_enforced=true
 ```
 
-The first command sets the Pages source to **GitHub Actions**. The second sets
-the custom domain; a `CNAME` file in the build is ignored for Actions
-deployments. Run `https_enforced=true` again after DNS resolves if the first
-call reports the certificate is still provisioning.
-
-DNS for `clidoc.dev` is managed on Cloudflare. Point the apex at GitHub Pages
-and keep the records **DNS only** (grey cloud) until the GitHub certificate is
-issued; proxying can be re-enabled afterwards with SSL/TLS mode
-**Full (strict)**:
-
-| Type  | Name  | Value                 |
-| ----- | ----- | --------------------- |
-| A     | `@`   | `185.199.108.153`     |
-| A     | `@`   | `185.199.109.153`     |
-| A     | `@`   | `185.199.110.153`     |
-| A     | `@`   | `185.199.111.153`     |
-| AAAA  | `@`   | `2606:50c0:8000::153` |
-| AAAA  | `@`   | `2606:50c0:8001::153` |
-| AAAA  | `@`   | `2606:50c0:8002::153` |
-| AAAA  | `@`   | `2606:50c0:8003::153` |
-| CNAME | `www` | `bhouston.github.io`  |
-
-Remove any records that still point at the retired Cloud Run service.
+DNS for `clidoc.dev` is on Cloudflare: the four GitHub Pages `A` records
+(`185.199.108-111.153`), the four `AAAA` records (`2606:50c0:8000-8003::153`),
+and `CNAME www → bhouston.github.io`. Keep records DNS-only until the GitHub
+certificate is issued, then proxy with SSL mode Full (strict).
 
 ## Recovery
 
-If npm succeeded but GitHub release creation failed, recover the GitHub
-release from the existing tag. Do not republish the same npm version.
-Publishing across seven packages is not atomic. If a run partially publishes,
-compare npm versions, tags, and workflow logs before retrying. Finish missing
-packages from the same release commit.
+Publishing is not atomic across packages. If a run fails part way, compare npm
+versions, tags, and the workflow log, then finish the missing packages from the
+same release commit. If npm succeeded but the GitHub Release failed, create the
+release from the existing tag; never republish an npm version.
