@@ -94,8 +94,7 @@ OpenCLI specifications in pull requests:
 ```
 
 The action accepts JSON/YAML, multiple files, explicit specification dialects,
-and pinned validator versions. Its default uses a locked source build until the
-clidoc npm packages are published. See the
+and pinned validator versions. Its default uses a locked source build. See the
 [official CI guide](https://clidoc.dev/docs/github-action/) for a complete
 workflow and version selection. This repository runs the hosted action against
 its generated CLI specification on Linux and macOS.
@@ -233,34 +232,26 @@ generates for itself:
 }
 ```
 
-## Compatibility and scope
+## Compatibility
 
-The contract is **OpenCLI `1.0.0-alpha.14`**, pinned to upstream commit
+clidoc implements **OpenCLI `1.0.0-alpha.14`**, pinned to upstream commit
 `683d0ca92fc37ccc2626e64db0a8c32f3c4063c0` in [`upstream/opencli`](upstream/opencli).
-The core package bundles that schema, so installed packages validate offline
-without the submodule. Tests compare the bundled schema and upstream fixtures when
-the submodule is checked out.
-The upstream Go project retains its own license; see
+The core package bundles the schema, so validation works offline. The upstream Go
+project keeps its own license; see
 [third-party attribution](packages/core/THIRD_PARTY_NOTICES.md).
 
-The OpenCLI schema only requires `commands` keys to be strings; it does not mandate a
-format. Upstream's Go generator decorates keys for display, e.g.
-`"petstore pet add <arguments> [flags]"`. clidoc emits the plain `binary sub command` path
-instead, as shown above, because page titles, route slugs, and `commands[...]` lookups all
-want that exact string. Both forms validate against the schema, and `clidoc validate`
-accepts upstream's decorated documents unchanged.
+Command keys are plain `binary sub command` paths, which page titles, routes, and
+`commands[...]` lookups rely on. Upstream decorates keys for display, such as
+`"petstore pet add <arguments> [flags]"`. Both forms validate, and `clidoc validate`
+accepts either.
 
-Framework metadata cannot express every runtime behavior. The framework packages document
-what their supported metadata exposes; they do not infer custom validation,
-coercion, middleware, or application behavior. See each framework package README for limits.
-Schema validation follows the upstream JSON Schema and is paired with the logical
-checks ported from upstream's `validate/validate.go` (argument ordering, variadic
-constraints, `$FILE` config references, duplicate flags), rather than claiming
-identical behavior to every semantic check in the Go CLI.
+Validation combines the upstream JSON Schema with the logical checks from upstream
+`validate/validate.go`: argument ordering, variadic constraints, `$FILE` config
+references, and duplicate flags.
 
-This first implementation focuses on the CLI-to-Markdown pipeline. OpenAPI and
-TypeDoc ingestion, a standalone embeddable React viewer, additional site platforms,
-and an integrated preview server remain extensions to that pipeline.
+Framework adapters expose what their metadata describes. They do not infer custom
+validation, coercion, middleware, or application behavior. Each adapter README lists
+its limitations.
 
 ## Contributing and releasing
 
