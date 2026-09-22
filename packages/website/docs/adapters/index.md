@@ -5,21 +5,23 @@ sidebar_position: 5
 
 # Generate from existing command definitions
 
-clidoc adapters convert framework definitions into an OpenCLI document. The resulting document can be validated, rendered, and published through either documentation integration.
+clidoc adapters convert framework definitions into an OpenCLI document. The resulting document can be validated, rendered, and published through either [documentation integration](/docs/guides/publishing).
 
-First, add `mycli docgen --output cli.json` to write a document derived from the same framework definitions as your CLI. Each adapter exports a `createDocgenCommand` helper that builds this command for you, wired to `--output`/`--format`, so you only need to register it. Install the validator with `npm install -g @clidoc/cli`, then run `clidoc validate cli.json` and `clidoc markdown cli.json --output reference.md`.
+- [Commander](#commander)
+- [oclif](#oclif)
+- [yargs](#yargs)
 
-For consistent discovery by documentation tools, you can optionally add the hidden `mycli __opencli` subcommand to your CLI too. Check for exactly that argument before normal argument parsing, print only one UTF-8 JSON OpenCLI document followed by a newline to stdout, and exit with status 0. Do not run handlers. Report errors on stderr and exit nonzero. For example, `mycli __opencli > mycli.opencli.json` captures the document for validation and rendering. See each adapter's README for the `handleOpenCliRequest` snippet that wires this up.
+Each adapter exports a `createDocgenCommand` helper that adds a `mycli docgen --output cli.json` command to your CLI, wired to `--output`/`--format`. The snippets below register `docgen` and read the title, binary name, and version from your `package.json`. Install the validator with `npm install -g @clidoc/cli`, then run `clidoc validate cli.json` and `clidoc markdown cli.json --output reference.md`.
 
-| Framework | Package                     | Entry point                                                                                |
-| --------- | --------------------------- | ------------------------------------------------------------------------------------------ |
-| Commander | `@clidoc/adapter-commander` | [`fromCommander`](https://github.com/bhouston/clidoc/tree/main/packages/adapter-commander) |
-| oclif     | `@clidoc/adapter-oclif`     | [`fromOclif`](https://github.com/bhouston/clidoc/tree/main/packages/adapter-oclif)         |
-| yargs     | `@clidoc/adapter-yargs`     | [`fromYargs`](https://github.com/bhouston/clidoc/tree/main/packages/adapter-yargs)         |
-
-Each snippet below registers `docgen` and reads the title, binary name, and version from your `package.json`. Read each adapter's README for its supported command features, how to add examples and exit codes with `mergeDocument`, and how to add `__opencli`.
+For consistent discovery by documentation tools, you can optionally add the hidden `mycli __opencli` subcommand to your CLI too. Check for exactly that argument before normal argument parsing, print only one UTF-8 JSON OpenCLI document followed by a newline to stdout, and exit with status 0. Do not run handlers. Report errors on stderr and exit nonzero. Each adapter's README has the `handleOpenCliRequest` snippet that wires this up.
 
 ## Commander
+
+```sh
+npm install @clidoc/adapter-commander @clidoc/core commander
+```
+
+[GitHub](https://github.com/bhouston/clidoc/tree/main/packages/adapter-commander) · [npm](https://www.npmjs.com/package/@clidoc/adapter-commander)
 
 ```ts
 import { readFileSync } from 'node:fs';
@@ -45,7 +47,15 @@ program.addCommand(createDocgenCommand(document));
 program.parse();
 ```
 
+More information, including supported command features, `mergeDocument`, and `__opencli`, is in the [README](https://www.npmjs.com/package/@clidoc/adapter-commander) of the npm module.
+
 ## oclif
+
+```sh
+npm install @clidoc/adapter-oclif @clidoc/core @oclif/core
+```
+
+[GitHub](https://github.com/bhouston/clidoc/tree/main/packages/adapter-oclif) · [npm](https://www.npmjs.com/package/@clidoc/adapter-oclif)
 
 `createDocgenCommand` lives at `@clidoc/adapter-oclif/docgen` so that importing `fromOclif` never requires `@oclif/core`. Generate `manifest.json` with `oclif manifest` as part of your build. `docgen` is exported as an ordinary command, so `src/index.ts` needs no changes.
 
@@ -61,7 +71,15 @@ export default createDocgenCommand(() => ({
 }));
 ```
 
+More information, including supported command features, `mergeDocument`, and `__opencli`, is in the [README](https://www.npmjs.com/package/@clidoc/adapter-oclif) of the npm module.
+
 ## yargs
+
+```sh
+npm install @clidoc/adapter-yargs @clidoc/core yargs
+```
+
+[GitHub](https://github.com/bhouston/clidoc/tree/main/packages/adapter-yargs) · [npm](https://www.npmjs.com/package/@clidoc/adapter-yargs)
 
 `fromYargs` discovers the registered top-level commands straight from the configured `yargs(...)` instance.
 
@@ -85,3 +103,5 @@ document = fromYargs(parser, info);
 
 parser.parse();
 ```
+
+More information, including supported command features, `mergeDocument`, and `__opencli`, is in the [README](https://www.npmjs.com/package/@clidoc/adapter-yargs) of the npm module.
