@@ -116,11 +116,41 @@ Never move a baseline tag after activation. Run
 
 ## GitHub Pages
 
-In repository Settings → Pages, set the source to **GitHub Actions**. The
-`pages.yml` workflow builds the clidoc website from `packages/website` on
-`main` and deploys it to the `github-pages` environment. Enable Pages and allow that environment before
-expecting the first deployment. The workflow uses the repository's built-in
-`GITHUB_TOKEN`; no separate deployment secret is needed.
+The `pages.yml` workflow builds the clidoc website from `packages/website` on
+every push to `main` and deploys it to the `github-pages` environment using the
+built-in `GITHUB_TOKEN`; no deployment secret is needed. It can also be
+dispatched manually with `gh workflow run pages.yml --ref main`.
+
+One-time repository setup (Settings → Pages, or the equivalent API calls):
+
+```sh
+gh api repos/bhouston/clidoc/pages -X POST -f build_type=workflow
+gh api repos/bhouston/clidoc/pages -X PUT -f cname=clidoc.dev -F https_enforced=true
+```
+
+The first command sets the Pages source to **GitHub Actions**. The second sets
+the custom domain; a `CNAME` file in the build is ignored for Actions
+deployments. Run `https_enforced=true` again after DNS resolves if the first
+call reports the certificate is still provisioning.
+
+DNS for `clidoc.dev` is managed on Cloudflare. Point the apex at GitHub Pages
+and keep the records **DNS only** (grey cloud) until the GitHub certificate is
+issued; proxying can be re-enabled afterwards with SSL/TLS mode
+**Full (strict)**:
+
+| Type  | Name  | Value                 |
+| ----- | ----- | --------------------- |
+| A     | `@`   | `185.199.108.153`     |
+| A     | `@`   | `185.199.109.153`     |
+| A     | `@`   | `185.199.110.153`     |
+| A     | `@`   | `185.199.111.153`     |
+| AAAA  | `@`   | `2606:50c0:8000::153` |
+| AAAA  | `@`   | `2606:50c0:8001::153` |
+| AAAA  | `@`   | `2606:50c0:8002::153` |
+| AAAA  | `@`   | `2606:50c0:8003::153` |
+| CNAME | `www` | `bhouston.github.io`  |
+
+Remove any records that still point at the retired Cloud Run service.
 
 ## Recovery
 
