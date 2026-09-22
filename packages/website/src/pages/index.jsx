@@ -20,6 +20,25 @@ const publishers = [
   { name: 'VitePress', image: 'vitepress.svg' },
 ];
 
+const commanderSnippet = `import { Command } from 'commander';
+import { createDocgenCommand, fromCommander } from '@clidoc/adapter-commander';
+import { handleOpenCliRequest, infoFromPackageJson } from '@clidoc/core';
+
+const info = infoFromPackageJson(pkg);
+const program = new Command(info.binary);
+// ...register your commands...
+
+const document = () => fromCommander(program, info);
+program.addCommand(createDocgenCommand(document));
+if (!(await handleOpenCliRequest(process.argv.slice(2), document))) program.parse();`;
+
+const docusaurusSnippet = `// docusaurus.config.js
+const clidocPlugin = require('@clidoc/docusaurus');
+
+module.exports = {
+  plugins: [[clidocPlugin, { input: 'cli.json', outputDir: 'docs/generated-cli', basePath: '/cli' }]],
+};`;
+
 function IntegrationList({ items, href }) {
   return <div className={styles.integrations}>
     {items.map(({ name, image }) => <Link className={styles.integration} to={href} key={name}>
@@ -46,10 +65,12 @@ export default function Home() {
       <section className={styles.support} aria-labelledby="frameworks-title">
         <div><h2 id="frameworks-title">Built for your CLI framework</h2><p>Use built-in adapters for yargs, Commander.js, and oclif to generate an OpenCLI document from the command definitions you already maintain.</p><Link to="/docs/adapters/">Explore the adapters →</Link></div>
         <IntegrationList items={frameworks} href="/docs/adapters/" />
+        <pre className={styles.snippet}><code>{commanderSnippet}</code></pre>
       </section>
       <section className={styles.support} aria-labelledby="publishing-title">
         <div><h2 id="publishing-title">Publish where your docs live</h2><p>Publishing plugins generate command pages for Docusaurus and VitePress. You can also render Markdown for other documentation sites.</p><Link to="/docs/guides/publishing">Explore publishing plugins →</Link></div>
         <IntegrationList items={publishers} href="/docs/guides/publishing" />
+        <pre className={styles.snippet}><code>{docusaurusSnippet}</code></pre>
       </section>
       <section className={styles.example}>
         <div><h2>Generate from your own CLI</h2><p>Give your CLI a docgen command with an adapter, then validate its OpenCLI document with clidoc.</p><Link to="/docs/guides/cli">Read the CLI guide →</Link></div>
