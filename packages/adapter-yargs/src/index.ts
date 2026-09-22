@@ -332,6 +332,14 @@ export interface CreateDocgenCommandOptions {
   command?: string;
 }
 
+interface DocgenOption {
+  type: 'string';
+  alias?: string;
+  choices?: readonly string[];
+  default?: string;
+  description?: string;
+}
+
 /**
  * Build a ready-to-register `docgen` command module: `--output <file>` (defaults to stdout) and
  * `--format <json|yaml|markdown>` (default `json`), writing `getDocument()`'s result via
@@ -340,7 +348,12 @@ export interface CreateDocgenCommandOptions {
 export function createDocgenCommand(
   getDocument: () => OpenCliDocument,
   options: CreateDocgenCommandOptions = {},
-): YargsCommandModule & { handler: (argv: unknown) => Promise<void> } {
+): {
+  command: string;
+  describe: string;
+  builder: Record<string, DocgenOption>;
+  handler: (argv: unknown) => Promise<void>;
+} {
   return {
     command: options.command ?? 'docgen',
     describe: 'Write the OpenCLI document to a file, or stdout if --output is omitted',
