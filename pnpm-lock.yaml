@@ -175,12 +175,6 @@ importers:
 
   packages/cli:
     dependencies:
-      '@clidoc/adapter-commander':
-        specifier: workspace:^
-        version: link:../adapter-commander
-      '@clidoc/adapter-oclif':
-        specifier: workspace:^
-        version: link:../adapter-oclif
       '@clidoc/adapter-yargs':
         specifier: workspace:^
         version: link:../adapter-yargs
