@@ -54,11 +54,19 @@ The [runnable oclif demo](../../demos/oclif/src/index.ts) builds the manifest in
 
 ## Supported metadata
 
-The adapter reads command IDs, descriptions, aliases, visibility, flags, arguments, examples, and topics from the generated manifest. It maps supported types, defaults, choices, required status, repeatable flags (`multiple` on both flags and args), flag `env` (to `alternativeSources`), flag `helpValue` (to `hint`), and flag `aliases`/`charAliases` (merged with `char` into `aliases`). Command `examples` (a string, or oclif's `{ command, description }` object) map to spec `examples: [{ title?, content }]`, with `description` becoming `title` and `command` becoming `content`. Argument `default` has no equivalent spec field, so it is folded into the argument's summary as `Default: <value>.`, matching `@clidoc/adapter-commander`. Manifest `topics` synthesise `kind: 'group'` commands keyed by the topic path (e.g. `user` or `user admin`) without overwriting a real command of the same key.
+- Command IDs, descriptions, aliases, visibility, flags, arguments, examples, and topics from the generated manifest.
+- Types, defaults, choices, required status, repeatable flags (`multiple` on flags and args).
+- Flag `env` → `alternativeSources`; flag `helpValue` → `hint`; flag `aliases`/`charAliases` merged with `char` into `aliases`.
+- Command `examples` (a string, or oclif's `{ command, description }` object) → `examples: [{ title?, content }]` (`description` → `title`, `command` → `content`).
+- Argument `default`, folded into the argument's summary as `Default: <value>.` (no dedicated OpenCLI field, matching `@clidoc/adapter-commander`).
+- Manifest `topics`, synthesised as `kind: 'group'` commands keyed by the topic path (e.g. `user` or `user admin`), without overwriting a real command of the same key.
 
-Flag `deprecated` and `deprecateAliases` are read by oclif's own help output but are not mapped to the OpenCLI document; there is no equivalent spec field. It cannot infer custom parsing, hooks, or command runtime behavior from the manifest.
+Not supported:
 
-For a flag with both `required: true` and `multiple: true` and no default, the adapter emits `variadic: true` and `minItems: 1`. OpenCLI rejects `required: true` on variadic flags, so `minItems` expresses the required first value. A default can satisfy oclif's required check without the flag being present, so the adapter throws a diagnostic for that combination and asks callers to document it separately or change the CLI behavior.
+- Flag `deprecated` and `deprecateAliases` (read by oclif's own help output, no equivalent OpenCLI field).
+- Custom parsing, hooks, or command runtime behavior can't be inferred from the manifest.
+- A flag with both `required: true` and `multiple: true` and no default emits `variadic: true, minItems: 1` as the closest approximation — OpenCLI has no way to mark a variadic flag `required` (schema gap, [tracked upstream](https://github.com/bcdxn/opencli/issues/20)).
+- The same combination with a default can't be represented at all (the default can satisfy oclif's required check without the flag being present), so the adapter throws a diagnostic for that case.
 
 ## Advanced: using `fromOclif` directly
 
