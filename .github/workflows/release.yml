@@ -50,6 +50,8 @@ jobs:
       - name: Require published package baselines
         run: node scripts/check-release-baselines.mjs
       - run: pnpm build
+      - name: Verify built packages include declared files
+        run: node scripts/check-release-package.mjs
       - name: Publish with npm trusted publishing
         run: pnpm release ${{ inputs.dry_run && '--dry-run' || '' }}
         env:
