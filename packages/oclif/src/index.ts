@@ -1,3 +1,8 @@
+/**
+ * Generates OpenCLI documents from oclif manifests.
+ *
+ * @packageDocumentation
+ */
 import { OPENCLI_VERSION } from '@clidoc/core';
 import type {
   OpenCliDocument,

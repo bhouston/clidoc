@@ -1,3 +1,8 @@
+/**
+ * Publishes OpenCLI documents as Docusaurus pages and sidebar entries.
+ *
+ * @packageDocumentation
+ */
 import { createHash } from 'node:crypto';
 import { mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';

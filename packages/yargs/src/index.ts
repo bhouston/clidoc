@@ -1,3 +1,8 @@
+/**
+ * Generates OpenCLI documents from Yargs command modules.
+ *
+ * @packageDocumentation
+ */
 import { OPENCLI_VERSION, writeOpenCliDocument } from '@clidoc/core';
 import type {
   OpenCliDocument,

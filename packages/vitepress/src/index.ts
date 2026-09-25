@@ -1,3 +1,8 @@
+/**
+ * Publishes OpenCLI documents as VitePress pages and sidebar entries.
+ *
+ * @packageDocumentation
+ */
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname, join, relative, resolve, sep } from 'node:path';
 import { generatePages, type OpenCliDocument } from '@clidoc/core';
