@@ -56,6 +56,7 @@ Consumers can then run `mycli __opencli > mycli.opencli.json` or `mycli __opencl
 - Custom parsing, coercion, validation, and middleware behavior.
 - Unsupported builder methods report their name and suggest `.option()` or extending `fromYargs`.
 - A required array option (`demandOption: true`) can't be expressed faithfully — OpenCLI has no way to mark a variadic flag `required` (schema gap, [tracked upstream](https://github.com/bcdxn/opencli/issues/20)), so `fromYargs` throws a diagnostic naming the option instead of emitting an incorrect `minItems: 1`.
+- An array-typed option's `default` can't be expressed either — OpenCLI flag defaults are a single string, number, or boolean — so `fromYargs` throws a diagnostic naming the option instead of emitting an invalid document. Apply the default in your handler instead (e.g. `argv.rules ?? ['basic']`).
 
 ## Advanced: passing an explicit command-modules array
 
