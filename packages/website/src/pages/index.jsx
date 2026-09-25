@@ -22,7 +22,7 @@ const publishers = [
 
 const commanderSnippet = `import { Command } from 'commander';
 import { createDocgenCommand, fromCommander } from '@clidoc/commander';
-import { handleOpenCliRequest, infoFromPackageJson } from '@clidoc/core';
+import { infoFromPackageJson } from '@clidoc/core';
 
 const info = infoFromPackageJson(pkg);
 const program = new Command(info.binary);
@@ -30,7 +30,7 @@ const program = new Command(info.binary);
 
 const document = () => fromCommander(program, info);
 program.addCommand(createDocgenCommand(document));
-if (!(await handleOpenCliRequest(process.argv.slice(2), document))) program.parse();`;
+program.parse();`;
 
 const docusaurusSnippet = `// docusaurus.config.js
 const clidocPlugin = require('@clidoc/docusaurus');
