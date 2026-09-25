@@ -41,6 +41,7 @@ module.exports = {
         { to: '/docs', label: 'Docs', position: 'left' },
         { to: '/docs/cli/reference', label: 'CLI reference', position: 'left' },
         { to: '/docs/api', label: 'Core API', position: 'left' },
+        { to: '/ecosystem', label: 'Ecosystem', position: 'left' },
         { href: 'https://github.com/bhouston/clidoc', label: 'GitHub', position: 'right' },
       ],
     },
