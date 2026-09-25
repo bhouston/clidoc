@@ -4,9 +4,6 @@ packages:
 allowBuilds:
   core-js: false
   esbuild: true
-minimumReleaseAgeExclude:
-  - yargs-file-commands@2.0.1
-  - vitest-command-line@0.9.1
 overrides:
   serialize-javascript: ^7.0.6
   'vitepress>vite': ^6.4.3
