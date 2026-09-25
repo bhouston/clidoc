@@ -1,6 +1,6 @@
 {
   "name": "@clidoc/commander",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Generate OpenCLI documents from Commander command trees",
   "keywords": [
     "cli",

@@ -1,6 +1,6 @@
 {
   "name": "@clidoc/vitepress",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Publish OpenCLI Markdown in VitePress",
   "keywords": [
     "cli",

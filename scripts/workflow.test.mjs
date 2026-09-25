@@ -2,7 +2,6 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { analyzeCommits } from '@semantic-release/commit-analyzer';
 import config from '../release.config.js';
-import { baselineCommits, baselineTags, missingTags } from './check-release-baselines.mjs';
 import { readFileSync } from 'node:fs';
 
 // PR policy is now enforced by the canonical scripts/check-pr.mjs + .github/workflows/pr-policy.yml.
@@ -26,18 +25,21 @@ for (const [message, expected] of [
 
 test('release branch is only main', () => assert.deepEqual(config.branches, ['main']));
 
-test('all seven public packages require their initial version tags', () => {
-  const tags = baselineTags();
-  assert.equal(tags.length, 7);
-  assert.equal(new Set(tags).size, 7);
-  assert.deepEqual(
-    missingTags(tags, (tag) => tag !== '@clidoc/core-v0.1.0'),
-    ['@clidoc/core-v0.1.0'],
-  );
-  assert.deepEqual(
-    [...baselineCommits(tags, (tag) => (tag === tags[0] ? 'other' : 'bootstrap'))],
-    ['other', 'bootstrap'],
-  );
+test('all seven public packages publish once, in dependency order, before cli', () => {
+  const pkgRoots = config.plugins
+    .filter((plugin) => Array.isArray(plugin) && plugin[0] === '@anolilab/semantic-release-pnpm')
+    .map(([, options]) => options.pkgRoot);
+  assert.deepEqual(pkgRoots, [
+    'packages/core',
+    'packages/commander',
+    'packages/oclif',
+    'packages/yargs',
+    'packages/cli',
+    'packages/docusaurus',
+    'packages/vitepress',
+  ]);
+  assert.ok(pkgRoots.indexOf('packages/core') < pkgRoots.indexOf('packages/cli'), 'core must publish before cli');
+  assert.ok(pkgRoots.indexOf('packages/yargs') < pkgRoots.indexOf('packages/cli'), 'yargs must publish before cli');
 });
 
 test('release workflow always runs semantic-release after checks', () => {
