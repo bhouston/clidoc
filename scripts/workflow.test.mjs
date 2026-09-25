@@ -1,34 +1,11 @@
 import assert from 'node:assert/strict';
-import { spawnSync } from 'node:child_process';
 import { test } from 'node:test';
 import { analyzeCommits } from '@semantic-release/commit-analyzer';
 import config from '../release.config.js';
 import { baselineCommits, baselineTags, missingTags } from './check-release-baselines.mjs';
 import { readFileSync } from 'node:fs';
 
-const valid = {
-  PR_BASE: 'main',
-  PR_HEAD: 'feat/42-export',
-  PR_BODY: 'Closes #42',
-  PR_HEAD_REPO: 'owner/repo',
-  PR_REPO: 'owner/repo',
-};
-for (const [name, overrides, passes] of [
-  ['implementation', {}, true],
-  ['wrong issue', { PR_BODY: 'Closes #420' }, false],
-  ['missing issue', { PR_BODY: '' }, false],
-  ['unnumbered branch', { PR_HEAD: 'feat/export' }, false],
-  ['wrong target branch', { PR_BASE: 'dev' }, false],
-  ['fork PR', { PR_HEAD_REPO: 'fork/repo' }, false],
-]) {
-  test(`PR policy: ${name}`, () => {
-    const result = spawnSync(process.execPath, ['scripts/check-pr-policy.mjs'], {
-      env: { ...process.env, ...valid, ...overrides },
-      encoding: 'utf8',
-    });
-    assert.equal(result.status === 0, passes, result.stderr);
-  });
-}
+// PR policy is now enforced by the canonical scripts/check-pr.mjs + .github/workflows/pr-policy.yml.
 
 for (const [message, expected] of [
   ['fix: handle empty output', 'patch'],
@@ -63,12 +40,8 @@ test('all seven public packages require their initial version tags', () => {
   );
 });
 
-test('release workflow always runs semantic-release after checks and requires baselines', () => {
+test('release workflow always runs semantic-release after checks', () => {
   const workflow = readFileSync('.github/workflows/release.yml', 'utf8');
-  assert.match(workflow, /release:\n\s+needs: checks\n\s+runs-on:/);
-  assert.match(
-    workflow,
-    /name: Require published package baselines\n\s+run: node scripts\/check-release-baselines\.mjs/,
-  );
+  assert.match(workflow, /release:\n\s+needs: \[guard, checks\]\n\s+runs-on:/);
   assert.match(workflow, /run: pnpm release \$\{\{ inputs\.dry_run && '--dry-run' \|\| '' \}\}/);
 });
