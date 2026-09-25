@@ -8,3 +8,6 @@ overrides:
   serialize-javascript: ^7.0.6
   'vitepress>vite': ^6.4.3
   '@vitejs/plugin-vue>vite': ^6.4.3
+minimumReleaseAgeExclude:
+  - vitest-command-line@0.9.1
+  - yargs-file-commands@2.0.1
