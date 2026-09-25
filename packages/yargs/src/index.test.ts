@@ -6,6 +6,17 @@ import { createDocgenCommand, fromYargs } from './index.js';
 import { validate } from '@clidoc/core';
 import { defineCommand } from 'yargs-file-commands';
 import buildYargs from 'yargs';
+
+/**
+ * Shape of the internal chainable recorder object `fromYargs` passes to a
+ * command module's `builder` function (see collectBuilder() in index.ts):
+ * every recognised method accepts arbitrary arguments and returns the same
+ * recorder for chaining. Used to type test-only builder callbacks without
+ * `any`; unsupported method names still type-check here but throw at
+ * runtime via the recorder's Proxy trap, which several tests exercise.
+ */
+type RecorderStub = Record<string, (...args: unknown[]) => RecorderStub>;
+
 const info = { title: 'Demo', binary: 'demo', version: '1.0.0' };
 describe('fromYargs', () => {
   it('reports demanded array options whose presence requirement OpenCLI cannot express', () => {
@@ -78,7 +89,7 @@ describe('fromYargs', () => {
       [
         {
           command: 'run <name>',
-          builder: (yargs: any) =>
+          builder: (yargs: RecorderStub) =>
             yargs
               .positional('name', { type: 'string', describe: 'Person', demandOption: true })
               .option('count', { type: 'number', default: 2 }),
@@ -96,7 +107,7 @@ describe('fromYargs', () => {
 describe('fromYargs from a live Yargs instance', () => {
   it('auto-discovers commands, aliases, and nested subcommands from a configured parser', () => {
     const parser = buildYargs([])
-      .command(['config', 'cfg'], 'Manage configuration', (y: any) => y.command('set <key> <value>', 'Set a value'))
+      .command(['config', 'cfg'], 'Manage configuration', (y) => y.command('set <key> <value>', 'Set a value'))
       .command('greet <name>', 'Greet a person', { language: { type: 'string', default: 'en' } });
     const doc = fromYargs(parser, info);
     expect(doc.commands?.['demo config']).toMatchObject({
@@ -153,7 +164,7 @@ describe('common Yargs builder chains (#75)', () => {
         {
           command: 'deploy <target>',
           handler,
-          builder: (y: any) =>
+          builder: (y: RecorderStub) =>
             y
               .strict()
               .help()
@@ -192,7 +203,7 @@ describe('common Yargs builder chains (#75)', () => {
       [
         {
           command: 'run',
-          builder: (y: any) =>
+          builder: (y: RecorderStub) =>
             y
               .strictOptions()
               .strictCommands()
@@ -221,19 +232,19 @@ describe('common Yargs builder chains (#75)', () => {
   });
   it('keeps help and version flag names and rejects unsupported object setters', () => {
     const doc = fromYargs(
-      [{ command: 'go', builder: (y: any) => y.help('usage', 'Print usage').version('1.2.3') }],
+      [{ command: 'go', builder: (y: RecorderStub) => y.help('usage', 'Print usage').version('1.2.3') }],
       info,
     );
     expect(doc.commands?.['demo go']?.flags).toMatchObject([
       { name: 'usage', summary: 'Print usage' },
       { name: 'version', summary: 'Show version number' },
     ]);
-    expect(() => fromYargs([{ command: 'go', builder: (y: any) => y.alias({ foo: 'f' }) }], info)).toThrow(
+    expect(() => fromYargs([{ command: 'go', builder: (y: RecorderStub) => y.alias({ foo: 'f' }) }], info)).toThrow(
       'Unsupported Yargs .alias() overload',
     );
   });
   it('reports unsupported metadata setters clearly', () => {
-    expect(() => fromYargs([{ command: 'go', builder: (y: any) => y.nargs('files', 2) }], info)).toThrow(
+    expect(() => fromYargs([{ command: 'go', builder: (y: RecorderStub) => y.nargs('files', 2) }], info)).toThrow(
       'Unsupported Yargs builder method .nargs(). Add metadata with .option() or extend fromYargs.',
     );
   });
@@ -246,7 +257,7 @@ describe('Yargs metadata variants', () => {
         {
           command: 'copy [paths..]',
           aliases: 'cp',
-          builder: (yargs: any) =>
+          builder: (yargs: RecorderStub) =>
             yargs.options({
               force: { type: 'boolean', alias: ['f'], describe: 'Overwrite' },
               levels: { type: 'number', array: true, choices: [1, 2], default: 1 },
@@ -272,7 +283,10 @@ describe('Yargs metadata variants', () => {
 
 describe('Yargs sparse metadata', () => {
   it('handles a positional() call with no type or describe metadata', () => {
-    const doc = fromYargs([{ command: 'go <where>', builder: (yargs: any) => yargs.positional('where', {}) }], info);
+    const doc = fromYargs(
+      [{ command: 'go <where>', builder: (yargs: RecorderStub) => yargs.positional('where', {}) }],
+      info,
+    );
     expect(doc.commands?.['demo go']).toMatchObject({ args: [{ name: 'where', required: true }] });
   });
   it('handles command modules with no builder or optional metadata', () => {
@@ -303,7 +317,7 @@ describe('Yargs sparse metadata', () => {
         {
           command: ['scale <factor>', 'resize'],
           aliases: ['s'],
-          builder: (yargs: any) =>
+          builder: (yargs: RecorderStub) =>
             yargs
               .positional('factor', { type: 'number', description: 'Scale factor' })
               .option('debug', { type: 'boolean' }),
@@ -361,9 +375,11 @@ describe('multi-word command names (#33)', () => {
         {
           command: 'config',
           describe: 'Manage configuration',
-          builder: (yargs: any) =>
+          builder: (yargs: RecorderStub) =>
             yargs
-              .command('set <key> <value>', 'Set a config value', (y: any) => y.option('force', { type: 'boolean' }))
+              .command('set <key> <value>', 'Set a config value', (y: RecorderStub) =>
+                y.option('force', { type: 'boolean' }),
+              )
               .command({ command: 'get <key>', describe: 'Get a config value' }),
         },
       ],
@@ -385,7 +401,7 @@ describe('multi-word command names (#33)', () => {
         {
           command: 'serve [port]',
           describe: 'Run the server, or manage it',
-          builder: (yargs: any) => yargs.command('stop', 'Stop the server'),
+          builder: (yargs: RecorderStub) => yargs.command('stop', 'Stop the server'),
         },
       ],
       info,
@@ -403,7 +419,7 @@ describe('option type mapping (#34)', () => {
           command: 'run',
           builder: {
             verbose: { type: 'count', alias: 'v' },
-            level: { type: 'enum' as any },
+            level: { type: 'enum' },
           },
         },
       ],
