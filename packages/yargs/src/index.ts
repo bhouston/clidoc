@@ -50,6 +50,11 @@ function toFlag(name: string, option: YargsOption): FlagItemObject {
       `Yargs option '${name}' combines demandOption with an array: OpenCLI cannot require the flag while allowing zero values. Document this option separately or change its CLI behavior.`,
     );
   }
+  if ((option.array || option.type === 'array') && Array.isArray(option.default)) {
+    throw new TypeError(
+      `Yargs option '${name}' has an array default: OpenCLI flag defaults must be a single string, number, or boolean. Document this option's default separately, or apply it in your handler instead of the Yargs builder.`,
+    );
+  }
   const flag: FlagItemObject = { name, type: mapValueType(option.type) };
   const aliases = typeof option.alias === 'string' ? [option.alias] : option.alias;
   if (aliases?.length) flag.aliases = [...aliases];

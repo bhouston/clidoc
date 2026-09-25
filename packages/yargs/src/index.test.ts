@@ -19,6 +19,14 @@ describe('fromYargs', () => {
     ).toThrow(/Yargs option 'items' combines demandOption with an array/);
   });
 
+  it('reports array-typed defaults OpenCLI cannot express as a single value', () => {
+    expect(() =>
+      fromYargs([{ command: 'run', builder: { rules: { array: true, default: ['basic'] } } }], info),
+    ).toThrow(
+      "Yargs option 'rules' has an array default: OpenCLI flag defaults must be a single string, number, or boolean. Document this option's default separately, or apply it in your handler instead of the Yargs builder.",
+    );
+  });
+
   it('maps declarative command modules', () => {
     const doc = fromYargs(
       [
