@@ -9,6 +9,8 @@
 .example { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; padding: 1rem 0 5rem; }
 .example pre, .snippet { padding: 2rem; border-radius: 12px; }
 .snippet { grid-column: 1 / -1; margin: 0; }
+.example > *, .support > * { min-width: 0; }
+.codeExample pre { padding: 1rem; }
 .support { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; padding: 1rem 0 5rem; }
 .integrations { display: flex; flex-wrap: wrap; gap: 1rem; }
 .integration { display: flex; align-items: center; gap: .8rem; min-height: 4.5rem; padding: .7rem 1rem; border: 1px solid var(--ifm-color-emphasis-200); border-radius: 12px; background: var(--ifm-background-surface-color); font-weight: 700; }
