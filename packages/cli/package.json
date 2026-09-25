@@ -1,6 +1,6 @@
 {
   "name": "@clidoc/cli",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Generate and validate OpenCLI documentation",
   "keywords": [
     "cli",
