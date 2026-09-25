@@ -1,0 +1,4 @@
+upstream/**
+submodules/**
+docs/generated/**
+pnpm-lock.yaml
