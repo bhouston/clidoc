@@ -21,7 +21,7 @@
     "react/exhaustive-deps": "warn",
     "react/react-in-jsx-scope": "off",
     "react/rules-of-hooks": "error",
-    "typescript/no-explicit-any": "off",
+    "typescript/no-explicit-any": "error",
     "unicorn/no-new-array": "error"
   },
   "overrides": [
