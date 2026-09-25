@@ -186,6 +186,9 @@ function collectBuilder(builder: unknown): CollectedBuilder {
     showHelpOnFail() {
       return supportedRecorder;
     },
+    group(_keys: unknown, _groupName: string) {
+      return supportedRecorder;
+    },
     middleware(_callback: unknown) {
       return supportedRecorder;
     },

@@ -159,6 +159,7 @@ describe('common Yargs builder chains (#75)', () => {
               .choices('mode', ['fast', 'safe'])
               .string('mode')
               .positional('target', { describe: 'Destination' })
+              .group(['mode'], 'Mode options:')
               .check(check)
               .middleware(middleware),
         },
