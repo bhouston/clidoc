@@ -1,3 +1,8 @@
+/**
+ * Generates OpenCLI documents from Commander command trees.
+ *
+ * @packageDocumentation
+ */
 import { Command as CommanderCommand, Option as CommanderOption } from 'commander';
 import type { Command, Option, Argument } from 'commander';
 import { OPENCLI_VERSION, writeOpenCliDocument } from '@clidoc/core';
