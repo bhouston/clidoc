@@ -257,9 +257,14 @@ pnpm package:check
 pnpm docs:build
 ```
 
+Coverage must be at least 95% for statements, branches, functions, and lines. Completion
+execution tests require Bash, Zsh, and Fish on `PATH` (`brew install fish` on macOS;
+`sudo apt-get install zsh fish` on Ubuntu). Run `pnpm docs:build` when changing generated
+CLI documentation or docs integrations.
+
 The repository follows a standard TypeScript toolchain: pnpm workspaces, TypeScript builds,
 Vitest, Oxlint/Oxfmt, Husky/commitlint, MIT licensing, and independent manually dispatched
-semantic releases. See [release and deployment setup](docs/releasing.md).
+semantic releases. See [release and deployment setup](RELEASING.md).
 
 ## License
 

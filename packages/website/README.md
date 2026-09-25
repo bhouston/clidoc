@@ -8,4 +8,4 @@ Browser smoke test: run `pnpm --filter @clidoc/website test:browser` after `SITE
 
 The `Deploy website to GitHub Pages` workflow (`.github/workflows/pages.yml`) runs on every push to `main` and can also be dispatched manually. It runs `pnpm docs:build`, uploads `packages/website/build` as a Pages artifact, and deploys it to the `github-pages` environment with the built-in `GITHUB_TOKEN`. No container, registry, or cloud credentials are involved.
 
-Builds use `https://clidoc.dev/` for canonical links and the sitemap. See [release setup](../../docs/releasing.md#github-pages) for the one-time Pages, custom domain, and Cloudflare DNS configuration.
+Builds use `https://clidoc.dev/` for canonical links and the sitemap. See [RELEASING.md](../../RELEASING.md#github-pages) for the one-time Pages, custom domain, and Cloudflare DNS configuration.
