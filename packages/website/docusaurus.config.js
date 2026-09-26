@@ -21,6 +21,8 @@ module.exports = {
         docs: { routeBasePath: 'docs', sidebarPath: './sidebars.js' },
         blog: false,
         theme: { customCss: './src/css/custom.css' },
+        // Docusaurus only activates gtag in production builds.
+        gtag: { trackingID: 'G-SZMJPLNSHW' },
       },
     ],
   ],
