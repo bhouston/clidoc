@@ -47,3 +47,8 @@ test('release workflow always runs semantic-release after checks', () => {
   assert.match(workflow, /release:\n\s+needs: \[guard, checks\]\n\s+runs-on:/);
   assert.match(workflow, /run: pnpm release \$\{\{ inputs\.dry_run && '--dry-run' \|\| '' \}\}/);
 });
+
+test('release plugins load', async () => {
+  // Catches missing transitive dependencies (e.g. @visulima/yaml) before a Release run does
+  await import('@anolilab/semantic-release-pnpm');
+});
