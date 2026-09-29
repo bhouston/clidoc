@@ -47,3 +47,16 @@ test('release workflow always runs semantic-release after checks', () => {
   assert.match(workflow, /release:\n\s+needs: \[guard, checks\]\n\s+runs-on:/);
   assert.match(workflow, /run: pnpm release \$\{\{ inputs\.dry_run && '--dry-run' \|\| '' \}\}/);
 });
+
+test('the website deploys from the release tag after a published release, not on push', () => {
+  const release = readFileSync('.github/workflows/release.yml', 'utf8');
+  assert.match(
+    release,
+    /website:\n\s+needs: release\n\s+if: \$\{\{ needs\.release\.outputs\.tag != '' \}\}\n\s+uses: \.\/\.github\/workflows\/pages\.yml/,
+  );
+  assert.match(release, /ref: \$\{\{ needs\.release\.outputs\.tag \}\}/);
+  const pages = readFileSync('.github/workflows/pages.yml', 'utf8');
+  assert.doesNotMatch(pages, /^\s+push:/m);
+  assert.match(pages, /workflow_call:/);
+  assert.match(pages, /CLIDOC_VERSION: \$\{\{ steps\.version\.outputs\.version \}\}/);
+});
