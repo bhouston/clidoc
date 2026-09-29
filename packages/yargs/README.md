@@ -53,11 +53,27 @@ Consumers can then run `mycli __opencli > mycli.opencli.json` or `mycli __opencl
 ## Limitations
 
 - `.check()` and `.middleware()` callbacks are never invoked.
-- Asynchronous builders (builder callbacks run synchronously to collect metadata — use trusted modules).
+- Builder callbacks run to collect metadata, so use trusted modules. `fromYargs` rejects asynchronous builders; use [`fromYargsAsync`](#asynchronous-builders) for those.
 - Custom parsing, coercion, validation, and middleware behavior.
 - Unsupported builder methods report their name and suggest `.option()` or extending `fromYargs`.
 - A required array option (`demandOption: true`) can't be expressed faithfully — OpenCLI has no way to mark a variadic flag `required` (schema gap, [tracked upstream](https://github.com/bcdxn/opencli/issues/20)), so `fromYargs` throws a diagnostic naming the option instead of emitting an incorrect `minItems: 1`.
 - An array-typed option's `default` can't be expressed either — OpenCLI flag defaults are a single string, number, or boolean — so `fromYargs` throws a diagnostic naming the option instead of emitting an invalid document. Apply the default in your handler instead (e.g. `argv.rules ?? ['basic']`).
+
+## Asynchronous builders
+
+`fromYargs` runs builders synchronously. If a builder is `async`, for example one that lazily imports its subcommands as [yargs-file-commands](https://github.com/bhouston/yargs-file-commands) does, use `fromYargsAsync`. It takes the same arguments, awaits each builder, and includes the options and subcommands registered after an `await`. `createDocgenCommand` accepts an async `getDocument`, so the document is built only when `docgen` runs and normal startup stays lazy:
+
+```ts
+import { createDocgenCommand, fromYargsAsync } from '@clidoc/yargs';
+import { fileCommands } from 'yargs-file-commands';
+
+const commands = await fileCommands({ commandDirs });
+const docgen = createDocgenCommand(() => fromYargsAsync([...commands, docgen], info));
+
+await yargs(hideBin(process.argv)).command(commands).command(docgen).parseAsync();
+```
+
+Pass the command modules rather than the parser here: Yargs doesn't expose its registered commands while a handler is running.
 
 ## Advanced: passing an explicit command-modules array
 
