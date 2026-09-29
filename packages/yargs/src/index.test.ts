@@ -369,6 +369,11 @@ describe('multi-word command names (#33)', () => {
     const doc = fromYargs([{ command: '$0 <file>', describe: 'Default command' }], info);
     expect(doc.commands?.['demo']).toMatchObject({ summary: 'Default command', args: [{ name: 'file' }] });
   });
+  it('maps * default-command patterns to the binary itself, like $0 (#174)', () => {
+    const doc = fromYargs([{ command: '* [word]', describe: 'Default command' }], info);
+    expect(Object.keys(doc.commands ?? {})).toEqual(['demo']);
+    expect(doc.commands?.['demo']).toMatchObject({ summary: 'Default command', args: [{ name: 'word' }] });
+  });
   it('recurses into nested .command() calls registered inside a builder, marking pure parents as groups', () => {
     const doc = fromYargs(
       [
