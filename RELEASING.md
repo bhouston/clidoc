@@ -51,8 +51,11 @@ browser smoke`.
 
 ## GitHub Pages
 
-`pages.yml` builds `packages/website` on every push to `main` and deploys with
-the built-in `GITHUB_TOKEN`. One-time setup:
+The Release workflow deploys the website after each published release: it calls
+`pages.yml`, which builds `packages/website` from the new `v<version>` tag, with that
+version in the CLI reference, and deploys with the built-in `GITHUB_TOKEN`. Dry runs
+and runs that publish nothing don't deploy. To redeploy the latest release, run
+`gh workflow run pages.yml --ref main` (optionally `-f ref=v<version>`). One-time setup:
 
 ```sh
 gh api repos/bhouston/clidoc/pages -X POST -f build_type=workflow

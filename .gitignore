@@ -20,3 +20,4 @@ packages/website/docs/cli/clidoc*.md
 packages/website/docs/cli/.clidoc-generated.json
 packages/website/tests/__screenshots__/
 packages/website/.vitest-attachments/
+docs/generated/
