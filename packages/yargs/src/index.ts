@@ -83,6 +83,16 @@ function deriveCommandName(pattern: string): string {
   return tokens.join(' ');
 }
 
+/** Map Yargs positional (or same-named option) metadata onto an OpenCLI argument. */
+function toArgument(value: YargsOption): Partial<ArgumentItemObject> {
+  const arg: Partial<ArgumentItemObject> = {};
+  if (value.type) arg.type = mapValueType(value.type);
+  if (value.describe ?? value.description) arg.summary = value.describe ?? value.description;
+  if (value.demandOption) arg.required = true;
+  if (value.choices?.length) arg.choices = value.choices.map((choice) => ({ value: choice }));
+  return arg;
+}
+
 interface CollectedBuilder {
   options: Record<string, YargsOption>;
   positionals: Record<string, Partial<ArgumentItemObject>>;
@@ -201,12 +211,7 @@ function collectBuilder(builder: unknown): CollectedBuilder {
       return supportedRecorder;
     },
     positional(name: string, value: YargsOption) {
-      const arg: Partial<ArgumentItemObject> = {};
-      if (value.type) arg.type = mapValueType(value.type);
-      if (value.describe ?? value.description) arg.summary = value.describe ?? value.description;
-      if (value.demandOption) arg.required = true;
-      if (value.choices?.length) arg.choices = value.choices.map((choice) => ({ value: choice }));
-      positionals[name] = arg;
+      positionals[name] = toArgument(value);
       return supportedRecorder;
     },
     command(
@@ -248,10 +253,14 @@ function buildCommandItem(module: YargsCommandModule, primary: string, metadata:
   const aliases = [...patterns.slice(1).map(deriveCommandName).filter(Boolean), ...directAliases];
   if (aliases.length) item.aliases = aliases;
   const args = parsePositionals(primary);
-  for (const arg of args) Object.assign(arg, metadata.positionals[arg.name]);
+  // Yargs applies an option named after a positional to that positional, so it is not a flag
+  const options = Object.entries(metadata.options).filter(([option]) => !args.some((arg) => arg.name === option));
+  for (const arg of args) {
+    const option = metadata.options[arg.name];
+    Object.assign(arg, option && toArgument(option), metadata.positionals[arg.name]);
+  }
   if (args.length) item.args = args;
-  if (Object.keys(metadata.options).length)
-    item.flags = Object.entries(metadata.options).map(([option, data]) => toFlag(option, data));
+  if (options.length) item.flags = options.map(([option, data]) => toFlag(option, data));
   return item;
 }
 
