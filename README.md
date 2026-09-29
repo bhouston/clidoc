@@ -45,7 +45,6 @@ cd clidoc
 pnpm install --frozen-lockfile
 pnpm build
 node packages/cli/dist/bin.js --help
-pnpm docs:generate
 node packages/cli/dist/bin.js validate docs/generated/clidoc.json
 node packages/cli/dist/bin.js markdown docs/generated/clidoc.json
 ```
@@ -178,17 +177,16 @@ demo uses barebones Yargs; the clidoc tool uses `defineCommand` and
 same workflow: `clidoc docgen` and `clidoc __opencli` describe the `clidoc`
 binary.
 
-The [generated CLI reference](docs/generated/cli.md) and
-[OpenCLI JSON](docs/generated/clidoc.json) come from the actual command modules.
-They are committed, unlike each site's own `outputDir`, so the demo sites and
-website build straight from a checkout with no generation step; `pnpm docs:generate`
-refreshes them locally, and CI's `docs:build` regenerates them before building
-the sites.
+The [CLI reference](https://clidoc.dev/docs/cli/reference) comes from the actual
+command modules. `pnpm build` writes the OpenCLI JSON and Markdown to `docs/generated/`
+(not committed) before building the demo sites that read them. The website is
+deployed by the Release workflow from each release tag, so it documents the
+released version.
 
 ## Example document
 
-Trimmed from [`docs/generated/clidoc.json`](docs/generated/clidoc.json), the document clidoc
-generates for itself:
+Trimmed from `docs/generated/clidoc.json`, the document clidoc generates for itself
+(`pnpm build` writes it):
 
 ```json
 {
@@ -196,7 +194,6 @@ generates for itself:
   "info": {
     "title": "clidoc",
     "binary": "clidoc",
-    "version": "0.1.0",
     "summary": "Generate, validate, and publish CLI documentation through OpenCLI."
   },
   "commands": {

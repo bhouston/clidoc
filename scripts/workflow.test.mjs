@@ -52,3 +52,16 @@ test('release plugins load', async () => {
   // Catches missing transitive dependencies (e.g. @visulima/yaml) before a Release run does
   await import('@anolilab/semantic-release-pnpm');
 });
+
+test('the website deploys from the release tag after a published release, not on push', () => {
+  const release = readFileSync('.github/workflows/release.yml', 'utf8');
+  assert.match(
+    release,
+    /website:\n\s+needs: release\n\s+if: \$\{\{ needs\.release\.outputs\.tag != '' \}\}\n\s+uses: \.\/\.github\/workflows\/pages\.yml/,
+  );
+  assert.match(release, /ref: \$\{\{ needs\.release\.outputs\.tag \}\}/);
+  const pages = readFileSync('.github/workflows/pages.yml', 'utf8');
+  assert.doesNotMatch(pages, /^\s+push:/m);
+  assert.match(pages, /workflow_call:/);
+  assert.match(pages, /CLIDOC_VERSION: \$\{\{ steps\.version\.outputs\.version \}\}/);
+});

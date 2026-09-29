@@ -2,7 +2,7 @@ import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { createDocgenCommand, fromYargs } from './index.js';
+import { createDocgenCommand, fromYargs, fromYargsAsync } from './index.js';
 import { validate } from '@clidoc/core';
 import { defineCommand } from 'yargs-file-commands';
 import buildYargs from 'yargs';
@@ -100,6 +100,58 @@ describe('fromYargs', () => {
     expect(doc.commands?.['demo run']).toMatchObject({
       args: [{ name: 'name', summary: 'Person', required: true }],
       flags: [{ name: 'count', type: 'number', default: 2 }],
+    });
+  });
+});
+
+describe('options named after positionals (#175)', () => {
+  it('applies option-map entries to the positional instead of emitting flags', () => {
+    const doc = fromYargs(
+      [
+        {
+          command: 'triage <owner> <issue> [labels..]',
+          builder: {
+            owner: { type: 'string', description: 'Repository owner', demandOption: true },
+            issue: { type: 'number', description: 'Issue number', demandOption: true },
+            labels: { type: 'string', choices: ['bug', 'feature'] },
+            dryRun: { type: 'boolean' },
+          },
+        },
+      ],
+      info,
+    );
+    expect(doc.commands?.['demo triage']).toEqual({
+      args: [
+        { name: 'owner', required: true, type: 'string', summary: 'Repository owner' },
+        { name: 'issue', required: true, type: 'number', summary: 'Issue number' },
+        {
+          name: 'labels',
+          required: false,
+          variadic: true,
+          type: 'string',
+          choices: [{ value: 'bug' }, { value: 'feature' }],
+        },
+      ],
+      flags: [{ name: 'dryRun', type: 'boolean' }],
+    });
+    expect(validate(doc).valid).toBe(true);
+  });
+
+  it('applies .option() metadata to a same-named positional, with .positional() taking precedence', () => {
+    const doc = fromYargs(
+      [
+        {
+          command: 'run <name>',
+          builder: (yargs: RecorderStub) =>
+            yargs
+              .option('name', { type: 'string', describe: 'From option' })
+              .positional('name', { describe: 'From positional' }),
+        },
+      ],
+      info,
+    );
+    expect(doc.commands?.['demo run']).toEqual({
+      args: [{ name: 'name', required: true, type: 'string', summary: 'From positional' }],
     });
   });
 });
@@ -277,7 +329,59 @@ describe('Yargs metadata variants', () => {
   });
   it('rejects commands lacking a name and asynchronous builders', () => {
     expect(() => fromYargs([{ command: [] }], info)).toThrow('needs a command');
-    expect(() => fromYargs([{ command: 'go', builder: async () => undefined }], info)).toThrow('Asynchronous');
+    expect(() => fromYargs([{ command: 'go', builder: async () => undefined }], info)).toThrow(
+      /Asynchronous.*fromYargsAsync/,
+    );
+  });
+});
+
+describe('fromYargsAsync (#178)', () => {
+  // The shape yargs-file-commands uses for lazily loaded groups: await imports, then register.
+  const tick = () => new Promise((resolve) => setTimeout(resolve, 0));
+  const lazyGroup = {
+    command: 'db',
+    describe: 'Database commands',
+    builder: async (yargs: RecorderStub) => {
+      await tick();
+      yargs.option('env', { type: 'string', describe: 'Target environment' });
+      yargs.command({ command: 'health', describe: 'Check health' });
+      yargs.command({
+        command: 'migrate',
+        describe: 'Migration commands',
+        builder: async (y: RecorderStub) => {
+          await tick();
+          y.command({ command: 'up <steps>', describe: 'Apply migrations' });
+          return y.demandCommand(1);
+        },
+      });
+      return yargs.demandCommand(1);
+    },
+  };
+
+  it('includes options and nested subcommands registered after an await in a builder', async () => {
+    const doc = await fromYargsAsync([lazyGroup], info);
+    expect(Object.keys(doc.commands ?? {})).toEqual([
+      'demo db health',
+      'demo db migrate up',
+      'demo db migrate',
+      'demo db',
+    ]);
+    expect(doc.commands?.['demo db']).toMatchObject({ summary: 'Database commands', flags: [{ name: 'env' }] });
+    expect(doc.commands?.['demo db migrate']).toMatchObject({ kind: 'group' });
+    expect(doc.commands?.['demo db migrate up']).toMatchObject({ args: [{ name: 'steps', required: true }] });
+    expect(validate(doc).valid).toBe(true);
+  });
+
+  it('reads async builders from a configured parser', async () => {
+    const parser = buildYargs([]).command(lazyGroup as never);
+    expect(await fromYargsAsync(parser, info)).toEqual(await fromYargsAsync([lazyGroup], info));
+  });
+
+  it('matches fromYargs for synchronous builders', async () => {
+    const parser = buildYargs([])
+      .command(['config', 'cfg'], 'Manage configuration', (y) => y.command('set <key> <value>', 'Set a value'))
+      .command('greet <name>', 'Greet a person', { language: { type: 'string', default: 'en' } });
+    expect(await fromYargsAsync(parser, info)).toEqual(fromYargs(parser, info));
   });
 });
 
@@ -465,6 +569,13 @@ describe('createDocgenCommand', () => {
     expect(module.command).toBe('docgen');
     const output = join(dir, 'cli.json');
     await module.handler({ output, format: 'json' });
+    expect(JSON.parse(await readFile(output, 'utf8'))).toEqual(doc);
+  });
+
+  it('awaits an async getDocument', async () => {
+    const doc = fromYargs([], info);
+    const output = join(dir, 'async.json');
+    await createDocgenCommand(async () => doc).handler({ output, format: 'json' });
     expect(JSON.parse(await readFile(output, 'utf8'))).toEqual(doc);
   });
 

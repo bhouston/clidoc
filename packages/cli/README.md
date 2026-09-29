@@ -35,7 +35,7 @@ those same definitions. `runCli(argv)` supports embedding without exiting the
 calling process; it rejects on invalid input.
 
 See the [repository guide](../../README.md) and
-[generated command reference](../../docs/generated/cli.md).
+[command reference](https://clidoc.dev/docs/cli/reference).
 
 ## Shell completion
 
