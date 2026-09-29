@@ -104,6 +104,58 @@ describe('fromYargs', () => {
   });
 });
 
+describe('options named after positionals (#175)', () => {
+  it('applies option-map entries to the positional instead of emitting flags', () => {
+    const doc = fromYargs(
+      [
+        {
+          command: 'triage <owner> <issue> [labels..]',
+          builder: {
+            owner: { type: 'string', description: 'Repository owner', demandOption: true },
+            issue: { type: 'number', description: 'Issue number', demandOption: true },
+            labels: { type: 'string', choices: ['bug', 'feature'] },
+            dryRun: { type: 'boolean' },
+          },
+        },
+      ],
+      info,
+    );
+    expect(doc.commands?.['demo triage']).toEqual({
+      args: [
+        { name: 'owner', required: true, type: 'string', summary: 'Repository owner' },
+        { name: 'issue', required: true, type: 'number', summary: 'Issue number' },
+        {
+          name: 'labels',
+          required: false,
+          variadic: true,
+          type: 'string',
+          choices: [{ value: 'bug' }, { value: 'feature' }],
+        },
+      ],
+      flags: [{ name: 'dryRun', type: 'boolean' }],
+    });
+    expect(validate(doc).valid).toBe(true);
+  });
+
+  it('applies .option() metadata to a same-named positional, with .positional() taking precedence', () => {
+    const doc = fromYargs(
+      [
+        {
+          command: 'run <name>',
+          builder: (yargs: RecorderStub) =>
+            yargs
+              .option('name', { type: 'string', describe: 'From option' })
+              .positional('name', { describe: 'From positional' }),
+        },
+      ],
+      info,
+    );
+    expect(doc.commands?.['demo run']).toEqual({
+      args: [{ name: 'name', required: true, type: 'string', summary: 'From positional' }],
+    });
+  });
+});
+
 describe('fromYargs from a live Yargs instance', () => {
   it('auto-discovers commands, aliases, and nested subcommands from a configured parser', () => {
     const parser = buildYargs([])
