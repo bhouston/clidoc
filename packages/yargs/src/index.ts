@@ -83,6 +83,16 @@ function deriveCommandName(pattern: string): string {
   return tokens.join(' ');
 }
 
+/** Map Yargs positional (or same-named option) metadata onto an OpenCLI argument. */
+function toArgument(value: YargsOption): Partial<ArgumentItemObject> {
+  const arg: Partial<ArgumentItemObject> = {};
+  if (value.type) arg.type = mapValueType(value.type);
+  if (value.describe ?? value.description) arg.summary = value.describe ?? value.description;
+  if (value.demandOption) arg.required = true;
+  if (value.choices?.length) arg.choices = value.choices.map((choice) => ({ value: choice }));
+  return arg;
+}
+
 interface CollectedBuilder {
   options: Record<string, YargsOption>;
   positionals: Record<string, Partial<ArgumentItemObject>>;
@@ -94,12 +104,14 @@ function requireName(name: unknown, method: string): string {
   return name;
 }
 
-function collectBuilder(builder: unknown): CollectedBuilder {
+/** Run `builder` against a recording stand-in for Yargs; `result` is whatever the builder returned. */
+function recordBuilder(builder: unknown): { metadata: CollectedBuilder; result: unknown } {
   const options: Record<string, YargsOption> = {};
   const positionals: Record<string, Partial<ArgumentItemObject>> = {};
   const children: YargsCommandModule[] = [];
-  if (builder === undefined) return { options, positionals, children };
-  if (typeof builder !== 'function') return { options: builder as Record<string, YargsOption>, positionals, children };
+  if (builder === undefined) return { metadata: { options, positionals, children }, result: undefined };
+  if (typeof builder !== 'function')
+    return { metadata: { options: builder as Record<string, YargsOption>, positionals, children }, result: undefined };
   let helpOption: string | undefined;
   let versionOption: string | undefined;
   const setOption = (name: string, value: Partial<YargsOption>) => {
@@ -201,12 +213,7 @@ function collectBuilder(builder: unknown): CollectedBuilder {
       return supportedRecorder;
     },
     positional(name: string, value: YargsOption) {
-      const arg: Partial<ArgumentItemObject> = {};
-      if (value.type) arg.type = mapValueType(value.type);
-      if (value.describe ?? value.description) arg.summary = value.describe ?? value.description;
-      if (value.demandOption) arg.required = true;
-      if (value.choices?.length) arg.choices = value.choices.map((choice) => ({ value: choice }));
-      positionals[name] = arg;
+      positionals[name] = toArgument(value);
       return supportedRecorder;
     },
     command(
@@ -233,9 +240,21 @@ function collectBuilder(builder: unknown): CollectedBuilder {
       return Reflect.get(target, property, receiver);
     },
   });
-  const result = builder(supportedRecorder);
-  if (result && typeof result.then === 'function') throw new TypeError('Asynchronous Yargs builders are not supported');
-  return { options, positionals, children };
+  return { metadata: { options, positionals, children }, result: builder(supportedRecorder) };
+}
+
+function collectBuilder(builder: unknown): CollectedBuilder {
+  const { metadata, result } = recordBuilder(builder);
+  if (result && typeof (result as { then?: unknown }).then === 'function')
+    throw new TypeError('Asynchronous Yargs builders are not supported by fromYargs; use fromYargsAsync');
+  return metadata;
+}
+
+/** Like collectBuilder, but waits for an async builder, so commands it registers after an `await` are included. */
+async function collectBuilderAsync(builder: unknown): Promise<CollectedBuilder> {
+  const { metadata, result } = recordBuilder(builder);
+  await result;
+  return metadata;
 }
 
 /** Build the OpenCLI command item + args/flags for a single module, without its nested commands. */
@@ -248,11 +267,35 @@ function buildCommandItem(module: YargsCommandModule, primary: string, metadata:
   const aliases = [...patterns.slice(1).map(deriveCommandName).filter(Boolean), ...directAliases];
   if (aliases.length) item.aliases = aliases;
   const args = parsePositionals(primary);
-  for (const arg of args) Object.assign(arg, metadata.positionals[arg.name]);
+  // Yargs applies an option named after a positional to that positional, so it is not a flag
+  const options = Object.entries(metadata.options).filter(([option]) => !args.some((arg) => arg.name === option));
+  for (const arg of args) {
+    const option = metadata.options[arg.name];
+    Object.assign(arg, option && toArgument(option), metadata.positionals[arg.name]);
+  }
   if (args.length) item.args = args;
-  if (Object.keys(metadata.options).length)
-    item.flags = Object.entries(metadata.options).map(([option, data]) => toFlag(option, data));
+  if (options.length) item.flags = options.map(([option, data]) => toFlag(option, data));
   return item;
+}
+
+function primaryPattern(module: YargsCommandModule): string {
+  const patterns = typeof module.command === 'string' ? [module.command] : (module.command ?? []);
+  const primary = patterns[0];
+  if (!primary) throw new TypeError('Yargs command module needs a command');
+  return primary;
+}
+
+/** The document key and item for one module, given its collected builder metadata. */
+function commandEntry(
+  module: YargsCommandModule,
+  primary: string,
+  prefix: string,
+  metadata: CollectedBuilder,
+): { key: string; item: CommandItemObject } {
+  const name = deriveCommandName(primary);
+  const item = buildCommandItem(module, primary, metadata);
+  if (metadata.children.length && !item.args && !item.flags) item.kind = 'group';
+  return { key: name ? `${prefix} ${name}` : prefix, item };
 }
 
 /** Recursively convert a module and, via nested builder `.command()` calls, its subcommands. */
@@ -261,17 +304,23 @@ function addCommandModule(
   prefix: string,
   commands: Record<string, CommandItemObject>,
 ): void {
-  const patterns = typeof module.command === 'string' ? [module.command] : (module.command ?? []);
-  const primary = patterns[0];
-  if (!primary) throw new TypeError('Yargs command module needs a command');
+  const primary = primaryPattern(module);
   const metadata = collectBuilder(module.builder);
-  const name = deriveCommandName(primary);
-  const key = name ? `${prefix} ${name}` : prefix;
-  const item = buildCommandItem(module, primary, metadata);
-  if (metadata.children.length) {
-    if (!item.args && !item.flags) item.kind = 'group';
-    for (const child of metadata.children) addCommandModule(child, key, commands);
-  }
+  const { key, item } = commandEntry(module, primary, prefix, metadata);
+  for (const child of metadata.children) addCommandModule(child, key, commands);
+  commands[key] = item;
+}
+
+async function addCommandModuleAsync(
+  module: YargsCommandModule,
+  prefix: string,
+  commands: Record<string, CommandItemObject>,
+): Promise<void> {
+  const primary = primaryPattern(module);
+  const metadata = await collectBuilderAsync(module.builder);
+  const { key, item } = commandEntry(module, primary, prefix, metadata);
+  // Sequential, so key order matches fromYargs
+  for (const child of metadata.children) await addCommandModuleAsync(child, key, commands);
   commands[key] = item;
 }
 
@@ -335,6 +384,22 @@ export function fromYargs(source: readonly YargsCommandModule[] | object, info: 
   return { opencliVersion: OPENCLI_VERSION, info, commands };
 }
 
+/**
+ * Like {@link fromYargs}, but awaits asynchronous builders, so options and subcommands they
+ * register after an `await` (e.g. lazily imported command modules) are included.
+ */
+export function fromYargsAsync(source: readonly YargsCommandModule[], info: InfoObject): Promise<OpenCliDocument>;
+export function fromYargsAsync(yargsInstance: object, info: InfoObject): Promise<OpenCliDocument>;
+export async function fromYargsAsync(
+  source: readonly YargsCommandModule[] | object,
+  info: InfoObject,
+): Promise<OpenCliDocument> {
+  const modules = Array.isArray(source) ? source : modulesFromYargsInstance(source);
+  const commands: Record<string, CommandItemObject> = {};
+  for (const module of modules) await addCommandModuleAsync(module, info.binary, commands);
+  return { opencliVersion: OPENCLI_VERSION, info, commands };
+}
+
 export interface CreateDocgenCommandOptions {
   /** Command string; defaults to `docgen`. */
   command?: string;
@@ -350,11 +415,11 @@ interface DocgenOption {
 
 /**
  * Build a ready-to-register `docgen` command module: `--output <file>` (defaults to stdout) and
- * `--format <json|yaml|markdown>` (default `json`), writing `getDocument()`'s result via
+ * `--format <json|yaml|markdown>` (default `json`), writing `getDocument()`'s (awaited) result via
  * `@clidoc/core`'s `writeOpenCliDocument`. Add it to your commands array/`.command(...)` calls.
  */
 export function createDocgenCommand(
-  getDocument: () => OpenCliDocument,
+  getDocument: () => OpenCliDocument | Promise<OpenCliDocument>,
   options: CreateDocgenCommandOptions = {},
 ): {
   command: string;
@@ -371,7 +436,7 @@ export function createDocgenCommand(
     },
     async handler(argv: unknown) {
       const { output, format } = argv as { output?: string; format: DocumentFormat };
-      await writeOpenCliDocument(getDocument(), output, format);
+      await writeOpenCliDocument(await getDocument(), output, format);
     },
   };
 }
