@@ -71,14 +71,14 @@ function toFlag(name: string, option: YargsOption): FlagItemObject {
 
 /**
  * Derive a command name from a Yargs command pattern by joining all leading tokens that are
- * not positionals (`<...>` / `[...]`). `$0` (Yargs' default-command token) maps to the binary
- * itself, so it contributes no token of its own.
+ * not positionals (`<...>` / `[...]`). `$0` and `*` (Yargs' default-command tokens) map to the binary
+ * itself, so they contribute no token of their own.
  */
 function deriveCommandName(pattern: string): string {
   const tokens: string[] = [];
   for (const token of pattern.split(/\s+/).filter(Boolean)) {
     if (token.startsWith('<') || token.startsWith('[')) break;
-    if (token !== '$0') tokens.push(token);
+    if (token !== '$0' && token !== '*') tokens.push(token);
   }
   return tokens.join(' ');
 }
