@@ -48,6 +48,11 @@ test('release workflow always runs semantic-release after checks', () => {
   assert.match(workflow, /run: pnpm release \$\{\{ inputs\.dry_run && '--dry-run' \|\| '' \}\}/);
 });
 
+test('release plugins load', async () => {
+  // Catches missing transitive dependencies (e.g. @visulima/yaml) before a Release run does
+  await import('@anolilab/semantic-release-pnpm');
+});
+
 test('the website deploys from the release tag after a published release, not on push', () => {
   const release = readFileSync('.github/workflows/release.yml', 'utf8');
   assert.match(
