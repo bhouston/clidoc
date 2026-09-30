@@ -156,8 +156,8 @@ importers:
         specifier: ^18.1.0
         version: 18.1.0
       yargs-file-commands:
-        specifier: ^2.0.1
-        version: 2.0.1(yargs@18.1.0)
+        specifier: ^2.1.0
+        version: 2.1.0(yargs@18.1.0)
     devDependencies:
       '@types/yargs':
         specifier: ^17.0.35
@@ -253,8 +253,8 @@ importers:
         specifier: ^18.1.0
         version: 18.1.0
       yargs-file-commands:
-        specifier: ^2.0.1
-        version: 2.0.1(yargs@18.1.0)
+        specifier: ^2.1.0
+        version: 2.1.0(yargs@18.1.0)
 
 packages:
 
@@ -8164,9 +8164,9 @@ packages:
     engines: {node: '>= 14.6'}
     hasBin: true
 
-  yargs-file-commands@2.0.1:
-    resolution: {integrity: sha512-8Rq/b6tm7k9ttUcC35EwsDQwm1TxwFVDq/n3eDK9mC4DZLvtog0im0+6LGXySrFMwqKBby5KVXGl3XpGVIA1Qw==}
-    engines: {node: '>=24.0.0'}
+  yargs-file-commands@2.1.0:
+    resolution: {integrity: sha512-4ips0PL6c2epNK/dF6H+YNDtbdursTpG84ovw73xJFaeaiJgOwFN7awC8WuPcvqo8MCDAy9ztSub61C2tnaUYA==}
+    engines: {node: '>=22.0.0'}
     peerDependencies:
       yargs: ^18.0.0
 
@@ -18899,7 +18899,7 @@ snapshots:
 
   yaml@2.9.1: {}
 
-  yargs-file-commands@2.0.1(yargs@18.1.0):
+  yargs-file-commands@2.1.0(yargs@18.1.0):
     dependencies:
       yargs: 18.1.0
 
