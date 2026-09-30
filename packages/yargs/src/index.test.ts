@@ -19,15 +19,14 @@ type RecorderStub = Record<string, (...args: unknown[]) => RecorderStub>;
 
 const info = { title: 'Demo', binary: 'demo', version: '1.0.0' };
 describe('fromYargs', () => {
-  it('reports demanded array options whose presence requirement OpenCLI cannot express', () => {
-    expect(() =>
-      fromYargs([{ command: 'run', builder: { items: { array: true, demandOption: true } } }], info),
-    ).toThrow(
-      "Yargs option 'items' combines demandOption with an array: OpenCLI cannot require the flag while allowing zero values. Document this option separately or change its CLI behavior.",
-    );
-    expect(() =>
-      fromYargs([{ command: 'run', builder: { items: { type: 'array', demandOption: true } } }], info),
-    ).toThrow(/Yargs option 'items' combines demandOption with an array/);
+  it('maps demanded array options to required variadic flags', () => {
+    for (const items of [
+      { array: true, demandOption: true },
+      { type: 'array', demandOption: true },
+    ]) {
+      const doc = fromYargs([{ command: 'run', builder: { items } }], info);
+      expect(doc.commands?.['demo run']?.flags).toMatchObject([{ name: 'items', variadic: true, required: true }]);
+    }
   });
 
   it('reports array-typed defaults OpenCLI cannot express as a single value', () => {

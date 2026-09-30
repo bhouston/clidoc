@@ -12,6 +12,7 @@ cli
   .command('greet <name>')
   .description('Greet a person')
   .addOption(new Option('-l, --language <language>', 'Greeting language').choices(['en', 'fr']).default('en'))
+  .addOption(new Option('-t, --tag <tags...>', 'Tags to attach (at least one required)').makeOptionMandatory())
   .action((name: string, options: { language: string }) => {
     console.log(`${options.language === 'fr' ? 'Bonjour' : 'Hello'}, ${name}!`);
   });

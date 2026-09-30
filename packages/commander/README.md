@@ -56,7 +56,7 @@ Consumers can then run `mycli __opencli > mycli.opencli.json` or `mycli __opencl
 ## Limitations
 
 - Custom parsers, hooks, and action behavior can't be inferred from the command tree.
-- A required-value variadic option (`--items <items...>` + `makeOptionMandatory()`, no default) emits `variadic: true, minItems: 1` as the closest approximation — OpenCLI has no way to mark a variadic flag `required` (schema gap, [tracked upstream](https://github.com/bcdxn/opencli/issues/20)).
+- A mandatory variadic option (`--items <items...>` + `makeOptionMandatory()`) emits `variadic: true, required: true`.
 - A mandatory optional-value variadic option (`--items [items...]`) can't be represented at all (a present-but-empty flag and an absent flag both need to be distinguishable from "must have values"), so `fromCommander` throws a diagnostic naming the option.
 
 ## Advanced: using `fromCommander` directly

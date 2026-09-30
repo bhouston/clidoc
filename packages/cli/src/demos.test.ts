@@ -22,10 +22,10 @@ describe.each(runners)('%s demo', (runner) => {
   const cli = commandLine({ command: [process.execPath, resolve(root, 'demos', runner, 'dist/index.js')] });
 
   it('greets in both documented languages', async () => {
-    const english = await cli.run(['greet', 'Ada']);
+    const english = await cli.run(['greet', 'Ada', '--tag', 'demo']);
     expect(english).toSucceed();
     expect(english).toHaveStdout(/Hello, Ada!/);
-    const french = await cli.run(['greet', 'Ada', '--language', 'fr']);
+    const french = await cli.run(['greet', 'Ada', '--tag', 'demo', '--language', 'fr']);
     expect(french).toSucceed();
     expect(french).toHaveStdout(/Bonjour, Ada!/);
   });
@@ -48,7 +48,7 @@ describe.each(runners)('%s demo', (runner) => {
   });
 
   it('runs the literal README quickstart command', async () => {
-    const result = await cli.run(['greet', 'Ada']);
+    const result = await cli.run(['greet', 'Ada', '--tag', 'demo']);
     expect(result).toSucceed();
     expect(result).toHaveStdout(/Hello, Ada!/);
   });
@@ -80,7 +80,9 @@ describe.each(runners)('%s demo', (runner) => {
       const discovered = await cli.run(['__opencli']);
       const markdown = await readFile(destination, 'utf8');
       expect(markdown).toBe(renderMarkdown(discovered.json()));
-      expect(markdown).toMatch(/### Usage\n\n```sh\ndemo greet <name>[^\n]*\[--language <language>\]/);
+      expect(markdown).toMatch(
+        /### Usage\n\n```sh\ndemo greet <name>[^\n]*\[--language <language>\] --tag <tag> \[--tag <tag>\]\.\.\./,
+      );
     } finally {
       await rm(directory, { recursive: true, force: true });
     }

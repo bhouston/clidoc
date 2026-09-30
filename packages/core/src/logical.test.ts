@@ -161,14 +161,12 @@ describe('logicalErrors', () => {
     expect(logicalErrors(doc)).toEqual([]);
   });
 
-  it('flags a variadic flag marked required', () => {
+  it('allows a required variadic flag', () => {
     const doc: OpenCliDocument = {
       ...base,
       commands: { run: { flags: [{ name: 'x', type: 'string', variadic: true, required: true }] } },
     };
-    expect(logicalErrors(doc)).toEqual([
-      "/commands/run/flags/0 variadic flag 'x' cannot be marked as required (variadic flags can be provided 0 or more times)",
-    ]);
+    expect(logicalErrors(doc)).toEqual([]);
   });
 
   it('allows a required non-variadic flag', () => {
@@ -252,13 +250,13 @@ describe('upstream negative fixtures', () => {
     expect(() => parse(mutated)).toThrow(/required positional argument 'user-id' cannot come after optional arguments/);
   });
 
-  it.skipIf(!hasUpstreamFiles)('rejects a variadic flag marked required', () => {
+  it.skipIf(!hasUpstreamFiles)('accepts a variadic flag marked required', () => {
     const mutated = replaceOnce(
       fixture('petstore-cli.ocs.yaml'),
       '      variadic: true',
       '      variadic: true\n      required: true',
     );
-    expect(() => parse(mutated)).toThrow(/variadic flag 'photo-urls' cannot be marked as required/);
+    expect(() => parse(mutated)).not.toThrow();
   });
 
   it.skipIf(!hasUpstreamFiles)('rejects minItems on a non-variadic argument', () => {

@@ -113,7 +113,7 @@ function validateFileReferences(
   }
 }
 
-/** Checks for duplicate flag names/aliases and variadic+required/minItems/maxItems constraints. */
+/** Checks for duplicate flag names/aliases and minItems/maxItems constraints. */
 function validateFlagConstraints(base: string, flags: NonNullable<CommandItemObject['flags']>, errors: string[]): void {
   const seen = new Map<string, number>();
 
@@ -136,12 +136,6 @@ function validateFlagConstraints(base: string, flags: NonNullable<CommandItemObj
         }
         seen.set(alias, i);
       }
-    }
-
-    if (flag.variadic && flag.required) {
-      errors.push(
-        `${path} variadic flag '${flagName}' cannot be marked as required (variadic flags can be provided 0 or more times)`,
-      );
     }
 
     if ((flag.minItems !== undefined || flag.maxItems !== undefined) && !flag.variadic) {
