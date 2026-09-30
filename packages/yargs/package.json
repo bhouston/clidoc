@@ -51,7 +51,7 @@
   },
   "devDependencies": {
     "yargs": "^18.1.0",
-    "yargs-file-commands": "^2.0.1"
+    "yargs-file-commands": "^2.1.0"
   },
   "engines": {
     "node": ">=22"
