@@ -57,7 +57,7 @@ The [runnable oclif demo](../../demos/oclif/src/index.ts) builds the manifest in
 
 - Flag `deprecated` and `deprecateAliases` (read by oclif's own help output, no equivalent OpenCLI field).
 - Custom parsing, hooks, or command runtime behavior can't be inferred from the manifest.
-- A flag with both `required: true` and `multiple: true` and no default emits `variadic: true, minItems: 1` as the closest approximation — OpenCLI has no way to mark a variadic flag `required` (schema gap, [tracked upstream](https://github.com/bcdxn/opencli/issues/20)).
+- A flag with both `required: true` and `multiple: true` emits `variadic: true, required: true`.
 - The same combination with a default can't be represented at all (the default can satisfy oclif's required check without the flag being present), so `fromOclif` throws a diagnostic for that case.
 
 ## Advanced: using `fromOclif` directly

@@ -157,8 +157,8 @@ Hand-written guides stay as ordinary Markdown alongside generated reference page
 
 ```sh
 pnpm build
-pnpm --filter @clidoc/demo-yargs start greet Ada --language fr
-pnpm --filter @clidoc/demo-commander start greet Ada
+pnpm --filter @clidoc/demo-yargs start greet Ada --tag demo --language fr
+pnpm --filter @clidoc/demo-commander start greet Ada --tag demo
 pnpm --filter @clidoc/demo-oclif start Ada
 
 pnpm dev

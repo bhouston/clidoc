@@ -17,6 +17,12 @@ class Greet extends Command {
   static override args = { name: Args.string({ description: 'Person to greet', required: true }) };
   static override flags = {
     language: Flags.string({ char: 'l', options: ['en', 'fr'], default: 'en' }),
+    tag: Flags.string({
+      char: 't',
+      multiple: true,
+      required: true,
+      description: 'Tags to attach (at least one required)',
+    }),
     loud: Flags.boolean({ description: 'Shout the greeting', env: 'DEMO_LOUD' }),
   };
   async run(): Promise<void> {

@@ -20,6 +20,13 @@ const greet = {
       default: 'en',
       describe: 'Greeting language',
     },
+    tag: {
+      alias: 't',
+      type: 'string' as const,
+      array: true,
+      demandOption: true,
+      describe: 'Tags to attach (at least one required)',
+    },
   },
   handler(argv: ArgumentsCamelCase) {
     console.log(`${argv.language === 'fr' ? 'Bonjour' : 'Hello'}, ${argv.name}!`);

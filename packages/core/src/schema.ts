@@ -294,7 +294,7 @@ export const schema: object = {
         variadic: {
           type: 'boolean',
           description:
-            'Indicates if the the flag value is variadic. Variadic flags can be supplied multiple times. e.g.: `--flag value --flag value_two --flag value_three`',
+            'Indicates if the the flag value is variadic. Variadic flags can be supplied multiple times. e.g.: `--flag value --flag value_two --flag value_three`. A variadic flag may also be `required`, meaning it must be supplied at least once. Use `minItems`/`maxItems` to constrain the number of values when the flag is supplied.',
           default: false,
         },
         minItems: {
