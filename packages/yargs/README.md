@@ -39,7 +39,16 @@ import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { createDocgenCommand, fromYargs } from '@clidoc/yargs';
 import { infoFromPackageJson } from '@clidoc/core';
-import { command as greet } from './commands/greet.js';
+
+const greet = {
+  command: 'greet <name>',
+  describe: 'Print a greeting',
+  builder: (y) =>
+    y
+      .positional('name', { type: 'string', describe: 'Who to greet' })
+      .option('loud', { type: 'boolean', describe: 'Shout the greeting' }),
+  handler: (argv) => console.log(argv.loud ? `HELLO, ${argv.name}!` : `Hello, ${argv.name}.`),
+};
 
 const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
 const info = infoFromPackageJson(pkg);
