@@ -7,7 +7,8 @@
 [![Documentation](https://img.shields.io/badge/docs-clidoc.dev-blue)](https://clidoc.dev)
 [![Discord](https://img.shields.io/badge/Discord-Join-5865F2?logo=discord&logoColor=white)](https://discord.gg/vSYc5CfRWH)
 
-Generate Docusaurus documentation and sidebar entries from an OpenCLI document.
+Add an always-current CLI reference to your Docusaurus site. Generate pages and
+sidebar entries from your CLI's OpenCLI document instead of maintaining them by hand.
 The output is ordinary Markdown with CommonMark front matter, so CLI descriptions
 remain plain Markdown even when they contain JSX-like text.
 
@@ -18,7 +19,7 @@ npm install @clidoc/docusaurus @docusaurus/core @docusaurus/preset-classic react
 ```
 
 Export an OpenCLI document from your CLI, for example with
-`mycli docgen --format yaml --output cli.ocs.yaml`.
+`mycli docgen --format yaml --output cli.ocs.yaml`, using the `docgen` command from [`@clidoc/yargs`](https://www.npmjs.com/package/@clidoc/yargs), [`@clidoc/commander`](https://www.npmjs.com/package/@clidoc/commander) or [`@clidoc/oclif`](https://www.npmjs.com/package/@clidoc/oclif).
 
 In `docusaurus.config.js`:
 
@@ -89,9 +90,23 @@ regardless of the docs plugin's `routeBasePath`.
 Add `docs/generated-cli/` to `.gitignore` if generated pages should stay out of
 version control.
 
+## Why / compared to alternatives
+
+- **Hand-written CLI reference pages** go stale. These pages are regenerated from your CLI's own definitions (via a framework package), and your hand-written pages stay alongside them.
+- **Pasting `--help` output** gives one unstructured block per command. Here each command gets its own page, usage synopsis, argument and flag tables, and a sidebar entry.
+- **`oclif readme`** updates a README for oclif projects only. This publishes into a Docusaurus site from any CLI that can produce an OpenCLI document (Yargs, Commander, oclif).
+
+## Related packages
+
+- [`@clidoc/core`](https://www.npmjs.com/package/@clidoc/core): parse, validate and render the OpenCLI document.
+- Generate the document from your CLI with [`@clidoc/yargs`](https://www.npmjs.com/package/@clidoc/yargs), [`@clidoc/commander`](https://www.npmjs.com/package/@clidoc/commander), [`@clidoc/oclif`](https://www.npmjs.com/package/@clidoc/oclif).
+- [`@clidoc/vitepress`](https://www.npmjs.com/package/@clidoc/vitepress) for VitePress.
+- [`@clidoc/cli`](https://www.npmjs.com/package/@clidoc/cli): validate the document first with `clidoc validate`.
+- [Publishing guide](https://clidoc.dev/docs/publishing) and the [demo site](https://github.com/bhouston/clidoc/tree/main/demos/docusaurus).
+
 ## License
 
-MIT. See [LICENSE](../../LICENSE).
+MIT. See [LICENSE](https://github.com/bhouston/clidoc/tree/main/LICENSE).
 
 ## Author
 

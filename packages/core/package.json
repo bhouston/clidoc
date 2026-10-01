@@ -1,16 +1,20 @@
 {
   "name": "@clidoc/core",
   "version": "1.0.0",
-  "description": "OpenCLI specification types, validation, and Markdown documentation generation",
+  "description": "OpenCLI types, offline validation, and Markdown reference generation for CLI documentation",
   "keywords": [
     "cli",
     "docs",
+    "docs-generator",
     "documentation",
     "json-schema",
     "markdown",
-    "opencli"
+    "opencli",
+    "reference",
+    "validation",
+    "yaml"
   ],
-  "homepage": "https://clidoc.dev",
+  "homepage": "https://clidoc.dev/docs/api",
   "bugs": {
     "url": "https://github.com/bhouston/clidoc/issues"
   },

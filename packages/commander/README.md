@@ -7,11 +7,31 @@
 [![Documentation](https://img.shields.io/badge/docs-clidoc.dev-blue)](https://clidoc.dev)
 [![Discord](https://img.shields.io/badge/Discord-Join-5865F2?logo=discord&logoColor=white)](https://discord.gg/vSYc5CfRWH)
 
-An [OpenCLI](https://github.com/bcdxn/opencli) spec generator for [Commander](https://github.com/tj/commander.js). clidoc is a JavaScript suite of tools for generating, transforming, and publishing OpenCLI specifications, with wide compatibility across the standard ecosystem tooling.
+Stop hand-writing your CLI reference docs. Generate them from your [Commander](https://github.com/tj/commander.js) command tree so they never drift from `--help`.
+
+`@clidoc/commander` converts your configured `Command` tree into an [OpenCLI](https://github.com/bcdxn/opencli) document that you can validate, render to Markdown, and publish to Docusaurus or VitePress.
+
+```sh
+npm install @clidoc/commander @clidoc/core commander
+```
+
+## Why / compared to alternatives
+
+- **Hand-written reference pages** drift as flags change; this reads the definitions your CLI already runs.
+- **`--help` only** is terminal text for one command at a time. The OpenCLI document is structured and validated, and renders to a full Markdown reference, shell completions and MCP tool definitions.
+- It reads metadata only: no handlers run, so generating docs has no side effects. Commander behavior that isn't metadata (custom validation, coercion, middleware) isn't documented; see Limitations.
+
+## Related packages
+
+- [`@clidoc/core`](https://www.npmjs.com/package/@clidoc/core): validate, parse and render the document, plus `mergeDocument`.
+- [`@clidoc/cli`](https://www.npmjs.com/package/@clidoc/cli): `clidoc validate`, `markdown`, `completion` and `mcp` commands.
+- Publish the result with [`@clidoc/docusaurus`](https://www.npmjs.com/package/@clidoc/docusaurus) or [`@clidoc/vitepress`](https://www.npmjs.com/package/@clidoc/vitepress).
+- Other CLI frameworks: [`@clidoc/yargs`](https://www.npmjs.com/package/@clidoc/yargs), [`@clidoc/oclif`](https://www.npmjs.com/package/@clidoc/oclif).
+- [Documentation](https://clidoc.dev/docs/frameworks) and [demos](https://github.com/bhouston/clidoc/tree/main/demos).
 
 ## Add `docgen` to your CLI
 
-`createDocgenCommand` builds a ready-to-register `docgen` command: `-o`/`--output <file>` (defaults to stdout) and `--format <json|markdown>` (default `json`). `infoFromPackageJson` derives the document's title, binary name, and version from your `package.json`.
+`createDocgenCommand` builds a ready-to-register `docgen` command: `-o`/`--output <file>` (defaults to stdout) and `--format <json|yaml|markdown>` (default `json`). `infoFromPackageJson` derives the document's title, binary name, and version from your `package.json`.
 
 ```ts
 import { readFileSync } from 'node:fs';
@@ -37,7 +57,7 @@ program.addCommand(createDocgenCommand(document));
 program.parse();
 ```
 
-Run `mycli docgen --output cli.json` for JSON (the default), or `mycli docgen --format markdown --output reference.md` to render Markdown directly; omit `--output` to print to stdout. Install the validator with `npm install -g @clidoc/cli` and run `clidoc validate cli.json`. See the [Commander demo](../../demos/commander) for a runnable example.
+Run `mycli docgen --output cli.json` for JSON (the default), or `mycli docgen --format markdown --output reference.md` to render Markdown directly; omit `--output` to print to stdout. Install the validator with `npm install -g @clidoc/cli` and run `clidoc validate cli.json`. See the [Commander demo](https://github.com/bhouston/clidoc/tree/main/demos/commander) for a runnable example.
 
 ## Optional: `__opencli` for machine discovery
 
@@ -94,11 +114,11 @@ const document = () =>
 
 Use the full generated command key (`mycli greet`) to add metadata to the existing command.
 
-See the [`@clidoc/core` README](../core/README.md#adding-author-supplied-metadata) for the merge rules.
+See the [`@clidoc/core` README](https://github.com/bhouston/clidoc/tree/main/packages/core#adding-author-supplied-metadata) for the merge rules.
 
 ## License
 
-MIT. See [LICENSE](../../LICENSE).
+MIT. See [LICENSE](https://github.com/bhouston/clidoc/tree/main/LICENSE).
 
 ## Author
 

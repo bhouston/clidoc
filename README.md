@@ -7,13 +7,37 @@
 [![Documentation](https://img.shields.io/badge/docs-clidoc.dev-blue)](https://clidoc.dev)
 [![Discord](https://img.shields.io/badge/Discord-Join-5865F2?logo=discord&logoColor=white)](https://discord.gg/vSYc5CfRWH)
 
-Turn CLI definitions into a portable OpenCLI document, then publish Markdown
-wherever your documentation lives.
+Stop hand-writing your CLI reference docs. Generate them from your yargs, Commander
+or oclif definitions so they never drift from `--help`, then publish them to Docusaurus,
+VitePress or plain Markdown.
 
-This TypeScript monorepo adopts the [OpenCLI specification](https://github.com/bcdxn/opencli).
-It provides framework integrations for Yargs, Commander, and oclif, a command-line tool, and
-Docusaurus and VitePress consumers. The clidoc tool documents itself from its
-own `yargs-file-commands` definitions.
+clidoc turns your CLI definitions into a portable
+[OpenCLI](https://github.com/bcdxn/opencli) document, which it validates and renders as
+Markdown, shell completions and MCP tools.
+
+```sh
+npm install @clidoc/yargs @clidoc/core   # or @clidoc/commander / @clidoc/oclif
+npm install -g @clidoc/cli
+```
+
+```sh
+mycli docgen --output cli.json                          # your CLI writes the document
+clidoc validate cli.json                                # check it against the OpenCLI schema
+clidoc markdown cli.json --output reference.md          # render the reference
+```
+
+Adding the `docgen` command to your CLI takes a few lines; see
+[Yargs](packages/yargs), [Commander](packages/commander) or [oclif](packages/oclif).
+The clidoc tool documents itself this way, from its own `yargs-file-commands` definitions.
+
+## Why clidoc
+
+- **Hand-written reference pages** drift as flags change. clidoc reads the definitions your CLI already runs, and your hand-written guides stay next to the generated pages.
+- **`--help` only** is unstructured terminal text. A validated OpenCLI document also gives you a Markdown reference, a docs-site section, shell completions and MCP tool definitions.
+- **`oclif readme`** generates command docs for oclif projects only, into a README. clidoc works across Yargs, Commander and oclif, and publishes to docs sites.
+
+The framework packages read metadata only. They don't infer custom validation, coercion or middleware (see
+[Compatibility and scope](#compatibility-and-scope)).
 
 ## Packages
 
@@ -26,6 +50,9 @@ own `yargs-file-commands` definitions.
 | [`@clidoc/cli`](packages/cli)               | `validate`, `markdown`, `docgen`, `completion`, and `mcp` commands, plus `__opencli` |
 | [`@clidoc/docusaurus`](packages/docusaurus) | Generated Markdown pages for the Docusaurus docs plugin                              |
 | [`@clidoc/vitepress`](packages/vitepress)   | Generated Markdown and matching VitePress sidebar links                              |
+
+Documentation: [clidoc.dev](https://clidoc.dev). Runnable examples live in
+[`demos/`](demos) (Yargs, Commander, oclif, Docusaurus, VitePress).
 
 ## MCP support
 

@@ -7,7 +7,11 @@
 [![Documentation](https://img.shields.io/badge/docs-clidoc.dev-blue)](https://clidoc.dev)
 [![Discord](https://img.shields.io/badge/Discord-Join-5865F2?logo=discord&logoColor=white)](https://discord.gg/vSYc5CfRWH)
 
-TypeScript types, offline JSON Schema validation, YAML/JSON parsing, and Markdown documentation generation for [OpenCLI 1.0.0-alpha.14](https://github.com/bcdxn/opencli). The published package bundles the exact schema pinned in `upstream/opencli/spec.schema.json`.
+Parse, validate and render CLI documentation from one portable [OpenCLI 1.0.0-alpha.14](https://github.com/bcdxn/opencli) document. This is the library underneath every clidoc package: use it directly if you already have an OpenCLI document, or pair it with a framework package to generate one from your CLI.
+
+```sh
+npm install @clidoc/core
+```
 
 ```ts
 import { parse, validate, renderMarkdown, generatePages } from '@clidoc/core';
@@ -17,6 +21,24 @@ const result = validate(document); // { valid, errors }
 const markdown = renderMarkdown(document);
 const pages = generatePages(document, { basePath: '/cli' });
 ```
+
+The published package bundles the exact schema pinned in `upstream/opencli/spec.schema.json`, so validation works offline.
+
+## Where it fits
+
+| You want to                                                        | Use                                                                                                                                                                                                      |
+| ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Generate a document from your CLI                                  | [`@clidoc/yargs`](https://www.npmjs.com/package/@clidoc/yargs), [`@clidoc/commander`](https://www.npmjs.com/package/@clidoc/commander) or [`@clidoc/oclif`](https://www.npmjs.com/package/@clidoc/oclif) |
+| Validate, render Markdown, completions or MCP tools from the shell | [`@clidoc/cli`](https://www.npmjs.com/package/@clidoc/cli)                                                                                                                                               |
+| Publish reference pages in your docs site                          | [`@clidoc/docusaurus`](https://www.npmjs.com/package/@clidoc/docusaurus) or [`@clidoc/vitepress`](https://www.npmjs.com/package/@clidoc/vitepress)                                                       |
+
+See the [API reference](https://clidoc.dev/docs/api) and the [runnable demos](https://github.com/bhouston/clidoc/tree/main/demos).
+
+## Why clidoc
+
+- **Compared to hand-written reference pages:** the document comes from the same command definitions your CLI runs, so options and arguments can't drift from `--help`. Hand-written guides still sit alongside the generated pages.
+- **Compared to `--help` output alone:** you get a validated, structured document (JSON/YAML) that also renders to Markdown, shell completions and MCP tool definitions, not just terminal text.
+- **Compared to `oclif readme`:** that command targets oclif projects and writes into a README. clidoc's OpenCLI document is framework-neutral, so yargs, Commander and oclif CLIs share one pipeline and one set of docs-site integrations.
 
 `generatePages` returns a landing page and one page per visible command. Each command page includes a generated usage synopsis: required values use `<value>`, optional elements use `[element]`, and repeatable elements use `...`. The synopsis includes visible command flags and inherited global flags. Each page has `id`, `title`, `path`, and Markdown `content`. A command named `<binary> foo-bar` keeps the readable `/commands/foo-bar` route when its suffix is lowercase ASCII letters, digits, and single hyphens (up to 64 characters). Other names use a normalized readable prefix (up to 64 characters), a reserved `~`, and a SHA-256 digest of the full command name. Each route depends only on its command name, so adding unrelated commands does not change existing URLs. The generator rejects a digest collision before returning any pages. This replaces the previous collision-dependent hash suffixes, so URLs for names outside the readable form may change. Landing links use the generated base path. The bundled JSON Schema is also available at `@clidoc/core/schema`.
 

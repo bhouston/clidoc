@@ -7,11 +7,11 @@
 [![Documentation](https://img.shields.io/badge/docs-clidoc.dev-blue)](https://clidoc.dev)
 [![Discord](https://img.shields.io/badge/Discord-Join-5865F2?logo=discord&logoColor=white)](https://discord.gg/vSYc5CfRWH)
 
-Generate OpenCLI JSON from framework metadata, validate JSON/YAML documents, and
-render Markdown. Node 22.12+; ESM only.
+Validate your CLI's OpenCLI document and turn it into a Markdown reference, shell
+completions or MCP tools, all from one command-line tool. Node 22.12+; ESM only.
 
-The CLI being documented should provide its own `docgen` command, the human-facing
-entry point. Install clidoc globally to validate and render the resulting file:
+The CLI being documented provides its own `docgen` command (see [`@clidoc/yargs`](https://www.npmjs.com/package/@clidoc/yargs), [`@clidoc/commander`](https://www.npmjs.com/package/@clidoc/commander), [`@clidoc/oclif`](https://www.npmjs.com/package/@clidoc/oclif)), the
+human-facing entry point. Install clidoc globally to validate and render the resulting file:
 
 ```sh
 npm install -g @clidoc/cli
@@ -34,8 +34,20 @@ the `hdrify` approach. `cliDocument()` derives this tool's OpenCLI document from
 those same definitions. `runCli(argv)` supports embedding without exiting the
 calling process; it rejects on invalid input.
 
-See the [repository guide](../../README.md) and
+See the [repository guide](https://github.com/bhouston/clidoc/tree/main#readme) and
 [command reference](https://clidoc.dev/docs/cli/reference).
+
+## Why / compared to alternatives
+
+- **Hand-written reference pages** drift from the real flags; this renders Markdown from a document generated from your command definitions.
+- **`--help` only** can't be validated, searched as a site, or turned into completions and MCP tools. A validated OpenCLI document can.
+- **`oclif readme`** is oclif-specific and writes into a README. `clidoc` works from an OpenCLI file, so any CLI that can emit one is covered.
+
+## Related packages
+
+- [`@clidoc/core`](https://www.npmjs.com/package/@clidoc/core): the library behind these commands.
+- Generate the document: [`@clidoc/yargs`](https://www.npmjs.com/package/@clidoc/yargs), [`@clidoc/commander`](https://www.npmjs.com/package/@clidoc/commander), [`@clidoc/oclif`](https://www.npmjs.com/package/@clidoc/oclif).
+- Publish it: [`@clidoc/docusaurus`](https://www.npmjs.com/package/@clidoc/docusaurus) or [`@clidoc/vitepress`](https://www.npmjs.com/package/@clidoc/vitepress).
 
 ## Shell completion
 
@@ -65,7 +77,7 @@ clidoc mcp cli.json --serve --executable /absolute/path/to/mycli
 Exporting does not execute the CLI. Serving requires an explicit trusted
 executable and validates every tool invocation. The bridge uses conventional
 long options and `--` before positional arguments; see the
-[MCP guide](../website/docs/mcp.md) for the serialization contract,
+[MCP guide](https://clidoc.dev/docs/mcp) for the serialization contract,
 client configuration, limits, and supported spec features.
 
 Library users can import `compileMcpTools`, `createMcpServer`, and `serveMcp`
@@ -73,7 +85,7 @@ from `@clidoc/cli/mcp`.
 
 ## License
 
-MIT. See [LICENSE](../../LICENSE).
+MIT. See [LICENSE](https://github.com/bhouston/clidoc/tree/main/LICENSE).
 
 ## Author
 

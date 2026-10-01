@@ -1,16 +1,19 @@
 {
   "name": "@clidoc/vitepress",
   "version": "1.0.0",
-  "description": "Publish OpenCLI Markdown in VitePress",
+  "description": "Publish a generated CLI reference in VitePress from an OpenCLI document",
   "keywords": [
     "cli",
     "docs",
+    "docs-generator",
     "documentation",
     "markdown",
     "opencli",
+    "reference",
+    "sidebar",
     "vitepress"
   ],
-  "homepage": "https://clidoc.dev",
+  "homepage": "https://clidoc.dev/docs/publishing",
   "bugs": {
     "url": "https://github.com/bhouston/clidoc/issues"
   },

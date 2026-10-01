@@ -1,15 +1,21 @@
 {
   "name": "@clidoc/cli",
   "version": "1.0.0",
-  "description": "Generate and validate OpenCLI documentation",
+  "description": "Validate OpenCLI documents and generate Markdown, shell completions, and MCP tools for your CLI docs",
   "keywords": [
     "cli",
+    "completion",
     "docs",
+    "docs-generator",
     "documentation",
+    "markdown",
+    "mcp",
     "opencli",
-    "yargs"
+    "reference",
+    "shell-completion",
+    "validator"
   ],
-  "homepage": "https://clidoc.dev",
+  "homepage": "https://clidoc.dev/docs/cli",
   "bugs": {
     "url": "https://github.com/bhouston/clidoc/issues"
   },
