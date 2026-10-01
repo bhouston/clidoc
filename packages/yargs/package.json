@@ -1,15 +1,20 @@
 {
   "name": "@clidoc/yargs",
   "version": "1.0.0",
-  "description": "Generate OpenCLI documents from Yargs command modules",
+  "description": "Generate CLI reference docs from Yargs command definitions via OpenCLI",
   "keywords": [
     "cli",
+    "command-line",
     "docs",
+    "docs-generator",
     "documentation",
+    "help",
+    "markdown",
     "opencli",
+    "reference",
     "yargs"
   ],
-  "homepage": "https://clidoc.dev",
+  "homepage": "https://clidoc.dev/docs/frameworks",
   "bugs": {
     "url": "https://github.com/bhouston/clidoc/issues"
   },

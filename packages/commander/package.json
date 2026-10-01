@@ -1,15 +1,21 @@
 {
   "name": "@clidoc/commander",
   "version": "1.0.0",
-  "description": "Generate OpenCLI documents from Commander command trees",
+  "description": "Generate CLI reference docs from Commander command trees via OpenCLI",
   "keywords": [
     "cli",
+    "command-line",
     "commander",
+    "commander.js",
     "docs",
+    "docs-generator",
     "documentation",
-    "opencli"
+    "help",
+    "markdown",
+    "opencli",
+    "reference"
   ],
-  "homepage": "https://clidoc.dev",
+  "homepage": "https://clidoc.dev/docs/frameworks",
   "bugs": {
     "url": "https://github.com/bhouston/clidoc/issues"
   },

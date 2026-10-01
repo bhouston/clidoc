@@ -7,11 +7,32 @@
 [![Documentation](https://img.shields.io/badge/docs-clidoc.dev-blue)](https://clidoc.dev)
 [![Discord](https://img.shields.io/badge/Discord-Join-5865F2?logo=discord&logoColor=white)](https://discord.gg/vSYc5CfRWH)
 
-An [OpenCLI](https://github.com/bcdxn/opencli) spec generator for [oclif](https://oclif.io/). clidoc is a JavaScript suite of tools for generating, transforming, and publishing OpenCLI specifications, with wide compatibility across the standard ecosystem tooling.
+Stop hand-writing your CLI reference docs. Generate them from your [oclif](https://oclif.io/) command manifest so they never drift from `--help`.
+
+`@clidoc/oclif` converts oclif's generated `manifest.json` into an [OpenCLI](https://github.com/bcdxn/opencli) document that you can validate, render to Markdown, and publish to Docusaurus or VitePress.
+
+```sh
+npm install @clidoc/oclif @clidoc/core
+```
+
+## Why / compared to alternatives
+
+- **Hand-written reference pages** drift as flags change; this reads the definitions your CLI already runs.
+- **`--help` only** is terminal text for one command at a time. The OpenCLI document is structured and validated, and renders to a full Markdown reference, shell completions and MCP tool definitions.
+- **`oclif readme`** writes command docs into your README and is specific to oclif. clidoc produces a standalone document and full Markdown pages for a docs site, and the same pipeline works for Yargs and Commander CLIs. If a generated README section is all you need, `oclif readme` is already built in.
+- It reads metadata only: no handlers run, so generating docs has no side effects. oclif behavior that isn't metadata (custom validation, coercion, middleware) isn't documented; see Limitations.
+
+## Related packages
+
+- [`@clidoc/core`](https://www.npmjs.com/package/@clidoc/core): validate, parse and render the document, plus `mergeDocument`.
+- [`@clidoc/cli`](https://www.npmjs.com/package/@clidoc/cli): `clidoc validate`, `markdown`, `completion` and `mcp` commands.
+- Publish the result with [`@clidoc/docusaurus`](https://www.npmjs.com/package/@clidoc/docusaurus) or [`@clidoc/vitepress`](https://www.npmjs.com/package/@clidoc/vitepress).
+- Other CLI frameworks: [`@clidoc/yargs`](https://www.npmjs.com/package/@clidoc/yargs), [`@clidoc/commander`](https://www.npmjs.com/package/@clidoc/commander).
+- [Documentation](https://clidoc.dev/docs/frameworks) and [demos](https://github.com/bhouston/clidoc/tree/main/demos).
 
 ## Add `docgen` to your CLI
 
-`@clidoc/oclif/docgen`'s `createDocgenCommand` builds a ready-to-export oclif command: `-o`/`--output <file>` (defaults to stdout) and `--format <json|markdown>` (default `json`). It lives at its own entry point so importing `fromOclif` from the package root never requires `@oclif/core` to be installed. `infoFromPackageJson` derives the document's title, binary name, and version from your `package.json`.
+`@clidoc/oclif/docgen`'s `createDocgenCommand` builds a ready-to-export oclif command: `-o`/`--output <file>` (defaults to stdout) and `--format <json|yaml|markdown>` (default `json`). It lives at its own entry point so importing `fromOclif` from the package root never requires `@oclif/core` to be installed. `infoFromPackageJson` derives the document's title, binary name, and version from your `package.json`.
 
 ```ts
 // src/commands/docgen.ts
@@ -51,7 +72,7 @@ if (!(await handleOpenCliRequest(args, document))) {
 }
 ```
 
-The [runnable oclif demo](../../demos/oclif/src/index.ts) builds the manifest inline to stay a single file and wires up `__opencli`; adjust the manifest and `package.json` paths for your project's layout. Consumers can then run `mycli __opencli > mycli.opencli.json` or `mycli __opencli --out mycli.opencli.json` for discovery.
+The [runnable oclif demo](https://github.com/bhouston/clidoc/blob/main/demos/oclif/src/index.ts) builds the manifest inline to stay a single file and wires up `__opencli`; adjust the manifest and `package.json` paths for your project's layout. Consumers can then run `mycli __opencli > mycli.opencli.json` or `mycli __opencli --out mycli.opencli.json` for discovery.
 
 ## Limitations
 
@@ -94,11 +115,11 @@ const document = mergeDocument(fromOclif(manifest, { title: 'My CLI', binary: 'm
 
 Use the full generated command key (`mycli greet`) to add metadata to the existing command.
 
-See the [`@clidoc/core` README](../core/README.md#adding-author-supplied-metadata) for the merge rules.
+See the [`@clidoc/core` README](https://github.com/bhouston/clidoc/tree/main/packages/core#adding-author-supplied-metadata) for the merge rules.
 
 ## License
 
-MIT. See [LICENSE](../../LICENSE).
+MIT. See [LICENSE](https://github.com/bhouston/clidoc/blob/main/LICENSE).
 
 ## Author
 

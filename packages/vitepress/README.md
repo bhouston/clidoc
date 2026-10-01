@@ -7,7 +7,8 @@
 [![Documentation](https://img.shields.io/badge/docs-clidoc.dev-blue)](https://clidoc.dev)
 [![Discord](https://img.shields.io/badge/Discord-Join-5865F2?logo=discord&logoColor=white)](https://discord.gg/vSYc5CfRWH)
 
-Generate VitePress pages and sidebar entries from an OpenCLI document.
+Add an always-current CLI reference to your VitePress site. Generate pages and
+sidebar entries from your CLI's OpenCLI document instead of maintaining them by hand.
 
 Install the publisher, parser, and VitePress:
 
@@ -16,7 +17,7 @@ npm install -D @clidoc/vitepress @clidoc/core vitepress
 ```
 
 Export an OpenCLI document from your CLI, for example with
-`mycli docgen --format yaml --output cli.ocs.yaml`.
+`mycli docgen --format yaml --output cli.ocs.yaml`, using the `docgen` command from [`@clidoc/yargs`](https://www.npmjs.com/package/@clidoc/yargs), [`@clidoc/commander`](https://www.npmjs.com/package/@clidoc/commander) or [`@clidoc/oclif`](https://www.npmjs.com/package/@clidoc/oclif).
 
 In `docs/.vitepress/config.mts`, with `cli.ocs.yaml` at the project root:
 
@@ -73,9 +74,23 @@ shared command routes. An ordinary binary-prefixed command such as
 route form use a normalized prefix plus a deterministic hash suffix. This keeps
 their URLs stable when unrelated commands are added while avoiding collisions.
 
+## Why / compared to alternatives
+
+- **Hand-written CLI reference pages** go stale. These pages are regenerated from your CLI's own definitions (via a framework package), and your hand-written pages stay alongside them.
+- **Pasting `--help` output** gives one unstructured block per command. Here each command gets its own page, usage synopsis, argument and flag tables, and a sidebar entry.
+- **`oclif readme`** updates a README for oclif projects only. This publishes into a VitePress site from any CLI that can produce an OpenCLI document (Yargs, Commander, oclif).
+
+## Related packages
+
+- [`@clidoc/core`](https://www.npmjs.com/package/@clidoc/core): parse, validate and render the OpenCLI document.
+- Generate the document from your CLI with [`@clidoc/yargs`](https://www.npmjs.com/package/@clidoc/yargs), [`@clidoc/commander`](https://www.npmjs.com/package/@clidoc/commander), [`@clidoc/oclif`](https://www.npmjs.com/package/@clidoc/oclif).
+- [`@clidoc/docusaurus`](https://www.npmjs.com/package/@clidoc/docusaurus) for Docusaurus.
+- [`@clidoc/cli`](https://www.npmjs.com/package/@clidoc/cli): validate the document first with `clidoc validate`.
+- [Publishing guide](https://clidoc.dev/docs/publishing) and the [demo site](https://github.com/bhouston/clidoc/tree/main/demos/vitepress).
+
 ## License
 
-MIT. See [LICENSE](../../LICENSE).
+MIT. See [LICENSE](https://github.com/bhouston/clidoc/blob/main/LICENSE).
 
 ## Author
 

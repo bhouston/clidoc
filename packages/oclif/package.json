@@ -1,15 +1,20 @@
 {
   "name": "@clidoc/oclif",
   "version": "1.0.0",
-  "description": "Generate OpenCLI documents from oclif manifests",
+  "description": "Generate CLI reference docs from oclif manifests via OpenCLI",
   "keywords": [
     "cli",
+    "command-line",
     "docs",
+    "docs-generator",
     "documentation",
+    "manifest",
+    "markdown",
     "oclif",
-    "opencli"
+    "opencli",
+    "reference"
   ],
-  "homepage": "https://clidoc.dev",
+  "homepage": "https://clidoc.dev/docs/frameworks",
   "bugs": {
     "url": "https://github.com/bhouston/clidoc/issues"
   },

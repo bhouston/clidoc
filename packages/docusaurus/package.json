@@ -1,16 +1,20 @@
 {
   "name": "@clidoc/docusaurus",
   "version": "1.0.0",
-  "description": "Publish OpenCLI Markdown in Docusaurus",
+  "description": "Publish a generated CLI reference in Docusaurus from an OpenCLI document",
   "keywords": [
     "cli",
     "docs",
+    "docs-generator",
     "documentation",
     "docusaurus",
+    "docusaurus-plugin",
     "markdown",
-    "opencli"
+    "opencli",
+    "reference",
+    "sidebar"
   ],
-  "homepage": "https://clidoc.dev",
+  "homepage": "https://clidoc.dev/docs/publishing",
   "bugs": {
     "url": "https://github.com/bhouston/clidoc/issues"
   },
