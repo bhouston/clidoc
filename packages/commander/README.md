@@ -118,7 +118,7 @@ See the [`@clidoc/core` README](https://github.com/bhouston/clidoc/tree/main/pac
 
 ## License
 
-MIT. See [LICENSE](https://github.com/bhouston/clidoc/tree/main/LICENSE).
+MIT. See [LICENSE](https://github.com/bhouston/clidoc/blob/main/LICENSE).
 
 ## Author
 

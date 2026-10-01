@@ -90,7 +90,7 @@ their URLs stable when unrelated commands are added while avoiding collisions.
 
 ## License
 
-MIT. See [LICENSE](https://github.com/bhouston/clidoc/tree/main/LICENSE).
+MIT. See [LICENSE](https://github.com/bhouston/clidoc/blob/main/LICENSE).
 
 ## Author
 

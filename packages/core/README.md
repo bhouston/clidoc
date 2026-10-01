@@ -85,7 +85,7 @@ supported syntax, and limitations.
 
 ## License
 
-MIT. See [LICENSE](../../LICENSE).
+MIT. See [LICENSE](https://github.com/bhouston/clidoc/blob/main/LICENSE).
 
 ## Author
 

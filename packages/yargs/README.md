@@ -73,7 +73,7 @@ Consumers can then run `mycli __opencli > mycli.opencli.json` or `mycli __opencl
 ## Limitations
 
 - `.check()` and `.middleware()` callbacks are never invoked.
-- Builder callbacks run to collect metadata, so use trusted modules. `fromYargs` rejects asynchronous builders; use [`fromYargsAsync`](#asynchronous-builders) for those.
+- Builder callbacks run to collect metadata, so use trusted modules. `fromYargs` rejects asynchronous builders; use [`fromYargsAsync`](https://github.com/bhouston/clidoc/tree/main/packages/yargs#asynchronous-builders) for those.
 - Custom parsing, coercion, validation, and middleware behavior.
 - Unsupported builder methods report their name and suggest `.option()` or extending `fromYargs`.
 - A required array option (`demandOption: true`) emits `variadic: true, required: true`.
@@ -133,7 +133,7 @@ See the [`@clidoc/core` README](https://github.com/bhouston/clidoc/tree/main/pac
 
 ## License
 
-MIT. See [LICENSE](https://github.com/bhouston/clidoc/tree/main/LICENSE).
+MIT. See [LICENSE](https://github.com/bhouston/clidoc/blob/main/LICENSE).
 
 ## Author
 

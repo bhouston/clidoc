@@ -72,7 +72,7 @@ if (!(await handleOpenCliRequest(args, document))) {
 }
 ```
 
-The [runnable oclif demo](https://github.com/bhouston/clidoc/tree/main/demos/oclif/src/index.ts) builds the manifest inline to stay a single file and wires up `__opencli`; adjust the manifest and `package.json` paths for your project's layout. Consumers can then run `mycli __opencli > mycli.opencli.json` or `mycli __opencli --out mycli.opencli.json` for discovery.
+The [runnable oclif demo](https://github.com/bhouston/clidoc/blob/main/demos/oclif/src/index.ts) builds the manifest inline to stay a single file and wires up `__opencli`; adjust the manifest and `package.json` paths for your project's layout. Consumers can then run `mycli __opencli > mycli.opencli.json` or `mycli __opencli --out mycli.opencli.json` for discovery.
 
 ## Limitations
 
@@ -119,7 +119,7 @@ See the [`@clidoc/core` README](https://github.com/bhouston/clidoc/tree/main/pac
 
 ## License
 
-MIT. See [LICENSE](https://github.com/bhouston/clidoc/tree/main/LICENSE).
+MIT. See [LICENSE](https://github.com/bhouston/clidoc/blob/main/LICENSE).
 
 ## Author
 
