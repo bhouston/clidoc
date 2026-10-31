@@ -56,7 +56,7 @@ async function connect(options: Partial<McpServerOptions> = {}) {
       }),
   };
 }
-const resultText = (result: { content?: unknown }) => JSON.stringify(result.content);
+const resultText = (result: object) => JSON.stringify('content' in result ? result.content : undefined);
 
 it('negotiates MCP, lists schemas, calls a process without shell expansion and returns both streams', async () => {
   const { client, name, call } = await connect();

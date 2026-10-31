@@ -33,7 +33,7 @@ describe.each(runners)('%s demo', (runner) => {
   it('exports a valid OpenCLI contract via the upstream __opencli subcommand', async () => {
     const result = await cli.run(['__opencli']);
     expect(result).toSucceed();
-    const document = result.json();
+    const document = result.json() as { info: { binary: string }; commands: Record<string, { summary: string }> };
     expect(validate(document)).toEqual({ valid: true, errors: [] });
     expect(document.info.binary).toBe('demo');
     expect(document.commands['demo greet'].summary).toBe('Greet a person');

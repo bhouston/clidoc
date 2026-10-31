@@ -13,7 +13,7 @@ for (const [message, expected] of [
   ['fix: change API\n\nBREAKING CHANGE: remove legacy arguments', 'major'],
   ['chore: update workflow', null],
 ]) {
-  test(`release analysis: ${message.split('\n')[0]}`, async () => {
+  void test(`release analysis: ${message.split('\n')[0]}`, async () => {
     const actual = await analyzeCommits(config.plugins[0][1], {
       cwd: process.cwd(),
       commits: [{ hash: 'test', message }],
@@ -23,9 +23,9 @@ for (const [message, expected] of [
   });
 }
 
-test('release branch is only main', () => assert.deepEqual(config.branches, ['main']));
+void test('release branch is only main', () => assert.deepEqual(config.branches, ['main']));
 
-test('all seven public packages publish once, in dependency order, before cli', () => {
+void test('all seven public packages publish once, in dependency order, before cli', () => {
   const pkgRoots = config.plugins
     .filter((plugin) => Array.isArray(plugin) && plugin[0] === '@anolilab/semantic-release-pnpm')
     .map(([, options]) => options.pkgRoot);
@@ -42,18 +42,18 @@ test('all seven public packages publish once, in dependency order, before cli', 
   assert.ok(pkgRoots.indexOf('packages/yargs') < pkgRoots.indexOf('packages/cli'), 'yargs must publish before cli');
 });
 
-test('release workflow always runs semantic-release after checks', () => {
+void test('release workflow always runs semantic-release after checks', () => {
   const workflow = readFileSync('.github/workflows/release.yml', 'utf8');
   assert.match(workflow, /release:\n\s+needs: \[guard, checks\]\n\s+runs-on:/);
   assert.match(workflow, /run: pnpm release \$\{\{ inputs\.dry_run && '--dry-run' \|\| '' \}\}/);
 });
 
-test('release plugins load', async () => {
+void test('release plugins load', async () => {
   // Catches missing transitive dependencies (e.g. @visulima/yaml) before a Release run does
   await import('@anolilab/semantic-release-pnpm');
 });
 
-test('the website deploys from the release tag after a published release, not on push', () => {
+void test('the website deploys from the release tag after a published release, not on push', () => {
   const release = readFileSync('.github/workflows/release.yml', 'utf8');
   assert.match(
     release,

@@ -55,6 +55,7 @@
     "@clidoc/core": "workspace:*"
   },
   "devDependencies": {
+    "@types/yargs": "^17.0.35",
     "yargs": "^18.1.0",
     "yargs-file-commands": "^2.1.0"
   },

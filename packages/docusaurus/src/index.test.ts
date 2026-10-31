@@ -29,7 +29,7 @@ it('writes CommonMark pages with stable sidebar entries, then removes only stale
   expect(sidebar[0]).toEqual({ type: 'doc', id: 'index', label: 'Sample CLI' });
   const names = await readdir(outputDir);
   const generated = names.filter((name) => name.endsWith('.md') && name !== 'manual.md');
-  expect(generated.toSorted()).toEqual([sendFilename, 'sample.md']);
+  expect(generated.sort()).toEqual([sendFilename, 'sample.md']);
   const contents = await Promise.all(
     generated.map(async (name) => [name, await readFile(join(outputDir, name), 'utf8')] as const),
   );
@@ -42,10 +42,7 @@ it('writes CommonMark pages with stable sidebar entries, then removes only stale
   expect(landing).toContain(`](./${commandName})`);
   expect(landing).not.toContain('/docs/cli/commands/');
   await writeDocusaurus({ ...document, commands: {} }, { outputDir, basePath: '/docs/cli' });
-  expect((await readdir(outputDir)).filter((name) => name.endsWith('.md')).toSorted()).toEqual([
-    'manual.md',
-    'sample.md',
-  ]);
+  expect((await readdir(outputDir)).filter((name) => name.endsWith('.md')).sort()).toEqual(['manual.md', 'sample.md']);
   expect(await readFile(join(outputDir, 'manual.md'), 'utf8')).toBe('# Keep me\n');
   expect(JSON.parse(await readFile(join(outputDir, '.clidoc-generated.json'), 'utf8'))).toEqual({
     version: 1,
@@ -58,7 +55,7 @@ it('loads a file relative to siteDir and writes generated docs before content lo
   await writeFile(join(siteDir, 'input.json'), JSON.stringify(document));
   const plugin = await clidocPlugin({ siteDir }, { input: 'input.json', outputDir: 'generated' });
   expect(plugin.name).toBe('clidoc-docusaurus');
-  expect((await readdir(join(siteDir, 'generated'))).filter((name) => name.endsWith('.md')).toSorted()).toEqual([
+  expect((await readdir(join(siteDir, 'generated'))).filter((name) => name.endsWith('.md')).sort()).toEqual([
     sendFilename,
     'sample.md',
   ]);
@@ -97,7 +94,7 @@ it('writes every colliding command to a distinct generated file and slug', async
 it('keeps the landing filename distinct from an index command', async () => {
   const outputDir = await site();
   await writeDocusaurus({ ...document, commands: { 'sample index': { summary: 'Index command' } } }, { outputDir });
-  expect((await readdir(outputDir)).filter((name) => name.endsWith('.md')).toSorted()).toEqual([
+  expect((await readdir(outputDir)).filter((name) => name.endsWith('.md')).sort()).toEqual([
     'sample-index.md',
     'sample.md',
   ]);
@@ -117,7 +114,7 @@ it('uses nested command words and omits usage syntax from readable filenames', a
     },
     { outputDir },
   );
-  const names = (await readdir(outputDir)).filter((name) => name.endsWith('.md')).toSorted();
+  const names = (await readdir(outputDir)).filter((name) => name.endsWith('.md')).sort();
   expect(names).toContain('sample-users-list.md');
   expect(names).toContain('sample-validate.md');
   expect(names).toContain('sample-inspect.md');

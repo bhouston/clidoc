@@ -29,7 +29,7 @@ const greet = {
     },
   },
   handler(argv: ArgumentsCamelCase) {
-    console.log(`${argv.language === 'fr' ? 'Bonjour' : 'Hello'}, ${argv.name}!`);
+    console.log(`${argv.language === 'fr' ? 'Bonjour' : 'Hello'}, ${String(argv.name)}!`);
   },
 };
 
@@ -41,5 +41,5 @@ parser.command(createDocgenCommand(() => document)).demandCommand();
 document = fromYargs(parser, info);
 
 if (!(await handleOpenCliRequest(hideBin(process.argv), () => document))) {
-  parser.parse();
+  await parser.parse();
 }
