@@ -48,7 +48,7 @@ jobs:
           git checkout --quiet "refs/tags/$tag"
           git submodule update --init --recursive
           echo "version=${tag#v}" >> "$GITHUB_OUTPUT"
-      - uses: pnpm/action-setup@v5
+      - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
