@@ -57,6 +57,6 @@
     "@clidoc/core": "workspace:^"
   },
   "engines": {
-    "node": ">=26"
+    "node": ">=22"
   }
 }

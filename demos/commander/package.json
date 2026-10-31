@@ -15,6 +15,6 @@
     "commander": "^15.0.0"
   },
   "engines": {
-    "node": ">=26"
+    "node": ">=22"
   }
 }
