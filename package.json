@@ -35,7 +35,7 @@
     "@semantic-release/release-notes-generator": "^14.1.1",
     "@types/node": "^24.13.5",
     "@visulima/yaml": "1.0.0",
-    "@vitest/coverage-v8": "^5.0.2",
+    "@vitest/coverage-v8": "^5.0.5",
     "conventional-changelog-conventionalcommits": "^9.3.1",
     "husky": "^9.1.7",
     "lint-staged": "^17.5.1",
@@ -44,8 +44,8 @@
     "oxlint-tsgolint": "^7.0.2005",
     "semantic-release": "^25.0.9",
     "typescript": "7.1.0-beta",
-    "vite": "^8.3.0",
-    "vitest": "^5.0.2",
+    "vite": "^8.3.5",
+    "vitest": "^5.0.5",
     "vitest-command-line": "^0.9.1"
   },
   "lint-staged": {
