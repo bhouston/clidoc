@@ -89,7 +89,7 @@ identifies the exact `git:<commit>` or `npm:<version>` used. Failure produces no
 success outputs and a nonzero exit status.
 
 The action is tested on Linux, macOS and Windows hosted runners. It sets up Node
-`26.1.0`, and source mode also sets up pnpm `11.1.3`; later steps can use these
+`26.1.0`, and source mode also sets up pnpm `12.16.1`; later steps can use these
 tools. Self-hosted runners need Git, Bash, support for Node 24 based setup actions,
 and network access to GitHub and npm. The action installs into a temporary
 directory, disables install lifecycle scripts, then removes the directory.
