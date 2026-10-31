@@ -54,7 +54,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "tsc": "tsc && tsc -p tsconfig.type-tests.json"
+    "tsc": "tsrs && tsrs -p tsconfig.type-tests.json"
   },
   "dependencies": {
     "ajv": "^8.17.1",

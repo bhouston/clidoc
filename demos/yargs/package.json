@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "tsc": "tsc",
+    "tsc": "tsrs",
     "start": "node dist/index.js"
   },
   "dependencies": {

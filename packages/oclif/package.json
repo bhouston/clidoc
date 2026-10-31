@@ -53,7 +53,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "tsc": "tsc"
+    "tsc": "tsrs"
   },
   "dependencies": {
     "@clidoc/core": "workspace:*"

@@ -48,7 +48,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "tsc": "tsc --noEmit"
+    "tsc": "tsrs --noEmit"
   },
   "dependencies": {
     "@clidoc/core": "workspace:^"
