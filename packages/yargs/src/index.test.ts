@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createDocgenCommand, fromYargs, fromYargsAsync } from './index.js';
 import { validate } from '@clidoc/core';
 import { defineCommand } from 'yargs-file-commands';
-import buildYargs from 'yargs';
+import buildYargs, { type CommandModule } from 'yargs';
 
 /**
  * Shape of the internal chainable recorder object `fromYargs` passes to a
@@ -180,7 +180,7 @@ describe('fromYargs from a live Yargs instance', () => {
     });
   });
   it('produces the same document as passing the equivalent modules array', () => {
-    const greet = { command: 'greet <name>', describe: 'Greet a person', builder: {} };
+    const greet: CommandModule = { command: 'greet <name>', describe: 'Greet a person', builder: {}, handler: vi.fn() };
     const parser = buildYargs([]).command(greet);
     expect(fromYargs(parser, info)).toEqual(fromYargs([greet], info));
   });

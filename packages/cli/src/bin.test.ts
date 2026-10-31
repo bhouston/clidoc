@@ -1,3 +1,6 @@
+import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { afterEach, expect, it, vi } from 'vitest';
 
 const document = { opencliVersion: '1.0.0-alpha.14', info: { title: 'clidoc', binary: 'clidoc', version: '0.0.0' } };
@@ -37,9 +40,6 @@ it('answers __opencli discovery requests without invoking runCli', async () => {
 });
 
 it('writes __opencli discovery requests to --out <file> without invoking runCli', async () => {
-  const { mkdtemp, readFile, rm } = await import('node:fs/promises');
-  const { tmpdir } = await import('node:os');
-  const { join } = await import('node:path');
   const dir = await mkdtemp(join(tmpdir(), 'clidoc-bin-'));
   const file = join(dir, 'cli.json');
   vi.resetModules();
