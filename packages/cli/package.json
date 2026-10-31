@@ -71,6 +71,6 @@
     "@types/yargs": "^17.0.35"
   },
   "engines": {
-    "node": ">=22"
+    "node": ">=26"
   }
 }
