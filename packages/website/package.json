@@ -16,11 +16,11 @@
     "react-dom": "^19.3.0"
   },
   "devDependencies": {
-    "@vitest/browser-playwright": "^4.1.11",
+    "@vitest/browser-playwright": "^5.0.5",
     "playwright": "^1.63.0",
     "typedoc": "^0.28.0",
     "typedoc-plugin-markdown": "^4.0.0",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.11"
+    "vitest": "^5.0.5"
   }
 }
