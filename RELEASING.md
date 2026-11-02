@@ -47,7 +47,7 @@ of record).
      those two packages' next Conventional Commit changes bump past `1.0.0`.
 3. `main` is protected: PRs required, merge commits only, and the checks
    `ci (macos-latest)`, `ci (ubuntu-latest)`, `contribution`, and `Website
-browser smoke`.
+   browser smoke`.
 
 ## GitHub Pages
 
