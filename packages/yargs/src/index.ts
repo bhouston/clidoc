@@ -213,15 +213,20 @@ function recordBuilder(builder: unknown): { metadata: CollectedBuilder; result: 
       return supportedRecorder;
     },
     command(
-      command: string | readonly string[] | YargsCommandModule,
+      command: string | readonly string[] | YargsCommandModule | readonly YargsCommandModule[],
       describe?: string | false,
       childBuilder?: unknown,
     ) {
-      children.push(
-        typeof command === 'object' && !Array.isArray(command)
-          ? (command as YargsCommandModule)
-          : { command, describe, builder: childBuilder },
-      );
+      // Yargs treats string arrays as aliases, but module arrays as separate commands.
+      if (Array.isArray(command) && command.every((item) => typeof item === 'object')) {
+        children.push(...(command as YargsCommandModule[]));
+      } else {
+        children.push(
+          typeof command === 'object' && !Array.isArray(command)
+            ? (command as YargsCommandModule)
+            : { command: command as string | readonly string[], describe, builder: childBuilder },
+        );
+      }
       return supportedRecorder;
     },
   };

@@ -18,6 +18,59 @@ import buildYargs, { type CommandModule } from 'yargs';
 type RecorderStub = Record<string, (...args: unknown[]) => RecorderStub>;
 
 const info = { title: 'Demo', binary: 'demo', version: '1.0.0' };
+describe('nested command arrays', () => {
+  const children = [
+    { command: ['get <key>', 'read'], describe: 'Get a value' },
+    { command: 'set <key> <value>', describe: 'Set a value', builder: { force: { type: 'boolean' } } },
+  ];
+
+  it.each([false, true])('records module arrays in builders (async: %s)', async (asyncBuilder) => {
+    const register = (y: RecorderStub) => y.command([]).command(children);
+    const modules = [
+      {
+        command: 'config',
+        builder: asyncBuilder
+          ? async (y: RecorderStub) => {
+              await Promise.resolve();
+              return register(y);
+            }
+          : register,
+      },
+    ];
+    const doc = asyncBuilder ? await fromYargsAsync(modules, info) : fromYargs(modules, info);
+    expect(Object.keys(doc.commands ?? {})).toEqual(['demo config get', 'demo config set', 'demo config']);
+    expect(doc.commands?.['demo config']).toEqual({ kind: 'group' });
+    expect(doc.commands?.['demo config get']).toMatchObject({
+      summary: 'Get a value',
+      aliases: ['read'],
+      args: [{ name: 'key', required: true }],
+    });
+    expect(doc.commands?.['demo config set']).toMatchObject({
+      summary: 'Set a value',
+      flags: [{ name: 'force', type: 'boolean' }],
+    });
+    expect(validate(doc).valid).toBe(true);
+  });
+
+  it('keeps nested string arrays as aliases with their shared builder', () => {
+    const doc = fromYargs(
+      [
+        {
+          command: 'config',
+          builder: (y: RecorderStub) => y.command(['get <key>', 'read'], 'Get a value', { quiet: { type: 'boolean' } }),
+        },
+      ],
+      info,
+    );
+    expect(Object.keys(doc.commands ?? {})).toEqual(['demo config get', 'demo config']);
+    expect(doc.commands?.['demo config get']).toMatchObject({
+      aliases: ['read'],
+      summary: 'Get a value',
+      flags: [{ name: 'quiet', type: 'boolean' }],
+    });
+  });
+});
+
 describe('fromYargs', () => {
   it('maps demanded array options to required variadic flags', () => {
     for (const items of [
