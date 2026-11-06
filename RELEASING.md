@@ -21,7 +21,7 @@ dependencies to a resolved semver range natively — no staging step needed.
 Publishing uses npm trusted publishing (OIDC); no npm token is stored. Source
 `package.json` versions are development snapshots; the authoritative released
 version is the Git tag (`v<version>`) and npm version. Demos and
-`@clidoc/website` are private and never published.
+`@clidoc/docs` are private and never published.
 
 Each GitHub Release contains generated release notes and every package's npm
 tarball; there is no `CHANGELOG.md` (the GitHub Releases page is the changelog
@@ -52,7 +52,7 @@ of record).
 ## GitHub Pages
 
 The Release workflow deploys the website after each published release: it calls
-`pages.yml`, which builds `packages/website` from the new `v<version>` tag, with that
+`pages.yml`, which builds `packages/docs` from the new `v<version>` tag, with that
 version in the CLI reference, and deploys with the built-in `GITHUB_TOKEN`. Dry runs
 and runs that publish nothing don't deploy. To redeploy the latest release, run
 `gh workflow run pages.yml --ref main` (optionally `-f ref=v<version>`). One-time setup:

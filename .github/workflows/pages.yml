@@ -59,7 +59,7 @@ jobs:
           CLIDOC_VERSION: ${{ steps.version.outputs.version }}
       - uses: actions/upload-pages-artifact@v4
         with:
-          path: packages/website/build
+          path: packages/docs/build
   deploy:
     needs: build
     runs-on: ubuntu-latest

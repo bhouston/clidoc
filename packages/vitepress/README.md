@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://clidoc.dev" target="_blank" rel="noopener noreferrer">
-    <img alt="clidoc logo" src="https://raw.githubusercontent.com/bhouston/clidoc/main/packages/website/static/img/icon-512.png" height="96">
+    <img alt="clidoc logo" src="https://raw.githubusercontent.com/bhouston/clidoc/main/packages/docs/static/img/icon-512.png" height="96">
   </a>
 </p>
 <br/>

@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://clidoc.dev" target="_blank" rel="noopener noreferrer">
-    <img alt="clidoc logo" src="https://raw.githubusercontent.com/bhouston/clidoc/main/packages/website/static/img/icon-512.png" height="96">
+    <img alt="clidoc logo" src="https://raw.githubusercontent.com/bhouston/clidoc/main/packages/docs/static/img/icon-512.png" height="96">
   </a>
 </p>
 <br/>
@@ -78,7 +78,7 @@ The framework packages read metadata only. They don't infer custom validation, c
 Export MCP tool definitions with `clidoc mcp cli.json -o tools.json`, or serve a
 trusted local executable with
 `clidoc mcp cli.json --serve --executable /absolute/path/to/mycli`.
-See the [MCP guide](packages/website/docs/mcp.md) for client configuration,
+See the [MCP guide](packages/docs/docs/mcp.md) for client configuration,
 argument mapping, process limits, and the `@clidoc/cli/mcp` library API.
 
 ## Run from source
