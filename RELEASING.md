@@ -46,8 +46,7 @@ of record).
      `@clidoc/cli@1.0.0` npm versions (npm publish is not overwritable) unless
      those two packages' next Conventional Commit changes bump past `1.0.0`.
 3. `main` is protected: PRs required, merge commits only, and the checks
-   `ci (macos-latest)`, `ci (ubuntu-latest)`, `contribution`, and `Website
-   browser smoke`.
+   `ci (ubuntu-latest)`, `contribution`, and `Website browser smoke`.
 
 ## GitHub Pages
 

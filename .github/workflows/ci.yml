@@ -17,12 +17,8 @@ concurrency:
 
 jobs:
   ci:
-    name: ci (${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [macos-latest, ubuntu-latest]
+    name: ci (ubuntu-latest)
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
         with:
@@ -40,12 +36,8 @@ jobs:
       - name: Check formatting
         run: pnpm exec oxfmt --check .
       - run: pnpm test:workflow
-      - name: Install completion test shells (Linux)
-        if: runner.os == 'Linux'
+      - name: Install completion test shells
         run: sudo apt-get update && sudo apt-get install -y zsh fish
-      - name: Install completion test shells (macOS)
-        if: runner.os == 'macOS'
-        run: brew install fish
       - run: pnpm test --coverage
       # --- repository-specific steps (package-content check, size budget, e2e, docs, ...) go here ---
       - run: pnpm package:check
@@ -58,7 +50,7 @@ jobs:
           format: json
       - uses: actions/upload-artifact@v4
         with:
-          name: quality-reports-${{ matrix.os }}
+          name: quality-reports
           path: |
             coverage/
       - name: Audit dependencies
@@ -69,7 +61,7 @@ jobs:
         if: steps.audit.outcome == 'failure'
         run: echo '::warning::Dependency audit found vulnerabilities or could not reach the registry. Review the audit step.'
       - uses: codecov/codecov-action@v5
-        if: ${{ !cancelled() && runner.os == 'macOS' && hashFiles('coverage/lcov.info') != '' }}
+        if: ${{ !cancelled() && hashFiles('coverage/lcov.info') != '' }}
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: coverage/lcov.info
