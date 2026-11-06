@@ -119,7 +119,7 @@ and pinned validator versions. Its default uses a locked source build; set
 `validator-version` to pin an exact published `@clidoc/core` version. See the
 [official CI guide](https://clidoc.ben3d.ca/docs/github-action/) for a complete
 workflow and version selection. This repository runs the hosted action against
-its generated CLI specification on Linux and macOS.
+its generated CLI specification on Linux.
 
 The standalone action is also available as the optional HTTPS submodule
 [`submodules/clidoc-action`](https://github.com/bhouston/clidoc-action).

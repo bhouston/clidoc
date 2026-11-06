@@ -54,7 +54,7 @@ Publishing goes through `@anolilab/semantic-release-pnpm`, one plugin instance p
 
 ### Required Checks
 
-`main` requires `ci (macos-latest)`, `ci (ubuntu-latest)`, `contribution`, and `Website browser smoke`.
+`main` requires `ci (ubuntu-latest)`, `contribution`, and `Website browser smoke`.
 
 ### Website
 
