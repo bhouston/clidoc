@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://clidoc.dev" target="_blank" rel="noopener noreferrer">
+  <a href="https://clidoc.ben3d.ca" target="_blank" rel="noopener noreferrer">
     <img alt="clidoc logo" src="https://raw.githubusercontent.com/bhouston/clidoc/main/packages/docs/static/img/icon-512.png" height="96">
   </a>
 </p>
@@ -9,7 +9,7 @@
   <a href="https://www.npmtrends.com/@clidoc/vitepress"><img src="https://img.shields.io/npm/dw/@clidoc/vitepress.svg" alt="npm downloads"></a>
   <a href="https://codecov.io/gh/bhouston/clidoc"><img src="https://codecov.io/gh/bhouston/clidoc/branch/main/graph/badge.svg" alt="coverage"></a>
   <a href="https://discord.gg/vSYc5CfRWH"><img src="https://img.shields.io/badge/chat-discord-blue?style=flat&logo=discord" alt="discord chat"></a>
-  <a href="https://clidoc.dev"><img src="https://img.shields.io/badge/docs-read-blue?style=flat" alt="documentation"></a>
+  <a href="https://clidoc.ben3d.ca"><img src="https://img.shields.io/badge/docs-read-blue?style=flat" alt="documentation"></a>
 </p>
 <br/>
 
@@ -26,7 +26,7 @@
 Add an always-current CLI reference to your VitePress site. Generate pages and
 sidebar entries from your CLI's OpenCLI document instead of maintaining them by hand.
 
-[Read the Docs to Learn More](https://clidoc.dev).
+[Read the Docs to Learn More](https://clidoc.ben3d.ca).
 
 ## Getting Started
 
@@ -106,7 +106,7 @@ their URLs stable when unrelated commands are added while avoiding collisions.
 - Generate the document from your CLI with [`@clidoc/yargs`](https://www.npmjs.com/package/@clidoc/yargs), [`@clidoc/commander`](https://www.npmjs.com/package/@clidoc/commander), [`@clidoc/oclif`](https://www.npmjs.com/package/@clidoc/oclif).
 - [`@clidoc/docusaurus`](https://www.npmjs.com/package/@clidoc/docusaurus) for Docusaurus.
 - [`@clidoc/cli`](https://www.npmjs.com/package/@clidoc/cli): validate the document first with `clidoc validate`.
-- [Publishing guide](https://clidoc.dev/docs/publishing) and the [demo site](https://github.com/bhouston/clidoc/tree/main/demos/vitepress).
+- [Publishing guide](https://clidoc.ben3d.ca/docs/publishing) and the [demo site](https://github.com/bhouston/clidoc/tree/main/demos/vitepress).
 
 ## Contribution
 

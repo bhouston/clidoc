@@ -48,7 +48,7 @@ Publishing is not atomic. If a run fails part way, compare the registry versions
 
 - npm packages, all sharing one version and published in dependency order: `@clidoc/core`, `@clidoc/commander`, `@clidoc/oclif`, `@clidoc/yargs`, `@clidoc/cli`, `@clidoc/docusaurus`, and `@clidoc/vitepress`.
 - Each package's npm tarball, attached to the GitHub Release.
-- The website at `clidoc.dev`, deployed after each published release (see Website).
+- The website at `clidoc.ben3d.ca`, deployed after each published release (see Website).
 
 Publishing goes through `@anolilab/semantic-release-pnpm`, one plugin instance per package, so `pnpm publish` resolves `workspace:*` dependencies to concrete versions. `@clidoc/docs` and the demos are private and never published.
 
@@ -64,7 +64,7 @@ One-time Pages setup:
 
 ```sh
 gh api repos/bhouston/clidoc/pages -X POST -f build_type=workflow
-gh api repos/bhouston/clidoc/pages -X PUT -f cname=clidoc.dev -F https_enforced=true
+gh api repos/bhouston/clidoc/pages -X PUT -f cname=clidoc.ben3d.ca -F https_enforced=true
 ```
 
-DNS for `clidoc.dev` is on Cloudflare: the four GitHub Pages `A` records (`185.199.108-111.153`), the four `AAAA` records (`2606:50c0:8000-8003::153`), and `CNAME www` pointing to `bhouston.github.io`. Keep records DNS-only until GitHub issues the certificate, then proxy with SSL mode Full (strict).
+DNS for `clidoc.ben3d.ca` is on Cloudflare, in the `ben3d.ca` zone: `CNAME clidoc` pointing to `bhouston.github.io`. Keep the record DNS-only until the GitHub certificate is issued, then proxy it. The former `clidoc.dev` domain 301-redirects to the same path here through a Cloudflare redirect rule.
