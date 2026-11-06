@@ -1,13 +1,33 @@
+<p align="center">
+  <a href="https://clidoc.dev" target="_blank" rel="noopener noreferrer">
+    <img alt="clidoc logo" src="https://raw.githubusercontent.com/bhouston/clidoc/main/packages/website/static/img/icon-512.png" height="96">
+  </a>
+</p>
+<br/>
+<p align="center">
+  <a href="https://npmjs.com/package/@clidoc/core"><img src="https://img.shields.io/npm/v/@clidoc/core.svg" alt="npm package"></a>
+  <a href="https://www.npmtrends.com/@clidoc/core"><img src="https://img.shields.io/npm/dw/@clidoc/core.svg" alt="npm downloads"></a>
+  <a href="https://codecov.io/gh/bhouston/clidoc"><img src="https://codecov.io/gh/bhouston/clidoc/branch/main/graph/badge.svg" alt="coverage"></a>
+  <a href="https://discord.gg/vSYc5CfRWH"><img src="https://img.shields.io/badge/chat-discord-blue?style=flat&logo=discord" alt="discord chat"></a>
+  <a href="https://clidoc.dev"><img src="https://img.shields.io/badge/docs-read-blue?style=flat" alt="documentation"></a>
+</p>
+<br/>
+
 # @clidoc/core
 
-[![npm version](https://img.shields.io/npm/v/%40clidoc%2Fcore)](https://www.npmjs.com/package/@clidoc/core)
-[![npm downloads](https://img.shields.io/npm/dw/%40clidoc%2Fcore)](https://www.npmjs.com/package/@clidoc/core)
-[![CI](https://github.com/bhouston/clidoc/actions/workflows/ci.yml/badge.svg)](https://github.com/bhouston/clidoc/actions/workflows/ci.yml)
-[![Coverage](https://codecov.io/gh/bhouston/clidoc/branch/main/graph/badge.svg)](https://codecov.io/gh/bhouston/clidoc)
-[![Documentation](https://img.shields.io/badge/docs-clidoc.dev-blue)](https://clidoc.dev)
-[![Discord](https://img.shields.io/badge/Discord-Join-5865F2?logo=discord&logoColor=white)](https://discord.gg/vSYc5CfRWH)
+> OpenCLI types, offline validation, and Markdown rendering for CLI docs.
+
+- 📦 Schema Bundled for Offline Use
+- 🔎 JSON and YAML Parsing
+- 📝 Markdown and Page Generation
+- 🧩 Merge Author Metadata
+- 🐚 Completion Script Generation
 
 Parse, validate and render CLI documentation from one portable [OpenCLI 1.0.0-alpha.14](https://github.com/bcdxn/opencli) document. This is the library underneath every clidoc package: use it directly if you already have an OpenCLI document, or pair it with a framework package to generate one from your CLI.
+
+[Read the Docs to Learn More](https://clidoc.dev).
+
+## Getting Started
 
 ```sh
 npm install @clidoc/core
@@ -83,9 +103,13 @@ The optional `binary` overrides only the registered executable name. See the
 [completion guide](https://clidoc.dev/docs/completion) for activation,
 supported syntax, and limitations.
 
+## Contribution
+
+See [Contributing Guide](https://github.com/bhouston/clidoc/blob/main/CONTRIBUTING.md).
+
 ## License
 
-MIT. See [LICENSE](https://github.com/bhouston/clidoc/blob/main/LICENSE).
+MIT
 
 ## Author
 

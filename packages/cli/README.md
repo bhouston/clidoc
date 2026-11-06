@@ -1,14 +1,34 @@
+<p align="center">
+  <a href="https://clidoc.dev" target="_blank" rel="noopener noreferrer">
+    <img alt="clidoc logo" src="https://raw.githubusercontent.com/bhouston/clidoc/main/packages/website/static/img/icon-512.png" height="96">
+  </a>
+</p>
+<br/>
+<p align="center">
+  <a href="https://npmjs.com/package/@clidoc/cli"><img src="https://img.shields.io/npm/v/@clidoc/cli.svg" alt="npm package"></a>
+  <a href="https://www.npmtrends.com/@clidoc/cli"><img src="https://img.shields.io/npm/dw/@clidoc/cli.svg" alt="npm downloads"></a>
+  <a href="https://codecov.io/gh/bhouston/clidoc"><img src="https://codecov.io/gh/bhouston/clidoc/branch/main/graph/badge.svg" alt="coverage"></a>
+  <a href="https://discord.gg/vSYc5CfRWH"><img src="https://img.shields.io/badge/chat-discord-blue?style=flat&logo=discord" alt="discord chat"></a>
+  <a href="https://clidoc.dev"><img src="https://img.shields.io/badge/docs-read-blue?style=flat" alt="documentation"></a>
+</p>
+<br/>
+
 # @clidoc/cli
 
-[![npm version](https://img.shields.io/npm/v/%40clidoc%2Fcli)](https://www.npmjs.com/package/@clidoc/cli)
-[![npm downloads](https://img.shields.io/npm/dw/%40clidoc%2Fcli)](https://www.npmjs.com/package/@clidoc/cli)
-[![CI](https://github.com/bhouston/clidoc/actions/workflows/ci.yml/badge.svg)](https://github.com/bhouston/clidoc/actions/workflows/ci.yml)
-[![Coverage](https://codecov.io/gh/bhouston/clidoc/branch/main/graph/badge.svg)](https://codecov.io/gh/bhouston/clidoc)
-[![Documentation](https://img.shields.io/badge/docs-clidoc.dev-blue)](https://clidoc.dev)
-[![Discord](https://img.shields.io/badge/Discord-Join-5865F2?logo=discord&logoColor=white)](https://discord.gg/vSYc5CfRWH)
+> Validate OpenCLI documents and render docs, completions, and MCP tools.
+
+- ✅ Offline Schema Validation
+- 📝 Markdown Reference Output
+- 🐚 Bash, Zsh, and Fish Completions
+- 🤖 MCP Tools and Stdio Server
+- 🧩 Embeddable with runCli
 
 Validate your CLI's OpenCLI document and turn it into a Markdown reference, shell
 completions or MCP tools, all from one command-line tool. Node 22.12+; ESM only.
+
+[Read the Docs to Learn More](https://clidoc.dev).
+
+## Getting Started
 
 The CLI being documented provides its own `docgen` command (see [`@clidoc/yargs`](https://www.npmjs.com/package/@clidoc/yargs), [`@clidoc/commander`](https://www.npmjs.com/package/@clidoc/commander), [`@clidoc/oclif`](https://www.npmjs.com/package/@clidoc/oclif)), the
 human-facing entry point. Install clidoc globally to validate and render the resulting file:
@@ -83,9 +103,13 @@ client configuration, limits, and supported spec features.
 Library users can import `compileMcpTools`, `createMcpServer`, and `serveMcp`
 from `@clidoc/cli/mcp`.
 
+## Contribution
+
+See [Contributing Guide](https://github.com/bhouston/clidoc/blob/main/CONTRIBUTING.md).
+
 ## License
 
-MIT. See [LICENSE](https://github.com/bhouston/clidoc/blob/main/LICENSE).
+MIT
 
 ## Author
 

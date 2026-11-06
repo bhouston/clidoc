@@ -1,16 +1,36 @@
+<p align="center">
+  <a href="https://clidoc.dev" target="_blank" rel="noopener noreferrer">
+    <img alt="clidoc logo" src="https://raw.githubusercontent.com/bhouston/clidoc/main/packages/website/static/img/icon-512.png" height="96">
+  </a>
+</p>
+<br/>
+<p align="center">
+  <a href="https://npmjs.com/package/@clidoc/docusaurus"><img src="https://img.shields.io/npm/v/@clidoc/docusaurus.svg" alt="npm package"></a>
+  <a href="https://www.npmtrends.com/@clidoc/docusaurus"><img src="https://img.shields.io/npm/dw/@clidoc/docusaurus.svg" alt="npm downloads"></a>
+  <a href="https://codecov.io/gh/bhouston/clidoc"><img src="https://codecov.io/gh/bhouston/clidoc/branch/main/graph/badge.svg" alt="coverage"></a>
+  <a href="https://discord.gg/vSYc5CfRWH"><img src="https://img.shields.io/badge/chat-discord-blue?style=flat&logo=discord" alt="discord chat"></a>
+  <a href="https://clidoc.dev"><img src="https://img.shields.io/badge/docs-read-blue?style=flat" alt="documentation"></a>
+</p>
+<br/>
+
 # @clidoc/docusaurus
 
-[![npm version](https://img.shields.io/npm/v/%40clidoc%2Fdocusaurus)](https://www.npmjs.com/package/@clidoc/docusaurus)
-[![npm downloads](https://img.shields.io/npm/dw/%40clidoc%2Fdocusaurus)](https://www.npmjs.com/package/@clidoc/docusaurus)
-[![CI](https://github.com/bhouston/clidoc/actions/workflows/ci.yml/badge.svg)](https://github.com/bhouston/clidoc/actions/workflows/ci.yml)
-[![Coverage](https://codecov.io/gh/bhouston/clidoc/branch/main/graph/badge.svg)](https://codecov.io/gh/bhouston/clidoc)
-[![Documentation](https://img.shields.io/badge/docs-clidoc.dev-blue)](https://clidoc.dev)
-[![Discord](https://img.shields.io/badge/Discord-Join-5865F2?logo=discord&logoColor=white)](https://discord.gg/vSYc5CfRWH)
+> Publish a generated CLI reference in Docusaurus.
+
+- 📚 Pages and Sidebar From OpenCLI
+- 🧱 Plain Markdown Output
+- 🔁 Safe Regeneration
+- 🔌 Plugin or writeDocusaurus API
+- ✍️ Hand-Written Pages Preserved
 
 Add an always-current CLI reference to your Docusaurus site. Generate pages and
 sidebar entries from your CLI's OpenCLI document instead of maintaining them by hand.
 The output is ordinary Markdown with CommonMark front matter, so CLI descriptions
 remain plain Markdown even when they contain JSX-like text.
+
+[Read the Docs to Learn More](https://clidoc.dev).
+
+## Getting Started
 
 Install the publisher alongside Docusaurus and its classic preset:
 
@@ -104,9 +124,13 @@ version control.
 - [`@clidoc/cli`](https://www.npmjs.com/package/@clidoc/cli): validate the document first with `clidoc validate`.
 - [Publishing guide](https://clidoc.dev/docs/publishing) and the [demo site](https://github.com/bhouston/clidoc/tree/main/demos/docusaurus).
 
+## Contribution
+
+See [Contributing Guide](https://github.com/bhouston/clidoc/blob/main/CONTRIBUTING.md).
+
 ## License
 
-MIT. See [LICENSE](https://github.com/bhouston/clidoc/blob/main/LICENSE).
+MIT
 
 ## Author
 

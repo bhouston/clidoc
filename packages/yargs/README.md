@@ -1,15 +1,35 @@
+<p align="center">
+  <a href="https://clidoc.dev" target="_blank" rel="noopener noreferrer">
+    <img alt="clidoc logo" src="https://raw.githubusercontent.com/bhouston/clidoc/main/packages/website/static/img/icon-512.png" height="96">
+  </a>
+</p>
+<br/>
+<p align="center">
+  <a href="https://npmjs.com/package/@clidoc/yargs"><img src="https://img.shields.io/npm/v/@clidoc/yargs.svg" alt="npm package"></a>
+  <a href="https://www.npmtrends.com/@clidoc/yargs"><img src="https://img.shields.io/npm/dw/@clidoc/yargs.svg" alt="npm downloads"></a>
+  <a href="https://codecov.io/gh/bhouston/clidoc"><img src="https://codecov.io/gh/bhouston/clidoc/branch/main/graph/badge.svg" alt="coverage"></a>
+  <a href="https://discord.gg/vSYc5CfRWH"><img src="https://img.shields.io/badge/chat-discord-blue?style=flat&logo=discord" alt="discord chat"></a>
+  <a href="https://clidoc.dev"><img src="https://img.shields.io/badge/docs-read-blue?style=flat" alt="documentation"></a>
+</p>
+<br/>
+
 # @clidoc/yargs
 
-[![npm version](https://img.shields.io/npm/v/%40clidoc%2Fyargs)](https://www.npmjs.com/package/@clidoc/yargs)
-[![npm downloads](https://img.shields.io/npm/dw/%40clidoc%2Fyargs)](https://www.npmjs.com/package/@clidoc/yargs)
-[![CI](https://github.com/bhouston/clidoc/actions/workflows/ci.yml/badge.svg)](https://github.com/bhouston/clidoc/actions/workflows/ci.yml)
-[![Coverage](https://codecov.io/gh/bhouston/clidoc/branch/main/graph/badge.svg)](https://codecov.io/gh/bhouston/clidoc)
-[![Documentation](https://img.shields.io/badge/docs-clidoc.dev-blue)](https://clidoc.dev)
-[![Discord](https://img.shields.io/badge/Discord-Join-5865F2?logo=discord&logoColor=white)](https://discord.gg/vSYc5CfRWH)
+> Generate CLI reference docs from Yargs command definitions.
+
+- 📄 Docs From Your Commands
+- 🔌 Ready-Made docgen Command
+- 🔁 Async Builder Support
+- 🛡️ Metadata Only, No Handlers Run
+- 🤖 Machine Discovery via __opencli
 
 Stop hand-writing your CLI reference docs. Generate them from your [Yargs](https://yargs.js.org/) command definitions so they never drift from `--help`.
 
 `@clidoc/yargs` converts your commands into an [OpenCLI](https://github.com/bcdxn/opencli) document that you can validate, render to Markdown, and publish to Docusaurus or VitePress.
+
+[Read the Docs to Learn More](https://clidoc.dev).
+
+## Getting Started
 
 ```sh
 npm install @clidoc/yargs @clidoc/core yargs
@@ -140,9 +160,13 @@ Use the full generated command key (`mycli greet`) to add metadata to the existi
 
 See the [`@clidoc/core` README](https://github.com/bhouston/clidoc/tree/main/packages/core#adding-author-supplied-metadata) for the merge rules.
 
+## Contribution
+
+See [Contributing Guide](https://github.com/bhouston/clidoc/blob/main/CONTRIBUTING.md).
+
 ## License
 
-MIT. See [LICENSE](https://github.com/bhouston/clidoc/blob/main/LICENSE).
+MIT
 
 ## Author
 

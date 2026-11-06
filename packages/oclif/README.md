@@ -1,15 +1,35 @@
+<p align="center">
+  <a href="https://clidoc.dev" target="_blank" rel="noopener noreferrer">
+    <img alt="clidoc logo" src="https://raw.githubusercontent.com/bhouston/clidoc/main/packages/website/static/img/icon-512.png" height="96">
+  </a>
+</p>
+<br/>
+<p align="center">
+  <a href="https://npmjs.com/package/@clidoc/oclif"><img src="https://img.shields.io/npm/v/@clidoc/oclif.svg" alt="npm package"></a>
+  <a href="https://www.npmtrends.com/@clidoc/oclif"><img src="https://img.shields.io/npm/dw/@clidoc/oclif.svg" alt="npm downloads"></a>
+  <a href="https://codecov.io/gh/bhouston/clidoc"><img src="https://codecov.io/gh/bhouston/clidoc/branch/main/graph/badge.svg" alt="coverage"></a>
+  <a href="https://discord.gg/vSYc5CfRWH"><img src="https://img.shields.io/badge/chat-discord-blue?style=flat&logo=discord" alt="discord chat"></a>
+  <a href="https://clidoc.dev"><img src="https://img.shields.io/badge/docs-read-blue?style=flat" alt="documentation"></a>
+</p>
+<br/>
+
 # @clidoc/oclif
 
-[![npm version](https://img.shields.io/npm/v/%40clidoc%2Foclif)](https://www.npmjs.com/package/@clidoc/oclif)
-[![npm downloads](https://img.shields.io/npm/dw/%40clidoc%2Foclif)](https://www.npmjs.com/package/@clidoc/oclif)
-[![CI](https://github.com/bhouston/clidoc/actions/workflows/ci.yml/badge.svg)](https://github.com/bhouston/clidoc/actions/workflows/ci.yml)
-[![Coverage](https://codecov.io/gh/bhouston/clidoc/branch/main/graph/badge.svg)](https://codecov.io/gh/bhouston/clidoc)
-[![Documentation](https://img.shields.io/badge/docs-clidoc.dev-blue)](https://clidoc.dev)
-[![Discord](https://img.shields.io/badge/Discord-Join-5865F2?logo=discord&logoColor=white)](https://discord.gg/vSYc5CfRWH)
+> Generate CLI reference docs from oclif manifests.
+
+- 📄 Docs From manifest.json
+- 🔌 Ready-Made docgen Command
+- 🛡️ Metadata Only, No Handlers Run
+- 🤖 Machine Discovery via __opencli
+- 🧩 Add Examples and Exit Codes
 
 Stop hand-writing your CLI reference docs. Generate them from your [oclif](https://oclif.io/) command manifest so they never drift from `--help`.
 
 `@clidoc/oclif` converts oclif's generated `manifest.json` into an [OpenCLI](https://github.com/bcdxn/opencli) document that you can validate, render to Markdown, and publish to Docusaurus or VitePress.
+
+[Read the Docs to Learn More](https://clidoc.dev).
+
+## Getting Started
 
 ```sh
 npm install @clidoc/oclif @clidoc/core
@@ -117,9 +137,13 @@ Use the full generated command key (`mycli greet`) to add metadata to the existi
 
 See the [`@clidoc/core` README](https://github.com/bhouston/clidoc/tree/main/packages/core#adding-author-supplied-metadata) for the merge rules.
 
+## Contribution
+
+See [Contributing Guide](https://github.com/bhouston/clidoc/blob/main/CONTRIBUTING.md).
+
 ## License
 
-MIT. See [LICENSE](https://github.com/bhouston/clidoc/blob/main/LICENSE).
+MIT
 
 ## Author
 
