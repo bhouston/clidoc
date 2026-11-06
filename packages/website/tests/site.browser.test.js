@@ -31,7 +31,7 @@ describe('published website', () => {
     }
     expect(home.querySelector('a[href="/docs/frameworks/"]')).not.toBeNull();
     expect(home.querySelector('a[href="/docs/publishing"]')).not.toBeNull();
-    expect(home.body.textContent).toContain('Created with love ❤️ by');
+    expect(home.body.textContent).toContain('Made with ❤️ by Ben Houston. Sponsored by Land of Assets');
     expect(home.querySelector('a[href="https://ben3d.ca"]')?.textContent).toBe('Ben Houston');
     expect(home.querySelector('a[href="https://landofassets.com"]')?.textContent).toBe('Land of Assets');
 
