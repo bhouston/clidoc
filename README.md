@@ -35,15 +35,15 @@ Markdown, shell completions and MCP tools.
 
 ## Packages
 
-| Package                                     | Purpose                                                                              | Version (click for changelogs)                                                                                                              |
-| ------------------------------------------- | ------------------------------------------------------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------ |
-| [`@clidoc/cli`](packages/cli)               | `validate`, `markdown`, `docgen`, `completion`, and `mcp` commands, plus `__opencli` | [![@clidoc/cli version](https://img.shields.io/npm/v/@clidoc/cli.svg?label=%20)](https://github.com/bhouston/clidoc/releases)               |
-| [`@clidoc/core`](packages/core)             | Types, offline JSON Schema validation, JSON/YAML parsing, Markdown, pages and routes | [![@clidoc/core version](https://img.shields.io/npm/v/@clidoc/core.svg?label=%20)](https://github.com/bhouston/clidoc/releases)             |
-| [`@clidoc/yargs`](packages/yargs)           | Yargs command modules, including supported `defineCommand` builders                  | [![@clidoc/yargs version](https://img.shields.io/npm/v/@clidoc/yargs.svg?label=%20)](https://github.com/bhouston/clidoc/releases)           |
-| [`@clidoc/commander`](packages/commander)   | Configured Commander command trees                                                   | [![@clidoc/commander version](https://img.shields.io/npm/v/@clidoc/commander.svg?label=%20)](https://github.com/bhouston/clidoc/releases)   |
-| [`@clidoc/oclif`](packages/oclif)           | oclif manifest command metadata                                                      | [![@clidoc/oclif version](https://img.shields.io/npm/v/@clidoc/oclif.svg?label=%20)](https://github.com/bhouston/clidoc/releases)           |
-| [`@clidoc/docusaurus`](packages/docusaurus) | Generated Markdown pages for the Docusaurus docs plugin                              | [![@clidoc/docusaurus version](https://img.shields.io/npm/v/@clidoc/docusaurus.svg?label=%20)](https://github.com/bhouston/clidoc/releases) |
-| [`@clidoc/vitepress`](packages/vitepress)   | Generated Markdown and matching VitePress sidebar links                              | [![@clidoc/vitepress version](https://img.shields.io/npm/v/@clidoc/vitepress.svg?label=%20)](https://github.com/bhouston/clidoc/releases)   |
+| Package                                     | Version (click for changelogs)                                                                                                              |
+| ------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------ |
+| [`@clidoc/cli`](packages/cli)               | [![@clidoc/cli version](https://img.shields.io/npm/v/@clidoc/cli.svg?label=%20)](https://github.com/bhouston/clidoc/releases)               |
+| [`@clidoc/core`](packages/core)             | [![@clidoc/core version](https://img.shields.io/npm/v/@clidoc/core.svg?label=%20)](https://github.com/bhouston/clidoc/releases)             |
+| [`@clidoc/yargs`](packages/yargs)           | [![@clidoc/yargs version](https://img.shields.io/npm/v/@clidoc/yargs.svg?label=%20)](https://github.com/bhouston/clidoc/releases)           |
+| [`@clidoc/commander`](packages/commander)   | [![@clidoc/commander version](https://img.shields.io/npm/v/@clidoc/commander.svg?label=%20)](https://github.com/bhouston/clidoc/releases)   |
+| [`@clidoc/oclif`](packages/oclif)           | [![@clidoc/oclif version](https://img.shields.io/npm/v/@clidoc/oclif.svg?label=%20)](https://github.com/bhouston/clidoc/releases)           |
+| [`@clidoc/docusaurus`](packages/docusaurus) | [![@clidoc/docusaurus version](https://img.shields.io/npm/v/@clidoc/docusaurus.svg?label=%20)](https://github.com/bhouston/clidoc/releases) |
+| [`@clidoc/vitepress`](packages/vitepress)   | [![@clidoc/vitepress version](https://img.shields.io/npm/v/@clidoc/vitepress.svg?label=%20)](https://github.com/bhouston/clidoc/releases)   |
 
 Runnable examples live in [`demos/`](demos) (Yargs, Commander, oclif, Docusaurus, VitePress).
 
