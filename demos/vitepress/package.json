@@ -1,7 +1,7 @@
 {
   "name": "@clidoc/demo-vitepress",
   "private": true,
-  "homepage": "https://clidoc.dev",
+  "homepage": "https://clidoc.ben3d.ca",
   "type": "module",
   "scripts": {
     "build": "vitepress build",

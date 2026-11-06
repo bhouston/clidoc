@@ -15,7 +15,7 @@
     "shell-completion",
     "validator"
   ],
-  "homepage": "https://clidoc.dev/docs/cli",
+  "homepage": "https://clidoc.ben3d.ca/docs/cli",
   "bugs": {
     "url": "https://github.com/bhouston/clidoc/issues"
   },

@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://clidoc.dev" target="_blank" rel="noopener noreferrer">
+  <a href="https://clidoc.ben3d.ca" target="_blank" rel="noopener noreferrer">
     <img alt="clidoc logo" src="https://raw.githubusercontent.com/bhouston/clidoc/main/packages/docs/static/img/icon-512.png" height="96">
   </a>
 </p>
@@ -9,7 +9,7 @@
   <a href="https://www.npmtrends.com/@clidoc/cli"><img src="https://img.shields.io/npm/dw/@clidoc/cli.svg" alt="npm downloads"></a>
   <a href="https://codecov.io/gh/bhouston/clidoc"><img src="https://codecov.io/gh/bhouston/clidoc/branch/main/graph/badge.svg" alt="coverage"></a>
   <a href="https://discord.gg/vSYc5CfRWH"><img src="https://img.shields.io/badge/chat-discord-blue?style=flat&logo=discord" alt="discord chat"></a>
-  <a href="https://clidoc.dev"><img src="https://img.shields.io/badge/docs-read-blue?style=flat" alt="documentation"></a>
+  <a href="https://clidoc.ben3d.ca"><img src="https://img.shields.io/badge/docs-read-blue?style=flat" alt="documentation"></a>
 </p>
 <br/>
 
@@ -26,7 +26,7 @@
 Validate your CLI's OpenCLI document and turn it into a Markdown reference, shell
 completions or MCP tools, all from one command-line tool. Node 22.12+; ESM only.
 
-[Read the Docs to Learn More](https://clidoc.dev).
+[Read the Docs to Learn More](https://clidoc.ben3d.ca).
 
 ## Getting Started
 
@@ -55,7 +55,7 @@ those same definitions. `runCli(argv)` supports embedding without exiting the
 calling process; it rejects on invalid input.
 
 See the [repository guide](https://github.com/bhouston/clidoc/tree/main#readme) and
-[command reference](https://clidoc.dev/docs/cli/reference).
+[command reference](https://clidoc.ben3d.ca/docs/cli/reference).
 
 ## Why / compared to alternatives
 
@@ -84,7 +84,7 @@ For Bash, activate with `source <(clidoc completion bash)`. For Zsh, run
 `source <(clidoc completion zsh)` after `autoload -Uz compinit; compinit`.
 Use `--binary name` to register an alternative executable name. Generated scripts
 need neither Node nor clidoc at completion time. Regenerate them after CLI changes.
-See the [completion guide](https://clidoc.dev/docs/completion) for
+See the [completion guide](https://clidoc.ben3d.ca/docs/completion) for
 persistent installation, supported syntax, and limitations.
 
 ## MCP tools and stdio server
@@ -97,7 +97,7 @@ clidoc mcp cli.json --serve --executable /absolute/path/to/mycli
 Exporting does not execute the CLI. Serving requires an explicit trusted
 executable and validates every tool invocation. The bridge uses conventional
 long options and `--` before positional arguments; see the
-[MCP guide](https://clidoc.dev/docs/mcp) for the serialization contract,
+[MCP guide](https://clidoc.ben3d.ca/docs/mcp) for the serialization contract,
 client configuration, limits, and supported spec features.
 
 Library users can import `compileMcpTools`, `createMcpServer`, and `serveMcp`

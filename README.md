@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://clidoc.dev" target="_blank" rel="noopener noreferrer">
+  <a href="https://clidoc.ben3d.ca" target="_blank" rel="noopener noreferrer">
     <img alt="clidoc logo" src="https://raw.githubusercontent.com/bhouston/clidoc/main/packages/docs/static/img/icon-512.png" height="96">
   </a>
 </p>
@@ -9,7 +9,7 @@
   <a href="https://www.npmtrends.com/@clidoc/cli"><img src="https://img.shields.io/npm/dw/@clidoc/cli.svg" alt="npm downloads"></a>
   <a href="https://codecov.io/gh/bhouston/clidoc"><img src="https://codecov.io/gh/bhouston/clidoc/branch/main/graph/badge.svg" alt="coverage"></a>
   <a href="https://discord.gg/vSYc5CfRWH"><img src="https://img.shields.io/badge/chat-discord-blue?style=flat&logo=discord" alt="discord chat"></a>
-  <a href="https://clidoc.dev"><img src="https://img.shields.io/badge/docs-read-blue?style=flat" alt="documentation"></a>
+  <a href="https://clidoc.ben3d.ca"><img src="https://img.shields.io/badge/docs-read-blue?style=flat" alt="documentation"></a>
 </p>
 <br/>
 
@@ -31,7 +31,7 @@ clidoc turns your CLI definitions into a portable
 [OpenCLI](https://github.com/bcdxn/opencli) document, which it validates and renders as
 Markdown, shell completions and MCP tools.
 
-[Read the Docs to Learn More](https://clidoc.dev).
+[Read the Docs to Learn More](https://clidoc.ben3d.ca).
 
 ## Packages
 
@@ -117,7 +117,7 @@ OpenCLI specifications in pull requests:
 The action accepts JSON/YAML, multiple files, explicit specification dialects,
 and pinned validator versions. Its default uses a locked source build; set
 `validator-version` to pin an exact published `@clidoc/core` version. See the
-[official CI guide](https://clidoc.dev/docs/github-action/) for a complete
+[official CI guide](https://clidoc.ben3d.ca/docs/github-action/) for a complete
 workflow and version selection. This repository runs the hosted action against
 its generated CLI specification on Linux and macOS.
 
@@ -223,7 +223,7 @@ demo uses barebones Yargs; the clidoc tool uses `defineCommand` and
 same workflow: `clidoc docgen` and `clidoc __opencli` describe the `clidoc`
 binary.
 
-The [CLI reference](https://clidoc.dev/docs/cli/reference) comes from the actual
+The [CLI reference](https://clidoc.ben3d.ca/docs/cli/reference) comes from the actual
 command modules. `pnpm build` writes the OpenCLI JSON and Markdown to `docs/generated/`
 (not committed) before building the demo sites that read them. The website is
 deployed by the Release workflow from each release tag, so it documents the
