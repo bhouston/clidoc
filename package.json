@@ -12,8 +12,8 @@
   "type": "module",
   "scripts": {
     "prepare": "husky",
-    "build": "pnpm -r --filter './packages/*' --filter '!@clidoc/website' build && node scripts/generate-docs.mjs && pnpm -r --filter './demos/*' build",
-    "dev": "pnpm --parallel --filter @clidoc/website --filter @clidoc/demo-docusaurus --filter @clidoc/demo-vitepress dev",
+    "build": "pnpm -r --filter './packages/*' --filter '!@clidoc/docs' build && node scripts/generate-docs.mjs && pnpm -r --filter './demos/*' build",
+    "dev": "pnpm --parallel --filter @clidoc/docs --filter @clidoc/demo-docusaurus --filter @clidoc/demo-vitepress dev",
     "tsc": "pnpm -r tsc",
     "test": "pnpm build && vitest run",
     "test:coverage": "pnpm build && vitest run --coverage",
@@ -24,7 +24,7 @@
     "package:check": "pnpm build && node scripts/check-package-maps.mjs",
     "release": "semantic-release",
     "test:workflow": "node --test scripts/workflow.test.mjs",
-    "docs:build": "pnpm build && pnpm --filter @clidoc/website generate:api && pnpm --filter @clidoc/website build && pnpm --filter @clidoc/demo-docusaurus build && pnpm --filter @clidoc/demo-vitepress build"
+    "docs:build": "pnpm build && pnpm --filter @clidoc/docs generate:api && pnpm --filter @clidoc/docs build && pnpm --filter @clidoc/demo-docusaurus build && pnpm --filter @clidoc/demo-vitepress build"
   },
   "devDependencies": {
     "@anolilab/semantic-release-pnpm": "^8.1.29",

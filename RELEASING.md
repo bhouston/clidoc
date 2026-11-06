@@ -50,7 +50,7 @@ Publishing is not atomic. If a run fails part way, compare the registry versions
 - Each package's npm tarball, attached to the GitHub Release.
 - The website at `clidoc.dev`, deployed after each published release (see Website).
 
-Publishing goes through `@anolilab/semantic-release-pnpm`, one plugin instance per package, so `pnpm publish` resolves `workspace:*` dependencies to concrete versions. `@clidoc/website` and the demos are private and never published.
+Publishing goes through `@anolilab/semantic-release-pnpm`, one plugin instance per package, so `pnpm publish` resolves `workspace:*` dependencies to concrete versions. `@clidoc/docs` and the demos are private and never published.
 
 ### Required Checks
 
@@ -58,7 +58,7 @@ Publishing goes through `@anolilab/semantic-release-pnpm`, one plugin instance p
 
 ### Website
 
-The Release workflow calls `pages.yml` after each published release. It builds `packages/website` from the new `v<version>` tag, with that version in the CLI reference, and deploys with the built-in `GITHUB_TOKEN`. Dry runs and runs that publish nothing do not deploy. To redeploy the latest release, run `gh workflow run pages.yml --ref main` (optionally with `-f ref=v<version>`).
+The Release workflow calls `pages.yml` after each published release. It builds `packages/docs` from the new `v<version>` tag, with that version in the CLI reference, and deploys with the built-in `GITHUB_TOKEN`. Dry runs and runs that publish nothing do not deploy. To redeploy the latest release, run `gh workflow run pages.yml --ref main` (optionally with `-f ref=v<version>`).
 
 One-time Pages setup:
 
