@@ -1,7 +1,7 @@
 {
   "name": "@clidoc/docs",
   "private": true,
-  "homepage": "https://clidoc.dev",
+  "homepage": "https://clidoc.ben3d.ca",
   "scripts": {
     "build": "docusaurus build",
     "dev": "docusaurus start --port 4000",

@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://clidoc.dev" target="_blank" rel="noopener noreferrer">
+  <a href="https://clidoc.ben3d.ca" target="_blank" rel="noopener noreferrer">
     <img alt="clidoc logo" src="https://raw.githubusercontent.com/bhouston/clidoc/main/packages/docs/static/img/icon-512.png" height="96">
   </a>
 </p>
@@ -9,7 +9,7 @@
   <a href="https://www.npmtrends.com/@clidoc/commander"><img src="https://img.shields.io/npm/dw/@clidoc/commander.svg" alt="npm downloads"></a>
   <a href="https://codecov.io/gh/bhouston/clidoc"><img src="https://codecov.io/gh/bhouston/clidoc/branch/main/graph/badge.svg" alt="coverage"></a>
   <a href="https://discord.gg/vSYc5CfRWH"><img src="https://img.shields.io/badge/chat-discord-blue?style=flat&logo=discord" alt="discord chat"></a>
-  <a href="https://clidoc.dev"><img src="https://img.shields.io/badge/docs-read-blue?style=flat" alt="documentation"></a>
+  <a href="https://clidoc.ben3d.ca"><img src="https://img.shields.io/badge/docs-read-blue?style=flat" alt="documentation"></a>
 </p>
 <br/>
 
@@ -27,7 +27,7 @@ Stop hand-writing your CLI reference docs. Generate them from your [Commander](h
 
 `@clidoc/commander` converts your configured `Command` tree into an [OpenCLI](https://github.com/bcdxn/opencli) document that you can validate, render to Markdown, and publish to Docusaurus or VitePress.
 
-[Read the Docs to Learn More](https://clidoc.dev).
+[Read the Docs to Learn More](https://clidoc.ben3d.ca).
 
 ## Getting Started
 
@@ -47,7 +47,7 @@ npm install @clidoc/commander @clidoc/core commander
 - [`@clidoc/cli`](https://www.npmjs.com/package/@clidoc/cli): `clidoc validate`, `markdown`, `completion` and `mcp` commands.
 - Publish the result with [`@clidoc/docusaurus`](https://www.npmjs.com/package/@clidoc/docusaurus) or [`@clidoc/vitepress`](https://www.npmjs.com/package/@clidoc/vitepress).
 - Other CLI frameworks: [`@clidoc/yargs`](https://www.npmjs.com/package/@clidoc/yargs), [`@clidoc/oclif`](https://www.npmjs.com/package/@clidoc/oclif).
-- [Documentation](https://clidoc.dev/docs/frameworks) and [demos](https://github.com/bhouston/clidoc/tree/main/demos).
+- [Documentation](https://clidoc.ben3d.ca/docs/frameworks) and [demos](https://github.com/bhouston/clidoc/tree/main/demos).
 
 ## Add `docgen` to your CLI
 

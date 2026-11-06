@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://clidoc.dev" target="_blank" rel="noopener noreferrer">
+  <a href="https://clidoc.ben3d.ca" target="_blank" rel="noopener noreferrer">
     <img alt="clidoc logo" src="https://raw.githubusercontent.com/bhouston/clidoc/main/packages/docs/static/img/icon-512.png" height="96">
   </a>
 </p>
@@ -9,7 +9,7 @@
   <a href="https://www.npmtrends.com/@clidoc/core"><img src="https://img.shields.io/npm/dw/@clidoc/core.svg" alt="npm downloads"></a>
   <a href="https://codecov.io/gh/bhouston/clidoc"><img src="https://codecov.io/gh/bhouston/clidoc/branch/main/graph/badge.svg" alt="coverage"></a>
   <a href="https://discord.gg/vSYc5CfRWH"><img src="https://img.shields.io/badge/chat-discord-blue?style=flat&logo=discord" alt="discord chat"></a>
-  <a href="https://clidoc.dev"><img src="https://img.shields.io/badge/docs-read-blue?style=flat" alt="documentation"></a>
+  <a href="https://clidoc.ben3d.ca"><img src="https://img.shields.io/badge/docs-read-blue?style=flat" alt="documentation"></a>
 </p>
 <br/>
 
@@ -25,7 +25,7 @@
 
 Parse, validate and render CLI documentation from one portable [OpenCLI 1.0.0-alpha.14](https://github.com/bcdxn/opencli) document. This is the library underneath every clidoc package: use it directly if you already have an OpenCLI document, or pair it with a framework package to generate one from your CLI.
 
-[Read the Docs to Learn More](https://clidoc.dev).
+[Read the Docs to Learn More](https://clidoc.ben3d.ca).
 
 ## Getting Started
 
@@ -52,7 +52,7 @@ The published package bundles the exact schema pinned in `upstream/opencli/spec.
 | Validate, render Markdown, completions or MCP tools from the shell | [`@clidoc/cli`](https://www.npmjs.com/package/@clidoc/cli)                                                                                                                                               |
 | Publish reference pages in your docs site                          | [`@clidoc/docusaurus`](https://www.npmjs.com/package/@clidoc/docusaurus) or [`@clidoc/vitepress`](https://www.npmjs.com/package/@clidoc/vitepress)                                                       |
 
-See the [API reference](https://clidoc.dev/docs/api) and the [runnable demos](https://github.com/bhouston/clidoc/tree/main/demos).
+See the [API reference](https://clidoc.ben3d.ca/docs/api) and the [runnable demos](https://github.com/bhouston/clidoc/tree/main/demos).
 
 ## Why clidoc
 
@@ -100,7 +100,7 @@ validates an OpenCLI document and returns a standalone completion script. It
 supports nested commands, aliases, global/local flags, option and positional
 choices, and hidden entries, with no runtime dependency on Node or the target CLI.
 The optional `binary` overrides only the registered executable name. See the
-[completion guide](https://clidoc.dev/docs/completion) for activation,
+[completion guide](https://clidoc.ben3d.ca/docs/completion) for activation,
 supported syntax, and limitations.
 
 ## Contribution

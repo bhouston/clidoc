@@ -59,13 +59,13 @@ and runs that publish nothing don't deploy. To redeploy the latest release, run
 
 ```sh
 gh api repos/bhouston/clidoc/pages -X POST -f build_type=workflow
-gh api repos/bhouston/clidoc/pages -X PUT -f cname=clidoc.dev -F https_enforced=true
+gh api repos/bhouston/clidoc/pages -X PUT -f cname=clidoc.ben3d.ca -F https_enforced=true
 ```
 
-DNS for `clidoc.dev` is on Cloudflare: the four GitHub Pages `A` records
-(`185.199.108-111.153`), the four `AAAA` records (`2606:50c0:8000-8003::153`),
-and `CNAME www → bhouston.github.io`. Keep records DNS-only until the GitHub
-certificate is issued, then proxy with SSL mode Full (strict).
+DNS for `clidoc.ben3d.ca` is on Cloudflare, in the `ben3d.ca` zone: `CNAME clidoc →
+bhouston.github.io`. Keep the record DNS-only until the GitHub certificate is issued,
+then proxy it. The former `clidoc.dev` domain 301-redirects to the same path here
+through a Cloudflare redirect rule.
 
 ## Recovery
 
