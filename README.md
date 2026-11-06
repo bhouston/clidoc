@@ -308,7 +308,11 @@ CLI documentation or docs integrations.
 
 The repository follows a standard TypeScript toolchain: pnpm workspaces, TypeScript builds,
 Vitest, Oxlint/Oxfmt, Husky/commitlint, MIT licensing, and independent manually dispatched
-semantic releases. See [release and deployment setup](RELEASING.md).
+semantic releases.
+
+## Releases
+
+See [RELEASING.md](RELEASING.md) for how releases are published and [GitHub Releases](https://github.com/bhouston/clidoc/releases) for changes.
 
 ## Contribution
 
