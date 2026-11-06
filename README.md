@@ -1,11 +1,27 @@
+<p align="center">
+  <a href="https://clidoc.dev" target="_blank" rel="noopener noreferrer">
+    <img alt="clidoc logo" src="https://raw.githubusercontent.com/bhouston/clidoc/main/packages/website/static/img/icon-512.png" height="96">
+  </a>
+</p>
+<br/>
+<p align="center">
+  <a href="https://npmjs.com/package/@clidoc/cli"><img src="https://img.shields.io/npm/v/@clidoc/cli.svg" alt="npm package"></a>
+  <a href="https://www.npmtrends.com/@clidoc/cli"><img src="https://img.shields.io/npm/dw/@clidoc/cli.svg" alt="npm downloads"></a>
+  <a href="https://codecov.io/gh/bhouston/clidoc"><img src="https://codecov.io/gh/bhouston/clidoc/branch/main/graph/badge.svg" alt="coverage"></a>
+  <a href="https://discord.gg/vSYc5CfRWH"><img src="https://img.shields.io/badge/chat-discord-blue?style=flat&logo=discord" alt="discord chat"></a>
+  <a href="https://clidoc.dev"><img src="https://img.shields.io/badge/docs-read-blue?style=flat" alt="documentation"></a>
+</p>
+<br/>
+
 # clidoc
 
-[![npm version](https://img.shields.io/npm/v/%40clidoc%2Fcli)](https://www.npmjs.com/package/@clidoc/cli)
-[![npm downloads](https://img.shields.io/npm/dw/%40clidoc%2Fcli)](https://www.npmjs.com/package/@clidoc/cli)
-[![CI](https://github.com/bhouston/clidoc/actions/workflows/ci.yml/badge.svg)](https://github.com/bhouston/clidoc/actions/workflows/ci.yml)
-[![Coverage](https://codecov.io/gh/bhouston/clidoc/branch/main/graph/badge.svg)](https://codecov.io/gh/bhouston/clidoc)
-[![Documentation](https://img.shields.io/badge/docs-clidoc.dev-blue)](https://clidoc.dev)
-[![Discord](https://img.shields.io/badge/Discord-Join-5865F2?logo=discord&logoColor=white)](https://discord.gg/vSYc5CfRWH)
+> Generate CLI reference docs that never drift from your code.
+
+- 📄 Docs Generated From Your CLI
+- 🔌 Yargs, Commander, and oclif
+- ✅ Validated OpenCLI Documents
+- 📚 Docusaurus and VitePress Pages
+- 🐚 Completions and MCP Tools
 
 Stop hand-writing your CLI reference docs. Generate them from your yargs, Commander
 or oclif definitions so they never drift from `--help`, then publish them to Docusaurus,
@@ -14,6 +30,24 @@ VitePress or plain Markdown.
 clidoc turns your CLI definitions into a portable
 [OpenCLI](https://github.com/bcdxn/opencli) document, which it validates and renders as
 Markdown, shell completions and MCP tools.
+
+[Read the Docs to Learn More](https://clidoc.dev).
+
+## Packages
+
+| Package                                     | Version (click for changelogs)                                                                                                              |
+| ------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------ |
+| [`@clidoc/cli`](packages/cli)               | [![@clidoc/cli version](https://img.shields.io/npm/v/@clidoc/cli.svg?label=%20)](https://github.com/bhouston/clidoc/releases)               |
+| [`@clidoc/core`](packages/core)             | [![@clidoc/core version](https://img.shields.io/npm/v/@clidoc/core.svg?label=%20)](https://github.com/bhouston/clidoc/releases)             |
+| [`@clidoc/yargs`](packages/yargs)           | [![@clidoc/yargs version](https://img.shields.io/npm/v/@clidoc/yargs.svg?label=%20)](https://github.com/bhouston/clidoc/releases)           |
+| [`@clidoc/commander`](packages/commander)   | [![@clidoc/commander version](https://img.shields.io/npm/v/@clidoc/commander.svg?label=%20)](https://github.com/bhouston/clidoc/releases)   |
+| [`@clidoc/oclif`](packages/oclif)           | [![@clidoc/oclif version](https://img.shields.io/npm/v/@clidoc/oclif.svg?label=%20)](https://github.com/bhouston/clidoc/releases)           |
+| [`@clidoc/docusaurus`](packages/docusaurus) | [![@clidoc/docusaurus version](https://img.shields.io/npm/v/@clidoc/docusaurus.svg?label=%20)](https://github.com/bhouston/clidoc/releases) |
+| [`@clidoc/vitepress`](packages/vitepress)   | [![@clidoc/vitepress version](https://img.shields.io/npm/v/@clidoc/vitepress.svg?label=%20)](https://github.com/bhouston/clidoc/releases)   |
+
+Runnable examples live in [`demos/`](demos) (Yargs, Commander, oclif, Docusaurus, VitePress).
+
+## Quick Start
 
 ```sh
 npm install @clidoc/yargs @clidoc/core   # or @clidoc/commander / @clidoc/oclif
@@ -38,21 +72,6 @@ The clidoc tool documents itself this way, from its own `yargs-file-commands` de
 
 The framework packages read metadata only. They don't infer custom validation, coercion or middleware (see
 [Compatibility and scope](#compatibility-and-scope)).
-
-## Packages
-
-| Package                                     | Purpose                                                                              |
-| ------------------------------------------- | ------------------------------------------------------------------------------------ |
-| [`@clidoc/core`](packages/core)             | Types, offline JSON Schema validation, JSON/YAML parsing, Markdown, pages and routes |
-| [`@clidoc/yargs`](packages/yargs)           | Yargs command modules, including supported `defineCommand` builders                  |
-| [`@clidoc/commander`](packages/commander)   | Configured Commander command trees                                                   |
-| [`@clidoc/oclif`](packages/oclif)           | oclif manifest command metadata                                                      |
-| [`@clidoc/cli`](packages/cli)               | `validate`, `markdown`, `docgen`, `completion`, and `mcp` commands, plus `__opencli` |
-| [`@clidoc/docusaurus`](packages/docusaurus) | Generated Markdown pages for the Docusaurus docs plugin                              |
-| [`@clidoc/vitepress`](packages/vitepress)   | Generated Markdown and matching VitePress sidebar links                              |
-
-Documentation: [clidoc.dev](https://clidoc.dev). Runnable examples live in
-[`demos/`](demos) (Yargs, Commander, oclif, Docusaurus, VitePress).
 
 ## MCP support
 
@@ -96,8 +115,8 @@ OpenCLI specifications in pull requests:
 ```
 
 The action accepts JSON/YAML, multiple files, explicit specification dialects,
-and pinned validator versions. Its default uses a locked source build until the
-clidoc npm packages are published. See the
+and pinned validator versions. Its default uses a locked source build; set
+`validator-version` to pin an exact published `@clidoc/core` version. See the
 [official CI guide](https://clidoc.dev/docs/github-action/) for a complete
 workflow and version selection. This repository runs the hosted action against
 its generated CLI specification on Linux and macOS.
@@ -268,7 +287,7 @@ This first implementation focuses on the CLI-to-Markdown pipeline. OpenAPI and
 TypeDoc ingestion, a standalone embeddable React viewer, additional site platforms,
 and an integrated preview server remain extensions to that pipeline.
 
-## Contributing and releasing
+## Local checks and releasing
 
 Follow [CONTRIBUTING.md](CONTRIBUTING.md): issue first, issue-numbered branch,
 Conventional Commits, checks, then a PR against `main`.
@@ -291,9 +310,13 @@ The repository follows a standard TypeScript toolchain: pnpm workspaces, TypeScr
 Vitest, Oxlint/Oxfmt, Husky/commitlint, MIT licensing, and independent manually dispatched
 semantic releases. See [release and deployment setup](RELEASING.md).
 
+## Contribution
+
+See [Contributing Guide](CONTRIBUTING.md).
+
 ## License
 
-MIT. See [LICENSE](LICENSE).
+MIT
 
 ## Author
 
