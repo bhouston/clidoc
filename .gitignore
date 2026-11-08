@@ -21,3 +21,8 @@ packages/docs/docs/cli/.clidoc-generated.json
 packages/docs/tests/__screenshots__/
 packages/docs/.vitest-attachments/
 docs/generated/
+
+# Agent tooling
+.claude/
+.codex/
+.cursor/
