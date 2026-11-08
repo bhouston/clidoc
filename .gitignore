@@ -25,3 +25,4 @@ docs/generated/
 # Agent tooling
 .claude/
 .codex/
+.cursor/
